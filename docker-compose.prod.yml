@@ -1,0 +1,130 @@
+version: "3.8"
+
+services:
+  # PostgreSQL with PostGIS
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: bieszczady_db_prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bieszczady}
+      POSTGRES_USER: ${POSTGRES_USER:-bieszczady}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bieszczady}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: bieszczady_redis_prod
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: bieszczady_backend_prod
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120
+    volumes:
+      - backend_static:/app/static
+      - backend_media:/app/media
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      DEEPL_API_KEY: ${DEEPL_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${BACKEND_DOMAIN}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+
+  # Celery Worker
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: bieszczady_celery_prod
+    command: celery -A config worker -l info --concurrency=2
+    volumes:
+      - backend_media:/app/media
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+      DEEPL_API_KEY: ${DEEPL_API_KEY}
+    depends_on:
+      - db
+      - redis
+      - backend
+    restart: unless-stopped
+
+  # Celery Beat
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: bieszczady_celery_beat_prod
+    command: celery -A config beat -l info
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    depends_on:
+      - db
+      - redis
+      - backend
+    restart: unless-stopped
+
+  # Frontend (built static files served by Node)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: https://${BACKEND_DOMAIN}
+    container_name: bieszczady_frontend_prod
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_static:
+  backend_media:

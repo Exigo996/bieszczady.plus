@@ -1,0 +1,35 @@
+# Core Django
+Django>=5.1,<5.2
+djangorestframework>=3.14,<4.0
+django-cors-headers>=4.3,<5.0
+
+# Database
+psycopg2-binary>=2.9,<3.0
+
+# GeoDjango
+GDAL>=3.7,<4.0
+
+# Celery for async tasks
+celery>=5.3,<6.0
+redis>=5.0,<6.0
+
+# Web scraping
+selenium>=4.15,<5.0
+beautifulsoup4>=4.12,<5.0
+lxml>=5.0,<6.0
+
+# Translation
+deepl>=1.17,<2.0
+
+# Geolocation
+geoip2>=4.7,<5.0
+
+# Image handling
+Pillow>=10.1,<11.0
+
+# Calendar export
+icalendar>=5.0,<6.0
+
+# Utilities
+python-dotenv>=1.0,<2.0
+python-dateutil>=2.8,<3.0

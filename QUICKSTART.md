@@ -1,8 +1,69 @@
 # Quick Start Guide - Bieszczady.plus
 
-Get up and running with Bieszczady.plus in 15 minutes.
+Get up and running with Bieszczady.plus in **5 minutes** using Docker.
 
-## Prerequisites
+## 🎯 Recommended Approach: Docker (Easiest!)
+
+**Why Docker?**
+
+- ✅ No need to install PostgreSQL, PostGIS, Redis locally
+- ✅ Identical environment to production (Coolify)
+- ✅ One command to start everything
+- ✅ Auto-reload on code changes
+- ✅ Clean, isolated environment
+
+**Prerequisites:**
+
+- **Docker Desktop** for Mac ([download here](https://www.docker.com/products/docker-desktop/))
+- **Git** for version control
+
+### Quick Start with Docker (Recommended)
+
+```bash
+# 1. Install Docker Desktop
+brew install --cask docker
+# Or download from https://www.docker.com/products/docker-desktop/
+
+# 2. Clone repository (or create new one)
+git clone https://github.com/yourusername/bieszczady-plus.git
+cd bieszczady-plus
+
+# 3. Copy environment file (defaults work out of the box!)
+cp .env.example .env
+
+# 4. Start everything with ONE command
+docker-compose up -d --build
+
+# That's it! 🎉
+```
+
+**Access your app:**
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000/api
+- Django Admin: http://localhost:8000/admin (admin/admin123)
+
+**Useful commands:**
+
+```bash
+make logs          # View all logs
+make shell         # Django shell
+make migrate       # Run migrations
+make test          # Run tests
+make down          # Stop everything
+```
+
+See **[DOCKER-GUIDE.md](DOCKER-GUIDE.md)** for complete Docker documentation.
+
+---
+
+## 🔧 Alternative: Manual Setup (Advanced)
+
+Only use this if you prefer not to use Docker or need manual control.
+
+### Prerequisites
+
+> **Note:** This manual setup is more complex. We recommend using Docker (see above) unless you specifically need a manual installation.
 
 - **Python 3.11+** installed
 - **Node.js 20+** and npm installed
@@ -10,7 +71,7 @@ Get up and running with Bieszczady.plus in 15 minutes.
 - **Redis** (for Celery)
 - **Git** for version control
 
-## 1. Initial Setup (5 minutes)
+### 1. Initial Setup (15 minutes)
 
 ```bash
 # Clone the repository (once it's created)
@@ -22,7 +83,37 @@ mkdir -p backend/media backend/static
 mkdir -p frontend/public/icons
 ```
 
-## 2. Backend Setup (5 minutes)
+### 2. Install PostgreSQL with PostGIS (macOS)
+
+```bash
+# Install via Homebrew
+brew install postgresql@16 postgis
+
+# Start PostgreSQL
+brew services start postgresql@16
+
+# Create database and enable PostGIS
+psql postgres << EOF
+CREATE DATABASE bieszczady;
+\c bieszczady
+CREATE EXTENSION postgis;
+\q
+EOF
+```
+
+### 3. Install Redis
+
+```bash
+# Install via Homebrew
+brew install redis
+
+# Start Redis
+brew services start redis
+```
+
+### 4. Backend Setup (Django)
+
+### 4. Backend Setup (Django)
 
 ```bash
 cd backend
@@ -31,37 +122,14 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies (create requirements files first)
-pip install django djangorestframework django-cors-headers
-pip install psycopg2-binary pillow
-pip install celery redis
-pip install selenium beautifulsoup4
-pip install deepl geoip2
+# Install dependencies
+pip install -r requirements/development.txt
 
-# Or use requirements file (once created):
-# pip install -r requirements/development.txt
-
-# Create Django project
-django-admin startproject config .
-
-# Configure database in config/settings.py
-# Add this to DATABASES:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'bieszczady',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
-# Install PostGIS in PostgreSQL
-# In psql:
-# CREATE DATABASE bieszczady;
-# \c bieszczady
-# CREATE EXTENSION postgis;
+# Configure database in .env (create from .env.example)
+cp ../.env.example .env
+# Edit .env and set:
+# DATABASE_URL=postgresql://your_username@localhost:5432/bieszczady
+# REDIS_URL=redis://localhost:6379/0
 
 # Run migrations
 python manage.py migrate
@@ -74,44 +142,13 @@ python manage.py runserver
 # Backend running at http://localhost:8000
 ```
 
-## 3. Frontend Setup (5 minutes)
+### 5. Frontend Setup (React)
 
 ```bash
-cd frontend
-
-# Initialize React project with Vite
-npm create vite@latest . -- --template react-ts
+cd ../frontend
 
 # Install dependencies
 npm install
-
-# Install additional packages
-npm install react-router-dom @tanstack/react-query axios
-npm install leaflet react-leaflet
-npm install i18next react-i18next
-npm install date-fns
-npm install -D tailwindcss postcss autoprefixer
-npm install -D @types/leaflet
-
-# Initialize Tailwind CSS
-npx tailwindcss init -p
-
-# Configure Tailwind (update tailwind.config.js):
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-
-# Add Tailwind to src/index.css:
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 # Create .env file
 echo "VITE_API_URL=http://localhost:8000/api" > .env
@@ -121,7 +158,34 @@ npm run dev
 # Frontend running at http://localhost:5173
 ```
 
-## 4. First Django App - Events
+### 6. Start Celery (Background Tasks)
+
+```bash
+# In a new terminal
+cd backend
+source venv/bin/activate
+
+# Start Celery worker
+celery -A config worker -l info
+
+# In another terminal (for scheduled tasks)
+celery -A config beat -l info
+```
+
+---
+
+## 📝 Creating Your First Django App
+
+Once everything is running, create the core apps:
+
+---
+
+## 📝 Creating Your First Django App
+
+> **Note:** If using Docker, run these commands with `docker-compose exec backend` prefix.
+> Example: `docker-compose exec backend python manage.py startapp events apps/events`
+
+### Create Events App
 
 ```bash
 cd backend
@@ -138,9 +202,9 @@ INSTALLED_APPS = [
     'apps.events',
 ]
 
-# Add CORS middleware:
+# Add CORS middleware to settings.py:
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Add this near the top
+    'corsheaders.middleware.CorsMiddleware',  # Add near the top
     # ... other middleware
 ]
 
@@ -148,21 +212,23 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+```
 
-# Create basic Event model in apps/events/models.py:
+### Create Basic Event Model
+
 from django.contrib.gis.db import models as gis_models
 from django.db import models
 
 class Event(models.Model):
-    CATEGORY_CHOICES = [
-        ('CONCERT', 'Concert'),
-        ('FESTIVAL', 'Festival'),
-        ('THEATRE', 'Theatre'),
-        ('CINEMA', 'Cinema'),
-        ('WORKSHOP', 'Workshop'),
-        ('FOOD', 'Food Event'),
-        ('CULTURAL', 'Cultural Event'),
-    ]
+CATEGORY_CHOICES = [
+('CONCERT', 'Concert'),
+('FESTIVAL', 'Festival'),
+('THEATRE', 'Theatre'),
+('CINEMA', 'Cinema'),
+('WORKSHOP', 'Workshop'),
+('FOOD', 'Food Event'),
+('CULTURAL', 'Cultural Event'),
+]
 
     title = models.JSONField(default=dict)  # {"pl": "", "en": "", "uk": ""}
     description = models.JSONField(default=dict)
@@ -190,9 +256,11 @@ class Event(models.Model):
         ordering = ['-start_date']
 
 # Make migrations
+
 python manage.py makemigrations
 python manage.py migrate
-```
+
+````
 
 ## 5. Create Basic API
 
@@ -245,7 +313,7 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'category', 'start_date', 'location_name']
     list_filter = ['category', 'start_date']
     search_fields = ['title']
-```
+````
 
 ## 6. Test Your Setup
 
@@ -306,7 +374,23 @@ function App() {
 export default App;
 ```
 
-## 7. Verify Everything Works
+## ✅ Verify Everything Works
+
+**With Docker:**
+
+```bash
+# Check all services are running
+docker-compose ps
+
+# Check logs
+docker-compose logs backend
+docker-compose logs frontend
+
+# Test API
+curl http://localhost:8000/api/events/
+```
+
+**Manual setup:**
 
 - [ ] Backend running at http://localhost:8000
 - [ ] Admin accessible at http://localhost:8000/admin
@@ -314,48 +398,130 @@ export default App;
 - [ ] Frontend running at http://localhost:5173
 - [ ] Frontend displays events fetched from API
 - [ ] No CORS errors in browser console
+- [ ] Celery worker running (check terminal)
+- [ ] Redis accessible
 
-## Next Steps
+## 🚀 Next Steps
 
 Now that you have the foundation:
 
-1. **Read CLAUDE.md** - Understand the full architecture
-2. **Review ROADMAP.md** - See what features to build next
-3. **Check PROJECT-STRUCTURE.md** - Understand where files go
-4. **Start building**:
+1. **Read documentation:**
+
+   - **[DOCKER-GUIDE.md](DOCKER-GUIDE.md)** - Complete Docker usage
+   - **[CLAUDE.md](CLAUDE.md)** - Full architecture and features
+   - **[ROADMAP.md](ROADMAP.md)** - What to build next
+   - **[PROJECT-STRUCTURE.md](PROJECT-STRUCTURE.md)** - Where files go
+
+2. **Start building features:**
+
    - Add more models (Product, Location, Organizer)
    - Implement search and filters
    - Add geolocation features
    - Build event detail pages
    - Implement calendar export
 
-## Common Issues
+3. **For production deployment:**
+   - **[COOLIFY-DEPLOYMENT.md](COOLIFY-DEPLOYMENT.md)** - Deploy to your OVH VPS
+
+## 🐛 Common Issues
+
+### Docker Issues
+
+**"Port already in use"**
+
+```bash
+# Check what's using the port
+lsof -i :8000
+
+# Stop the service or change port in docker-compose.yml
+```
+
+**"Cannot connect to database"**
+
+```bash
+# Wait for database to be ready (health check)
+docker-compose logs db
+
+# Restart if needed
+docker-compose restart backend
+```
+
+**"Module not found"**
+
+```bash
+# Rebuild containers
+docker-compose build backend
+docker-compose up -d backend
+```
+
+### Manual Setup Issues
+
+### Manual Setup Issues
 
 **"ImportError: No module named django.contrib.gis"**
-→ Install PostGIS: `CREATE EXTENSION postgis;` in your database
+
+```bash
+# Make sure PostGIS is installed
+brew install postgis
+
+# In PostgreSQL:
+psql bieszczady
+CREATE EXTENSION postgis;
+```
 
 **CORS errors in browser**
-→ Check `CORS_ALLOWED_ORIGINS` in settings.py includes your frontend URL
+
+```bash
+# Check CORS_ALLOWED_ORIGINS in backend settings.py
+# Should include http://localhost:5173
+```
 
 **Events not appearing**
-→ Check API response in browser DevTools → Network tab
-→ Verify data in Django admin
 
-**Port already in use**
-→ Backend: `python manage.py runserver 8001`
-→ Frontend: Update in `vite.config.ts` or use different port
+```bash
+# Check API response in browser DevTools → Network tab
+# Verify data in Django admin
+# Check backend logs for errors
+```
 
-## Resources
+**Port already in use (manual setup)**
 
+```bash
+# Backend: Change port
+python manage.py runserver 8001
+
+# Frontend: Update vite.config.ts or use --port flag
+npm run dev -- --port 5174
+```
+
+## 📚 Resources
+
+- **Project Documentation**: Check all .md files in project root
 - Django: https://docs.djangoproject.com/
 - DRF: https://www.django-rest-framework.org/
 - React: https://react.dev/
 - Vite: https://vitejs.dev/
 - Tailwind: https://tailwindcss.com/
 - PostGIS: https://postgis.net/
+- Docker: https://docs.docker.com/
 
 ---
 
-**You're ready to build Bieszczady.plus! 🚀**
+## 🎉 You're Ready!
 
-Questions? Check CLAUDE.md or open an issue on GitHub.
+**Recommended next step:** Start Docker containers and access Django admin to add your first event!
+
+```bash
+# With Docker (easiest)
+docker-compose up -d
+open http://localhost:8000/admin
+
+# Login: admin / admin123
+# Create your first event in Bieszczady region!
+```
+
+**Questions?**
+
+- Check [DOCKER-GUIDE.md](DOCKER-GUIDE.md) for Docker help
+- Check [CLAUDE.md](CLAUDE.md) for development guidance
+- Review [ROADMAP.md](ROADMAP.md) for feature ideas
