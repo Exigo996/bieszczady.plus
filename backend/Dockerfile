@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Set work directory

@@ -488,6 +488,32 @@ def generate_ics(event):
 
 ### 1. Starting New Feature
 
+**With Docker (Recommended):**
+
+```bash
+# Start containers
+docker-compose up -d
+# Or: make up
+
+# Create feature branch
+git checkout -b feature/event-calendar-export
+
+# Backend changes (in container)
+docker-compose exec backend python manage.py makemigrations
+docker-compose exec backend python manage.py migrate
+docker-compose exec backend pytest apps.events
+
+# Frontend changes (auto-reload)
+# Just edit files in frontend/src/
+
+# Commit
+git add .
+git commit -m "feat: Add calendar export functionality"
+git push origin feature/event-calendar-export
+```
+
+**Manual Setup:**
+
 ```bash
 # Create branch
 git checkout -b feature/event-calendar-export
@@ -510,6 +536,19 @@ git push origin feature/event-calendar-export
 ```
 
 ### 2. Testing
+
+**With Docker:**
+
+```bash
+# Backend tests
+docker-compose exec backend pytest
+# Or: make test
+
+# Frontend tests
+docker-compose exec frontend npm run test
+```
+
+**Manual:**
 
 ```bash
 # Backend tests
@@ -539,19 +578,53 @@ npm run test
 
 ## 📦 Deployment Checklist
 
-- [ ] Environment variables configured in Coolify
-- [ ] Database migrations applied
-- [ ] Static files collected (`python manage.py collectstatic`)
+**Docker/Coolify Deployment:**
+
+- [x] Docker Compose files created (development & production)
+- [x] Dockerfile for backend (Gunicorn)
+- [x] Dockerfile for frontend (serve, not Nginx - Coolify uses Traefik)
+- [x] Traefik labels configured in docker-compose.prod.yml
+- [ ] Code pushed to GitHub/GitLab
+- [ ] Repository connected in Coolify
+- [ ] Environment variables configured in Coolify:
+  - [ ] SECRET_KEY (Django)
+  - [ ] POSTGRES_PASSWORD
+  - [ ] DEEPL_API_KEY
+  - [ ] ALLOWED_HOSTS (api.bieszczady.plus)
+  - [ ] CORS_ALLOWED_ORIGINS (https://bieszczady.plus)
+  - [ ] BACKEND_DOMAIN (api.bieszczady.plus)
+  - [ ] FRONTEND_DOMAIN (bieszczady.plus)
+- [ ] DNS A records pointing to VPS IP
+- [ ] Deployed via Coolify (auto SSL via Let's Encrypt)
+- [ ] Database migrations applied (auto via entrypoint)
 - [ ] Celery worker running for background tasks
-- [ ] Redis configured and accessible
-- [ ] GeoIP2 database downloaded and configured
-- [ ] SSL certificate active (Let's Encrypt via Coolify)
-- [ ] Domain DNS pointing to VPS
+- [ ] GeoIP2 database configured (optional)
 - [ ] Facebook scraper tested with approved pages
 - [ ] Translation API keys working
 - [ ] Service Worker registered (PWA)
+- [ ] Verify both domains accessible (https://bieszczady.plus, https://api.bieszczady.plus)
 
 ## 🐛 Common Issues & Solutions
+
+**With Docker:**
+
+**Issue**: Container won't start
+
+- Check: `docker-compose logs backend` or `make logs-backend`
+- Check: Port conflicts? Change port in docker-compose.yml
+- Fix: `docker-compose down -v && docker-compose up -d --build`
+
+**Issue**: Database connection refused
+
+- Check: `docker-compose ps` - ensure db is healthy
+- Wait: Database health check takes ~10 seconds
+- Fix: `docker-compose restart db && docker-compose restart backend`
+
+**Issue**: Module not found / dependency issues
+
+- Fix: Rebuild containers: `docker-compose build --no-cache backend`
+
+**Manual Setup:**
 
 **Issue**: Events not appearing on map
 

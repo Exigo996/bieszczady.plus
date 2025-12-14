@@ -24,9 +24,12 @@
 
 **Infrastructure**
 
-- [ ] Local development environment documentation
-- [ ] Git repository structure
-- [ ] Environment variables management
+- [x] Docker development environment
+- [x] Docker Compose configuration
+- [x] Production Dockerfile (Coolify-ready)
+- [x] Local development environment documentation
+- [x] Git repository structure
+- [x] Environment variables management
 
 ### Week 3-4: Core Features
 
@@ -96,9 +99,11 @@
 
 **Deployment**
 
+- [x] Docker production configuration (docker-compose.prod.yml)
+- [x] Coolify deployment documentation (COOLIFY-DEPLOYMENT.md)
 - [ ] Production environment setup on OVH VPS
 - [ ] Coolify deployment configuration
-- [ ] SSL certificate (Let's Encrypt)
+- [ ] SSL certificate (Let's Encrypt) - Auto via Coolify
 - [ ] Domain configuration (bieszczady.plus)
 - [ ] Database backup strategy
 - [ ] Monitoring and logging

@@ -7,7 +7,7 @@ django-cors-headers>=4.3,<5.0
 psycopg2-binary>=2.9,<3.0
 
 # GeoDjango
-GDAL>=3.7,<4.0
+GDAL>=3.8,<3.11
 
 # Celery for async tasks
 celery>=5.3,<6.0
