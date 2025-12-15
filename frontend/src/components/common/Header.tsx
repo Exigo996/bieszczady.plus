@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -13,7 +17,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-14">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center -ml-2">
-            <a href="/" className="group">
+            <Link to="/" className="group">
               <div className="relative z-10">
                 <img
                   src="/bieszczadyplus1.png"
@@ -22,36 +26,52 @@ const Header: React.FC = () => {
                   style={{ marginTop: '-1.5rem', marginBottom: '-1.5rem' }}
                 />
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-8">
-            <a
-              href="/"
-              className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors border-b-2 border-blue-600"
-              aria-current="page"
+            <Link
+              to="/"
+              className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
+                isActive('/')
+                  ? 'text-gray-900 border-blue-600'
+                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+              }`}
+              aria-current={isActive('/') ? 'page' : undefined}
             >
               Wydarzenia
-            </a>
-            <a
-              href="/produkty"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-blue-600"
+            </Link>
+            <Link
+              to="/produkty"
+              className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
+                isActive('/produkty')
+                  ? 'text-gray-900 border-blue-600'
+                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+              }`}
             >
               Lokalni Producenci
-            </a>
-            <a
-              href="/mapa"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-blue-600"
+            </Link>
+            <Link
+              to="/mapa"
+              className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
+                isActive('/mapa')
+                  ? 'text-gray-900 border-blue-600'
+                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+              }`}
             >
               Mapa
-            </a>
-            <a
-              href="/o-nas"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-blue-600"
+            </Link>
+            <Link
+              to="/o-nas"
+              className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
+                isActive('/o-nas')
+                  ? 'text-gray-900 border-blue-600'
+                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+              }`}
             >
               O nas
-            </a>
+            </Link>
           </div>
 
           {/* Language Selector - Desktop */}
@@ -127,31 +147,51 @@ const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200" id="mobile-menu">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <a
-                href="/"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600"
-                aria-current="page"
+              <Link
+                to="/"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/')
+                    ? 'text-white bg-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                } transition-colors`}
+                aria-current={isActive('/') ? 'page' : undefined}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Wydarzenia
-              </a>
-              <a
-                href="/produkty"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
+              </Link>
+              <Link
+                to="/produkty"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/produkty')
+                    ? 'text-white bg-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                } transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Lokalni Producenci
-              </a>
-              <a
-                href="/mapa"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
+              </Link>
+              <Link
+                to="/mapa"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/mapa')
+                    ? 'text-white bg-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                } transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Mapa
-              </a>
-              <a
-                href="/o-nas"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
+              </Link>
+              <Link
+                to="/o-nas"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/o-nas')
+                    ? 'text-white bg-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                } transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 O nas
-              </a>
+              </Link>
             </div>
 
             {/* Language Selector - Mobile */}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -29,24 +30,24 @@ const Footer: React.FC = () => {
             <h3 className="text-white font-semibold mb-4">Szybkie linki</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/" className="text-sm hover:text-blue-400 transition-colors">
                   Wydarzenia
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/produkty" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/produkty" className="text-sm hover:text-blue-400 transition-colors">
                   Lokalni Producenci
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/mapa" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/mapa" className="text-sm hover:text-blue-400 transition-colors">
                   Mapa
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/o-nas" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/o-nas" className="text-sm hover:text-blue-400 transition-colors">
                   O nas
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -129,12 +130,12 @@ const Footer: React.FC = () => {
               © {currentYear} Bieszczady.plus. Wszelkie prawa zastrzeżone.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="/polityka-prywatnosci" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
+              <Link to="/polityka-prywatnosci" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
                 Polityka prywatności
-              </a>
-              <a href="/regulamin" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
+              </Link>
+              <Link to="/regulamin" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
                 Regulamin
-              </a>
+              </Link>
             </div>
           </div>
         </div>
