@@ -1,19 +1,17 @@
-version: "3.8"
-
 services:
   # PostgreSQL with PostGIS
   db:
     image: postgis/postgis:16-3.4
     container_name: bieszczady_db_prod
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-bieszczady}
-      POSTGRES_USER: ${POSTGRES_USER:-bieszczady}
+      POSTGRES_DB: ${POSTGRES_DB:-bieszcz}
+      POSTGRES_USER: ${POSTGRES_USER:-bieszcz}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bieszczady}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bieszcz}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,7 +42,7 @@ services:
     environment:
       DEBUG: "False"
       SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
       REDIS_URL: "redis://redis:6379/0"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
@@ -76,7 +74,7 @@ services:
     environment:
       DEBUG: "False"
       SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
       REDIS_URL: "redis://redis:6379/0"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
@@ -97,7 +95,7 @@ services:
     environment:
       DEBUG: "False"
       SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszczady}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszczady}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
       REDIS_URL: "redis://redis:6379/0"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"

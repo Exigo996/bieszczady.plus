@@ -5,8 +5,9 @@ django-cors-headers>=4.3,<5.0
 
 # Database
 psycopg2-binary>=2.9,<3.0
+dj-database-url>=2.0,<3.0
 
-# GeoDjango
+# GeoDjango - match installed libgdal version (3.10.x in debian slim)
 GDAL>=3.8,<3.11
 
 # Celery for async tasks
