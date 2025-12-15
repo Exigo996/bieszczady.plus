@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import type { GeoJsonObject } from 'geojson';
+import type { FeatureCollection } from 'geojson';
 
 // More detailed Poland boundary
-const polandGeoJSON: GeoJsonObject = {
+const polandGeoJSON: FeatureCollection = {
   type: 'FeatureCollection',
   features: [
     {
