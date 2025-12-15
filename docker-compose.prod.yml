@@ -63,47 +63,47 @@ services:
     #   - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
   # Celery Worker
-  celery:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    container_name: bieszczady_celery_prod
-    command: celery -A config worker -l info --concurrency=2
-    volumes:
-      - backend_media:/app/media
-    environment:
-      DEBUG: "False"
-      SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
-      REDIS_URL: "redis://redis:6379/0"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-      DEEPL_API_KEY: ${DEEPL_API_KEY}
-    depends_on:
-      - db
-      - redis
-      - backend
-    restart: unless-stopped
+  # celery:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.prod
+  #   container_name: bieszczady_celery_prod
+  #   command: celery -A config worker -l info --concurrency=2
+  #   volumes:
+  #     - backend_media:/app/media
+  #   environment:
+  #     DEBUG: "False"
+  #     SECRET_KEY: ${SECRET_KEY}
+  #     DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
+  #     REDIS_URL: "redis://redis:6379/0"
+  #     CELERY_BROKER_URL: "redis://redis:6379/0"
+  #     CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+  #     DEEPL_API_KEY: ${DEEPL_API_KEY}
+  #   depends_on:
+  #     - db
+  #     - redis
+  #     - backend
+  #   restart: unless-stopped
 
   # Celery Beat
-  celery-beat:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    container_name: bieszczady_celery_beat_prod
-    command: celery -A config beat -l info
-    environment:
-      DEBUG: "False"
-      SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
-      REDIS_URL: "redis://redis:6379/0"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-    depends_on:
-      - db
-      - redis
-      - backend
-    restart: unless-stopped
+  # celery-beat:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.prod
+  #   container_name: bieszczady_celery_beat_prod
+  #   command: celery -A config beat -l info
+  #   environment:
+  #     DEBUG: "False"
+  #     SECRET_KEY: ${SECRET_KEY}
+  #     DATABASE_URL: "postgresql://${POSTGRES_USER:-bieszcz}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bieszcz}"
+  #     REDIS_URL: "redis://redis:6379/0"
+  #     CELERY_BROKER_URL: "redis://redis:6379/0"
+  #     CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+  #   depends_on:
+  #     - db
+  #     - redis
+  #     - backend
+  #   restart: unless-stopped
 
   # Frontend (built static files served by Node)
   frontend:
