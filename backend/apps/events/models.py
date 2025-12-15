@@ -8,7 +8,6 @@ class Event(models.Model):
     """
     Event model for Bieszczady.plus
     Stores cultural events, concerts, festivals, workshops, etc.
-    dupa
     """
     
     # Category choices
