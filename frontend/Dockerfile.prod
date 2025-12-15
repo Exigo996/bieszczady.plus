@@ -12,7 +12,7 @@ COPY . .
 
 # Build for production
 ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_URL=api.bieszczady.plus
 RUN npm run build
 
 # Production stage - serve with a simple static file server
