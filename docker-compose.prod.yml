@@ -111,7 +111,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: https://${BACKEND_DOMAIN}
+        VITE_API_URL: ${VITE_API_URL:-https://api.bieszczady.plus}
     container_name: bieszczady_frontend_prod
     restart: unless-stopped
     labels:
