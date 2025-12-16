@@ -9,10 +9,10 @@ const Footer: React.FC = () => {
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/gory.jpg)' }}
+        style={{ backgroundImage: 'url(/gory1.jpg)' }}
       />
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/90 via-gray-900/85 to-gray-900/95" />
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/70 via-gray-900/65 to-gray-900/75" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/bieszczady.plus/"
                 className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors"
                 aria-label="Instagram"
                 target="_blank"

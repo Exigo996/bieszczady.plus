@@ -15,13 +15,13 @@ const ProducerCard: React.FC<ProducerCardProps> = ({ name, image, description, w
       {/* Card */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
         <div
-          className="relative h-48 overflow-hidden cursor-pointer"
+          className="relative h-48 overflow-hidden cursor-pointer bg-amber-50"
           onClick={() => setIsExpanded(true)}
         >
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+            className="w-full h-full object-contain transition-transform duration-300 hover:scale-110"
           />
         </div>
         <div className="p-4">
@@ -91,11 +91,11 @@ const ProducerCard: React.FC<ProducerCardProps> = ({ name, image, description, w
 
             {/* Content */}
             <div className="p-6">
-              <div className="mb-6">
+              <div className="mb-6 bg-amber-50 rounded-lg flex items-center justify-center" style={{ minHeight: '16rem' }}>
                 <img
                   src={image}
                   alt={name}
-                  className="w-full h-64 object-cover rounded-lg"
+                  className="w-full h-auto max-h-96 object-contain rounded-lg"
                 />
               </div>
 

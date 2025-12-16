@@ -14,6 +14,17 @@ Dysponujemy inkubatorem przetwórstwa lokalnego, który udostępniamy lokalnym r
 Regularnie organizujemy warsztaty z zakresu ogrodnictwa i zielarstwa, dzieląc się naszą wiedzą i doświadczeniem z pasjonatami naturalnej uprawy i przetwórstwa.`,
       website: 'https://www.bieszczadzkiogrod.pl/',
     },
+    {
+      id: 2,
+      name: 'Złoto Bieszczad Kołodziejów',
+      image: '/miod.jpg',
+      description: `Złoto Bieszczad Kołodziejów czyli wszystko co od pszczół najlepsze.
+
+Pszczoły są naszą pasją, a miód to produkt uboczny. Cieszymy się każdym pożytkiem a jeszcze bardziej każdą chwilą kiedy jesteśmy u naszych pszczół.
+
+Uchylimy wam drzwi do naszej codziennej pracy przy pszczołach, podzielimy się wiedzą, doświadczeniem, czy przepisami na nietypowe produkty, które sami uczymy się tworzyć z pszczelich darów.`,
+      website: 'https://www.instagram.com/zlotobieszczad/',
+    },
   ];
 
   return (
