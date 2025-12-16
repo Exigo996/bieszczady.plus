@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getTranslations } from '../../translations';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { language, setLanguage } = useLanguage();
+  const t = getTranslations(language);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -40,7 +44,7 @@ const Header: React.FC = () => {
               }`}
               aria-current={isActive('/') ? 'page' : undefined}
             >
-              Wydarzenia
+              {t.events}
             </Link>
             <Link
               to="/produkty"
@@ -50,7 +54,7 @@ const Header: React.FC = () => {
                   : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
               }`}
             >
-              Lokalni Producenci
+              {t.localProducers}
             </Link>
             <Link
               to="/mapa"
@@ -60,7 +64,7 @@ const Header: React.FC = () => {
                   : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
               }`}
             >
-              Mapa
+              {t.map}
             </Link>
             <Link
               to="/o-nas"
@@ -70,26 +74,41 @@ const Header: React.FC = () => {
                   : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
               }`}
             >
-              O nas
+              {t.aboutUs}
             </Link>
           </div>
 
           {/* Language Selector - Desktop */}
           <div className="hidden md:flex items-center space-x-2">
             <button
-              className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+              onClick={() => setLanguage('pl')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                language === 'pl'
+                  ? 'text-white bg-blue-600 hover:bg-blue-700'
+                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+              }`}
               aria-label="Język polski"
             >
               PL
             </button>
             <button
-              className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              onClick={() => setLanguage('en')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                language === 'en'
+                  ? 'text-white bg-blue-600 hover:bg-blue-700'
+                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+              }`}
               aria-label="English language"
             >
               EN
             </button>
             <button
-              className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              onClick={() => setLanguage('uk')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                language === 'uk'
+                  ? 'text-white bg-blue-600 hover:bg-blue-700'
+                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+              }`}
               aria-label="Українська мова"
             >
               UA
@@ -105,7 +124,7 @@ const Header: React.FC = () => {
               aria-expanded={isMobileMenuOpen}
               onClick={toggleMobileMenu}
             >
-              <span className="sr-only">Otwórz menu główne</span>
+              <span className="sr-only">{t.openMainMenu}</span>
               {!isMobileMenuOpen ? (
                 <svg
                   className="block h-6 w-6"
@@ -157,7 +176,7 @@ const Header: React.FC = () => {
                 aria-current={isActive('/') ? 'page' : undefined}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Wydarzenia
+                {t.events}
               </Link>
               <Link
                 to="/produkty"
@@ -168,7 +187,7 @@ const Header: React.FC = () => {
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Lokalni Producenci
+                {t.localProducers}
               </Link>
               <Link
                 to="/mapa"
@@ -179,7 +198,7 @@ const Header: React.FC = () => {
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Mapa
+                {t.map}
               </Link>
               <Link
                 to="/o-nas"
@@ -190,33 +209,48 @@ const Header: React.FC = () => {
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                O nas
+                {t.aboutUs}
               </Link>
             </div>
 
             {/* Language Selector - Mobile */}
             <div className="px-2 pt-2 pb-4 border-t border-gray-200">
               <p className="px-3 text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Język
+                {t.language}
               </p>
               <div className="flex space-x-2 px-3">
                 <button
-                  className="flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                  onClick={() => setLanguage('pl')}
+                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    language === 'pl'
+                      ? 'text-white bg-blue-600 hover:bg-blue-700'
+                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                  }`}
                   aria-label="Język polski"
                 >
-                  Polski
+                  {t.polish}
                 </button>
                 <button
-                  className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                  onClick={() => setLanguage('en')}
+                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    language === 'en'
+                      ? 'text-white bg-blue-600 hover:bg-blue-700'
+                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                  }`}
                   aria-label="English language"
                 >
-                  English
+                  {t.english}
                 </button>
                 <button
-                  className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                  onClick={() => setLanguage('uk')}
+                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    language === 'uk'
+                      ? 'text-white bg-blue-600 hover:bg-blue-700'
+                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                  }`}
                   aria-label="Українська мова"
                 >
-                  Українська
+                  {t.ukrainian}
                 </button>
               </div>
             </div>

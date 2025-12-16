@@ -325,10 +325,10 @@ const MapPage: React.FC = () => {
           {eventLocations.map((location) => (
             <div
               key={location.id}
-              className={`bg-white rounded-lg shadow-md p-4 cursor-pointer transition-all ${
+              className={`bg-white rounded-lg shadow-md p-4 cursor-pointer transition-all duration-300 ${
                 activeLocation === location.id
                   ? 'ring-2 ring-blue-500 shadow-lg'
-                  : 'hover:shadow-lg'
+                  : 'hover:shadow-lg hover:-translate-y-1'
               }`}
               onClick={() => handleLocationClick(location.id)}
             >
