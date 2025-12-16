@@ -430,11 +430,15 @@ def generate_ics(event):
 ## 📱 Mobile-First Development Guidelines
 
 1. **Test on mobile devices first** - Use Chrome DevTools mobile emulation
-2. **Touch targets**: Minimum 44x44px for buttons
-3. **Viewport units**: Use `vh`, `vw` for responsive layouts
-4. **Performance**: Lazy load images, code splitting
-5. **Offline-first**: Service Worker caching for key pages
-6. **Fast 3G testing**: Throttle network in DevTools
+2. **Touch targets**: Minimum 44x44px for buttons (WCAG requirement)
+3. **Responsive patterns**: Use toggleable sidebars on mobile, always-visible on desktop
+4. **Viewport units**: Use `vh`, `vw` for responsive layouts
+5. **Performance**: Lazy load images, code splitting, optimize for 3G networks
+6. **Offline-first**: Service Worker caching for key pages
+7. **Fast 3G testing**: Throttle network in DevTools
+8. **Breakpoints**: Mobile (<640px), Tablet (640-1024px), Desktop (≥1024px)
+9. **Gestures**: Support swipe to close modals/sidebars
+10. **Scroll locking**: Prevent body scroll when modals/sidebars are open
 
 ## 🎨 UI/UX Patterns
 
@@ -459,29 +463,315 @@ def generate_ics(event):
 </div>
 ```
 
-### Filter Bar
+### Mobile Sidebar/Filter Panel
+
+**Implementation** (HeroSection.tsx):
+
+The filter panel uses a responsive design pattern with different behavior on mobile vs desktop:
 
 ```jsx
-<div className="filter-bar sticky top-0 bg-white shadow-md p-4 z-10">
-  <select className="w-full mb-2" onChange={(e) => setCategory(e.target.value)}>
-    <option value="">{t("all_categories")}</option>
-    <option value="CONCERT">{t("concerts")}</option>
-    <option value="FESTIVAL">{t("festivals")}</option>
-    {/* ... */}
-  </select>
+const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  <input
-    type="range"
-    min="5"
-    max="100"
-    value={radius}
-    onChange={(e) => setRadius(e.target.value)}
-    className="w-full"
+// Mobile: Toggle button (visible < lg breakpoint)
+<button
+  onClick={() => setIsSidebarOpen(true)}
+  className="lg:hidden fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-3 py-6 rounded-r-lg shadow-lg z-40"
+  style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+>
+  <span className="text-sm font-semibold">Filtry</span>
+</button>
+
+// Mobile: Overlay (closes sidebar when clicked)
+{isSidebarOpen && (
+  <div
+    className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+    onClick={() => setIsSidebarOpen(false)}
   />
-  <span className="text-sm">
-    {t("within")} {radius} km
-  </span>
+)}
+
+// Mobile: Slide-in sidebar
+<div className={`
+  lg:hidden fixed inset-y-0 left-0 w-80 bg-white z-50
+  transform transition-transform duration-300 ease-in-out overflow-y-auto
+  ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+`}>
+  {/* Close button */}
+  <button onClick={() => setIsSidebarOpen(false)}>×</button>
+  <FilterPanel filters={filters} onFiltersChange={handleFiltersChange} />
 </div>
+
+// Desktop: Always visible sidebar
+<div className="hidden lg:block">
+  <FilterPanel filters={filters} onFiltersChange={handleFiltersChange} />
+</div>
+```
+
+**Features**:
+- **Mobile (<lg)**: Hidden by default, slides in from left
+- **Desktop (≥lg)**: Always visible in grid layout
+- **Auto-close**: Closes when filters are applied (except radius slider)
+- **Keyboard support**: ESC key closes the sidebar
+- **Body scroll lock**: Prevents background scrolling on mobile when open
+- **Smooth animations**: 300ms slide transition
+- **Touch-friendly**: Fixed "Filtry" button on left edge
+- **Overlay dismiss**: Click/tap overlay to close
+
+## ♿ Accessibility (WCAG 2.1 AA Compliance)
+
+Bieszczady.plus is committed to being accessible to all users, including those with disabilities. We follow **WCAG 2.1 Level AA** standards.
+
+### 1. Perceivable
+
+**Color Contrast**:
+```jsx
+// All text must meet minimum contrast ratios:
+// - Normal text: 4.5:1
+// - Large text (18pt+ or 14pt+ bold): 3:1
+// - UI components and graphics: 3:1
+
+// Example: Event category badges
+const categoryColors = {
+  CONCERT: '#9333ea',   // Purple - ensure 4.5:1 with white text
+  FESTIVAL: '#ec4899',  // Pink - ensure 4.5:1 with white text
+  THEATRE: '#ef4444',   // Red - ensure 4.5:1 with white text
+  // Test all colors: https://webaim.org/resources/contrastchecker/
+};
+```
+
+**Alternative Text for Images**:
+```jsx
+// All images MUST have meaningful alt text
+<img
+  src={event.image}
+  alt={`${event.title.pl} - ${event.category} w ${event.location.name}`}
+  className="w-full h-48 object-cover"
+/>
+
+// Decorative images use empty alt
+<img src="/decorative-pattern.svg" alt="" aria-hidden="true" />
+```
+
+**Text Alternatives**:
+- All icons must have text labels or ARIA labels
+- Maps must have text-based event lists as alternative
+- Videos require captions (future feature)
+
+### 2. Operable
+
+**Keyboard Navigation**:
+```jsx
+// All interactive elements accessible via keyboard
+// Focus indicators visible (outline ring)
+<button className="focus:ring-2 focus:ring-blue-500 focus:outline-none">
+  Zobacz szczegóły
+</button>
+
+// Skip to content link (for screen readers)
+<a href="#main-content" className="sr-only focus:not-sr-only">
+  Przejdź do głównej treści
+</a>
+
+// Tab order must be logical (top to bottom, left to right)
+// Use tabIndex={-1} for non-interactive elements only
+```
+
+**Touch Target Size**:
+- Minimum 44x44px for all interactive elements (buttons, links)
+- Adequate spacing between touch targets (8px minimum)
+
+```jsx
+// Example: Filter buttons
+<button className="min-h-[44px] min-w-[44px] p-3">
+  Filtry
+</button>
+```
+
+**No Keyboard Traps**:
+- Users can navigate in/out of all components using only keyboard
+- Modal dialogs have proper focus management
+- Sidebar closes with ESC key
+
+**Time Limits**:
+- No automatic timeouts for reading content
+- Event countdowns are informational only, not functional
+
+### 3. Understandable
+
+**Language Identification**:
+```html
+<!-- HTML lang attribute set dynamically -->
+<html lang="pl">  <!-- or "en", "uk" based on user preference -->
+
+<!-- Language changes marked inline -->
+<p lang="en">André Rieu Concert</p>
+```
+
+**Predictable Navigation**:
+- Consistent header/footer across all pages
+- Navigation menu in same location
+- Breadcrumbs for deep pages
+
+**Error Identification and Suggestions**:
+```jsx
+// Form validation with clear error messages
+{errors.search && (
+  <p className="text-red-600 text-sm mt-1" role="alert">
+    Wyszukiwana fraza musi mieć minimum 3 znaki
+  </p>
+)}
+
+// Empty state with helpful guidance
+<div role="status" aria-live="polite">
+  <p>Nie znaleziono wydarzeń</p>
+  <p>Spróbuj zmienić filtry lub poszukać w szerszym zakresie</p>
+  <button onClick={clearFilters}>Wyczyść filtry</button>
+</div>
+```
+
+### 4. Robust
+
+**Semantic HTML**:
+```jsx
+// Use proper HTML5 elements
+<header>
+  <nav aria-label="Główna nawigacja">
+    <ul>
+      <li><a href="/">Strona główna</a></li>
+      <li><a href="/wydarzenia">Wydarzenia</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main-content">
+  <h1>Wydarzenia w Bieszczadach</h1>
+
+  <aside aria-label="Filtry wydarzeń">
+    {/* FilterPanel */}
+  </aside>
+
+  <section aria-label="Lista wydarzeń">
+    <ul role="list">
+      {events.map(event => (
+        <li key={event.id} role="listitem">
+          <article>
+            <h2>{event.title}</h2>
+            {/* Event content */}
+          </article>
+        </li>
+      ))}
+    </ul>
+  </section>
+</main>
+
+<footer>
+  {/* Footer content */}
+</footer>
+```
+
+**ARIA Labels and Landmarks**:
+```jsx
+// Form controls
+<label htmlFor="category">Kategoria wydarzenia</label>
+<select id="category" aria-label="Wybierz kategorię wydarzenia">
+  <option>Wszystkie kategorie</option>
+</select>
+
+// Buttons without visible text
+<button
+  onClick={closeSidebar}
+  aria-label="Zamknij panel filtrów"
+>
+  ×
+</button>
+
+// Dynamic content updates
+<div aria-live="polite" aria-atomic="true">
+  Znaleziono {count} wydarzeń
+</div>
+
+// Loading states
+<div role="status" aria-live="polite">
+  <span>Ładowanie wydarzeń...</span>
+</div>
+```
+
+**Screen Reader Support**:
+```jsx
+// Visually hidden but read by screen readers
+<span className="sr-only">
+  Wydarzenie rozpoczyna się {formatDate(event.start_date)}
+</span>
+
+// Skip repetitive content
+<a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 bg-blue-600 text-white p-4 z-50">
+  Przejdź do głównej treści
+</a>
+
+// Hide decorative elements
+<svg aria-hidden="true" className="icon">...</svg>
+```
+
+### WCAG Testing Tools
+
+**Automated Testing**:
+```bash
+# Install axe-core for React
+npm install --save-dev @axe-core/react
+
+# Add to main.tsx (development only)
+if (process.env.NODE_ENV !== 'production') {
+  import('@axe-core/react').then(axe => {
+    axe.default(React, ReactDOM, 1000);
+  });
+}
+```
+
+**Manual Testing**:
+1. **Keyboard only**: Navigate entire site using only Tab, Enter, Arrow keys, ESC
+2. **Screen reader**: Test with NVDA (Windows), VoiceOver (Mac), TalkBack (Android)
+3. **Color blindness**: Use browser extensions (Colorblinding, NoCoffee)
+4. **Zoom**: Test at 200% zoom (WCAG requirement)
+5. **Contrast checker**: https://webaim.org/resources/contrastchecker/
+
+**Browser Extensions**:
+- **WAVE**: Web accessibility evaluation tool
+- **axe DevTools**: Automated accessibility testing
+- **Lighthouse**: Chrome DevTools audit (includes accessibility score)
+
+### Accessibility Checklist
+
+- [ ] All images have meaningful alt text
+- [ ] Color contrast meets 4.5:1 (normal text) or 3:1 (large text)
+- [ ] All interactive elements keyboard accessible
+- [ ] Focus indicators visible on all focusable elements
+- [ ] Touch targets minimum 44x44px
+- [ ] Semantic HTML5 elements used correctly
+- [ ] ARIA labels on all form controls
+- [ ] Skip to content link for screen readers
+- [ ] No keyboard traps in modals/sidebars
+- [ ] Headings follow logical hierarchy (h1 → h2 → h3)
+- [ ] Error messages associated with form fields
+- [ ] Dynamic content changes announced to screen readers
+- [ ] Language attribute set on HTML tag
+- [ ] Page title describes current page content
+- [ ] Links have descriptive text (not "click here")
+
+### Accessibility Statement (to be added to footer)
+
+```markdown
+## Oświadczenie o dostępności
+
+Bieszczady.plus zobowiązuje się do zapewnienia dostępności swojej strony internetowej zgodnie z ustawą z dnia 4 kwietnia 2019 r. o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych.
+
+**Status zgodności**: Ta strona internetowa jest częściowo zgodna z ustawą o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych z powodu niezgodności wymienionych poniżej:
+
+- Mapy interaktywne mogą być trudne w obsłudze dla użytkowników technologii asystujących (dostępna jest lista tekstowa wydarzeń)
+- Niektóre obrazy mogą nie mieć odpowiednich opisów alternatywnych
+
+**Data sporządzenia**: 2025-12-16
+**Data ostatniego przeglądu**: 2025-12-16
+
+**Kontakt**: accessibility@bieszczady.plus
 ```
 
 ## 🚀 Development Workflow
@@ -650,12 +940,13 @@ npm run test
 ## 💡 Best Practices
 
 1. **Keep it simple** - Seba is experienced but prefers clarity
-2. **Mobile-first** - Always test mobile view first
+2. **Mobile-first** - Always test mobile view first (use responsive sidebars, touch-friendly UI)
 3. **Performance matters** - Bieszczady has spotty 3G/4G coverage
-4. **Accessibility** - Semantic HTML, proper ARIA labels
-5. **Offline capability** - Cache critical resources
-6. **Error handling** - Graceful degradation, helpful error messages
+4. **Accessibility (WCAG 2.1 AA)** - Semantic HTML, proper ARIA labels, keyboard navigation, color contrast, screen reader support
+5. **Offline capability** - Cache critical resources via Service Worker
+6. **Error handling** - Graceful degradation, helpful error messages with clear guidance
 7. **Logging** - Use Django logging for debugging scraper issues
+8. **Responsive design** - Test at different breakpoints (mobile, tablet, desktop)
 
 ## 📞 Communication Style
 
@@ -670,13 +961,18 @@ When providing code/guidance to Seba:
 ## 🎯 Current Priority (Phase 1 MVP)
 
 1. ✅ Core Django + React setup
-2. Event listing with search/filters
-3. Location-based discovery (GPS + IP)
-4. Facebook scraper integration
-5. Calendar export (.ics)
-6. Browser push notifications
-7. Multi-language support (PL/EN/UK)
-8. Basic product/producer listings
+2. ✅ Event listing with search/filters
+3. ✅ Mobile-responsive sidebar with toggle functionality
+4. ✅ WCAG 2.1 AA accessibility foundation
+5. Location-based discovery (GPS + IP)
+6. Facebook scraper integration
+7. Calendar export (.ics)
+8. Browser push notifications
+9. Multi-language support (PL/EN/UK)
+10. Basic product/producer listings
+
+**Recent Updates**:
+- **2025-12-16**: Added mobile sidebar toggle, WCAG accessibility guidelines
 
 **Timeline**: MVP in 4-6 weeks, then iterate based on user feedback.
 

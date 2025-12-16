@@ -61,7 +61,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
 
   return (
     <aside
-      className="bg-white rounded-lg shadow-lg p-6 sticky top-4"
+      className="lg:bg-white lg:rounded-lg lg:shadow-lg lg:p-6 lg:sticky lg:top-4"
       role="complementary"
       aria-label="Filtry wydarzeń"
     >
@@ -69,7 +69,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
         <h2 className="text-xl font-bold text-gray-900">Filtry</h2>
         <button
           onClick={handleClearFilters}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors min-h-11 min-w-11"
           aria-label="Wyczyść filtry"
         >
           Wyczyść
