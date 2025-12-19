@@ -5,6 +5,291 @@ import EventCard from "./EventCard";
 
 // Mock data - będzie zastąpione przez prawdziwe dane z API
 const mockEvents: Event[] = [
+    {
+      id: 100,
+      title: {
+        pl: "AVATAR: OGIEŃ I POPIÓŁ (3D, NAPISY PL)",
+        en: "AVATAR: THE FIRE AND ASH (3D, SUBTITLES)"
+      },
+      description: {
+        pl: "Jake Sully (Sam Worthington) i Neytiri (Zoe Saldaña), stojąc na czele zjednoczonych klanów Na'vi, muszą zmierzyć się z nowym, jeszcze bardziej bezwzględnym zagrożeniem, które przybywa z Ziemi - ogniem, który spopiela wszystko na swojej drodze. Tym razem historia prowadzi nas do wulkanicznych krain Pandory, gdzie żyje tajemniczy klan Zaran - wojownicy żyjący w harmonii z ogniem i popiołem. Sojusze zostaną poddane próbie, granice wytrzymałości przekroczone, a walka o przyszłość Pandory stanie się bardziej osobista niż kiedykolwiek.",
+        en: "Jake Sully (Sam Worthington) and Neytiri (Zoe Saldaña), leading the united Na'vi clans, must face a new, even more ruthless threat from Earth - fire that scorches everything in its path. This time, the story takes us to the volcanic lands of Pandora, home to the mysterious Zaran clan - warriors living in harmony with fire and ash. Alliances will be tested, limits pushed, and the fight for Pandora's future will become more personal than ever."
+      },
+      slug: "avatar-ogien-i-popiol",
+      category: "CINEMA",
+      event_type: "EVENT",
+      start_date: "2025-12-20T14:30:00Z",
+      duration_minutes: 197,
+      age_restriction: 13,
+      location: {
+        id: 10,
+        name: "Dom Kultury w Lesku",
+        coordinates: { lat: 49.4700, lng: 22.3300 },
+        distance: 23.5,
+      },
+      price_type: "PAID",
+      price_amount: 35,
+      price_currency: "PLN",
+      image: "/AVATAR.jpeg",
+      ticket_url: "https://bdk.systembiletowy.pl/index.php/repertoire.html?id=1118",
+      created_at: "2025-12-19T10:00:00Z",
+      updated_at: "2025-12-19T10:00:00Z",
+      // Custom field for multiple showtimes
+      showtimes: [
+        {
+          label: "sobota, 20 grudnia 2025",
+          time: "godz. 18:00",
+          date: "2025-12-20T18:00:00Z",
+          ticket_url: "https://bdk.systembiletowy.pl/index.php/repertoire.html?id=1118"
+        },
+        {
+          label: "niedziela, 21 grudnia 2025",
+          time: "godz. 14:30",
+          date: "2025-12-21T14:30:00Z",
+          ticket_url: "https://bdk.systembiletowy.pl/index.php/repertoire.html?id=1118"
+        },
+        {
+          label: "niedziela, 21 grudnia 2025",
+          time: "godz. 18:00",
+          date: "2025-12-21T18:00:00Z",
+          ticket_url: "https://bdk.systembiletowy.pl/index.php/repertoire.html?id=1118"
+        },
+        {
+          label: "sobota, 27 grudnia 2025",
+          time: "godz. 14:30 (3D, DUBBING PL)",
+          date: "2025-12-27T14:30:00Z",
+          ticket_url: "https://bdk.systembiletowy.pl/index.php/repertoire.html?id=1118"
+        }
+      ]
+    },
+  {
+    id: 101,
+    title: {
+      pl: "ZWIERZOGRÓD 2 - Film 2D dubbing",
+      en: "Zootopia 2 - 2D Dubbed"
+    },
+    description: {
+      pl: "Detektywi Judy Hops i Nick Bajer depczą po piętach pewnemu nieuchwytnemu gadowi, który zjawia się w mieście ssaków i wywraca je do góry nogami. Aby rozgryźć tę sprawę, policjanci muszą buszować incognito po nieznanych im dzielnicach, których mroczne realia wystawią na próbę ich partnerski układ.",
+      en: "Detectives Judy Hopps and Nick Wilde are on the trail of an elusive reptile who shows up in the city of mammals and turns it upside down. To crack this case, the officers must go undercover in unfamiliar neighborhoods whose dark realities will test their partnership."
+    },
+    slug: "zwierzogrod-2",
+    category: "CINEMA",
+    event_type: "EVENT",
+    start_date: "2026-01-02T17:00:00Z",
+    duration_minutes: 105,
+    location: {
+      id: 1,
+      name: "Ustrzycki Dom Kultury",
+      coordinates: { lat: 49.4302, lng: 22.5965 },
+      distance: 0.5,
+    },
+    price_type: "PAID",
+    price_amount: 25,
+    price_currency: "PLN",
+    image: "/zwier.jpg",
+    ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=993",
+    created_at: "2025-12-19T12:00:00Z",
+    updated_at: "2025-12-19T12:00:00Z",
+    showtimes: [
+      {
+        label: "piątek, 2 stycznia 2026",
+        time: "godz. 17:00",
+        date: "2026-01-02T17:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=993"
+      },
+      {
+        label: "sobota, 3 stycznia 2026",
+        time: "godz. 17:00",
+        date: "2026-01-03T17:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=993"
+      },
+      {
+        label: "niedziela, 4 stycznia 2026",
+        time: "godz. 17:00",
+        date: "2026-01-04T17:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=993"
+      }
+    ]
+  },
+  {
+    id: 102,
+    title: {
+      pl: "MINISTRANCI - FILM 2D",
+      en: "Altar Boys - 2D Film"
+    },
+    description: {
+      pl: "Grupa nastoletnich ministrantów, sfrustrowana obojętną postawą dorosłych i instytucji Kościoła wobec niesprawiedliwości społecznej, postanawia wdrożyć własny, nietypowy plan odnowy moralnej. Uzbrojeni w młodzieńczy bunt i własną interpretację Pisma Świętego zakładają podsłuch… w konfesjonale, aby lepiej poznać swoich sąsiadów. Zamaskowani niczym Zorro i z ambicjami na miarę Robin Hooda, stają się sędziami w swoim osiedlowym świecie, pomagając potrzebującym i wymierzając kary za grzechy.",
+      en: "A group of teenage altar boys, frustrated by adults' indifferent attitude and the Church's stance on social injustice, decide to implement their own unconventional plan for moral renewal. Armed with youthful rebellion and their own interpretation of Scripture, they plant a bug... in the confessional to better understand their neighbors."
+    },
+    slug: "ministranci",
+    category: "CINEMA",
+    event_type: "EVENT",
+    start_date: "2026-01-02T19:00:00Z",
+    duration_minutes: 110,
+    age_restriction: 13,
+    location: {
+      id: 1,
+      name: "Ustrzycki Dom Kultury",
+      coordinates: { lat: 49.4302, lng: 22.5965 },
+      distance: 0.5,
+    },
+    price_type: "PAID",
+    price_amount: 25,
+    price_currency: "PLN",
+    image: "/film.jpg",
+    ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=996",
+    created_at: "2025-12-19T12:30:00Z",
+    updated_at: "2025-12-19T12:30:00Z",
+    showtimes: [
+      {
+        label: "piątek, 2 stycznia 2026",
+        time: "godz. 19:00",
+        date: "2026-01-02T19:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=996"
+      },
+      {
+        label: "sobota, 3 stycznia 2026",
+        time: "godz. 19:00",
+        date: "2026-01-03T19:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=996"
+      },
+      {
+        label: "niedziela, 4 stycznia 2026",
+        time: "godz. 19:00",
+        date: "2026-01-04T19:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=996"
+      }
+    ]
+  },
+  {
+    id: 103,
+    title: {
+      pl: "Kolęda bez granic",
+      en: "Carol Without Borders"
+    },
+    description: {
+      pl: "Świąteczne wydarzenie składające się z dwóch części: korowodu ulicami miasta ze śpiewaniem kolęd oraz transmisji na żywo koncertu \"Kolęda bez Granic\" z Ustrzyckiego Domu Kultury. Śląska kolędna gastronomia z ciepłym napojem i rodzinnem. Weź ze sobą lampę ognia - latarkę lub inny dowolny lampion!",
+      en: "Christmas event consisting of two parts: a procession through the city streets with carol singing and a live broadcast of the 'Carol Without Borders' concert from the Ustrzycki Cultural Center. Silesian carol gastronomy with warm drinks and family atmosphere."
+    },
+    slug: "koleda-bez-granic",
+    category: "CULTURAL",
+    event_type: "EVENT",
+    start_date: "2025-12-28T18:45:00Z",
+    duration_minutes: 120,
+    location: {
+      id: 1,
+      name: "Ustrzyki Dolne - Rynek Centrum",
+      coordinates: { lat: 49.4302, lng: 22.5965 },
+      distance: 0.5,
+    },
+    price_type: "FREE",
+    price_currency: "PLN",
+    image: "/koleda.jpeg",
+    created_at: "2025-12-19T13:00:00Z",
+    updated_at: "2025-12-19T13:00:00Z",
+    showtimes: [
+      {
+        label: "niedziela, 28 grudnia 2025",
+        time: "godz. 18:45 - Korowód",
+        date: "2025-12-28T18:45:00Z"
+      },
+      {
+        label: "niedziela, 28 grudnia 2025",
+        time: "godz. 19:30 - Koncert",
+        date: "2025-12-28T19:30:00Z"
+      }
+    ]
+  },
+  {
+    id: 104,
+    title: {
+      pl: "XXXIX BIESZCZADZKI BIEG LOTNIKÓW",
+      en: "XXXIX Bieszczady Airmen's Run"
+    },
+    description: {
+      pl: "Jedna z najbardziej kultowych zimowych imprez sportowych w Polsce. Bieg odbędzie się na Trasach Biegowych pod Żukowem im. Stanisława Nahajowskiego w ramach Zimowego Weekendu w Ustrzykach Dolnych. Program: 8:00–11:00 wydawanie numerów, 9:30–11:00 starty dzieci i młodzieży, 12:00 START BIEGU GŁÓWNEGO (20 km mężczyzn OPEN, 10 km kobiet OPEN, 5 km OPEN). Elektroniczny pomiar czasu, medal dla każdego uczestnika, posiłek regeneracyjny.",
+      en: "One of the most iconic winter sports events in Poland. The run will take place on the Ski Trails under Żuków named after Stanisław Nahajowski as part of the Winter Weekend in Ustrzyki Dolne. Electronic timing, medal for every participant, regeneration meal."
+    },
+    slug: "bieg-lotnikow",
+    category: "FESTIVAL",
+    event_type: "EVENT",
+    start_date: "2026-01-11T08:00:00Z",
+    duration_minutes: 390,
+    location: {
+      id: 11,
+      name: "Ustjanowa Górna - Trasy pod Żukowem",
+      coordinates: { lat: 49.4302, lng: 22.5965 },
+      distance: 5.2,
+    },
+    price_type: "PAID",
+    price_currency: "PLN",
+    image: "/bieg.jpg",
+    external_url: "https://kepasport.pl/wydarzenie/xxxix-bieszczadzki-bieg-lotnikow/",
+    ticket_url: "https://kepasport.pl/wydarzenie/xxxix-bieszczadzki-bieg-lotnikow/",
+    created_at: "2025-12-19T13:30:00Z",
+    updated_at: "2025-12-19T13:30:00Z",
+    showtimes: [
+      {
+        label: "sobota, 11 stycznia 2026",
+        time: "godz. 8:00 - Wydawanie numerów",
+        date: "2026-01-11T08:00:00Z"
+      },
+      {
+        label: "sobota, 11 stycznia 2026",
+        time: "godz. 9:30 - Starty dzieci",
+        date: "2026-01-11T09:30:00Z"
+      },
+      {
+        label: "sobota, 11 stycznia 2026",
+        time: "godz. 12:00 - Bieg główny",
+        date: "2026-01-11T12:00:00Z"
+      }
+    ]
+  },
+  {
+    id: 105,
+    title: {
+      pl: "XVII Przegląd Filmów Górskich",
+      en: "XVII Mountain Film Review"
+    },
+    description: {
+      pl: "Wyjątkowe, zimowe spotkanie ludzi gór, kina i przygody w ramach Zimowego Weekendu w Ustrzykach Dolnych. Przez trzy dni opowieści z Himalajów, Alp i całego górskiego świata rozbrzmią na żywo. Goście: Aleksander Lwow, Leszek Cichy (pierwszy zdobywca Everestu zimą), Ryszard Pawłowski (Everest ×10), Piotr Snopczyński (TOPR), Gilberto Merlante i inni. Wystawa \"Himalajskie Pejzaże\", koncert Roman'Sik, filmy górskie, prelekcje himalaistów.",
+      en: "A unique winter gathering of mountain people, cinema and adventure as part of the Winter Weekend in Ustrzyki Dolne. Stories from the Himalayas, Alps and the entire mountain world. Guests: Aleksander Lwow, Leszek Cichy (first winter Everest summiter), and others."
+    },
+    slug: "przeglad-filmow-gorskich",
+    category: "CULTURAL",
+    event_type: "EVENT",
+    start_date: "2026-01-09T17:00:00Z",
+    duration_minutes: 180,
+    location: {
+      id: 1,
+      name: "Ustrzycki Dom Kultury",
+      coordinates: { lat: 49.4302, lng: 22.5965 },
+      distance: 0.5,
+    },
+    price_type: "FREE",
+    price_currency: "PLN",
+    image: "/gorskie.jpg",
+    created_at: "2025-12-19T13:30:00Z",
+    updated_at: "2025-12-19T13:30:00Z",
+    showtimes: [
+      {
+        label: "czwartek, 9 stycznia 2026",
+        time: "godz. 17:00 - Otwarcie + koncert",
+        date: "2026-01-09T17:00:00Z"
+      },
+      {
+        label: "piątek, 10 stycznia 2026",
+        time: "godz. 16:00 - Legendy himalaizmu",
+        date: "2026-01-10T16:00:00Z"
+      },
+      {
+        label: "sobota, 11 stycznia 2026",
+        time: "godz. 17:00 - Maraton filmowy",
+        date: "2026-01-11T17:00:00Z"
+      }
+    ]
+  },
   {
     id: 0,
     title: {
@@ -62,6 +347,26 @@ const mockEvents: Event[] = [
       "https://udk.systembiletowy.pl/index.php/repertoire.html?id=984",
     created_at: "2025-12-15T20:00:00Z",
     updated_at: "2025-12-15T20:00:00Z",
+    showtimes: [
+      {
+        label: "niedziela, 21 grudnia 2025",
+        time: "godz. 18:00",
+        date: "2025-12-21T18:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=984"
+      },
+      {
+        label: "piątek, 16 stycznia 2026",
+        time: "godz. 18:00",
+        date: "2026-01-16T18:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=984"
+      },
+      {
+        label: "sobota, 24 stycznia 2026",
+        time: "godz. 18:00",
+        date: "2026-01-24T18:00:00Z",
+        ticket_url: "https://udk.systembiletowy.pl/index.php/repertoire.html?id=984"
+      }
+    ]
   },
   {
     id: 2,

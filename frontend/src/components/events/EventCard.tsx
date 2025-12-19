@@ -9,9 +9,18 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl' }) => {
+
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const title = event.title[language] || event.title.pl;
   const description = event.description[language] || event.description.pl;
+
+  // Sprawdź czy event ma wiele terminów (showtimes)
+  const hasMultipleDates = Array.isArray((event as any).showtimes) && (event as any).showtimes.length > 0;
+  const showtimeTabs = hasMultipleDates ? (event as any).showtimes : [];
+
+  // Kolory dla różnych eventów
+  const isAvatar = event.slug === 'avatar-ogien-i-popiol';
 
   const formatEventDate = (dateString: string) => {
     try {
@@ -94,24 +103,82 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl' }) => {
         {/* Description */}
         <p className="text-sm text-gray-600 mb-4 line-clamp-2 min-h-[2.5rem]">{description}</p>
 
-        {/* Date */}
-        <div className="flex items-center text-sm text-gray-700 mb-2">
-          <svg
-            className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          <time dateTime={event.start_date}>{formatEventDate(event.start_date)}</time>
-        </div>
+        {/* Date (with tabs for events with multiple showtimes) */}
+        {hasMultipleDates ? (
+          <div className="mb-2">
+            {/* Compact tabs for dates */}
+            <div className="flex items-center text-sm text-gray-700 mb-2">
+              <svg
+                className={`w-4 h-4 mr-2 flex-shrink-0 ${isAvatar ? 'text-indigo-600' : 'text-blue-600'}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <time dateTime={showtimeTabs[activeTab]?.date} className="font-medium">
+                {showtimeTabs[activeTab]?.label}, {showtimeTabs[activeTab]?.time}
+              </time>
+            </div>
+            {/* Date tabs - scrollable horizontal */}
+            <div className="flex gap-1 mb-2 overflow-x-auto scrollbar-hide">
+              {showtimeTabs.map((tab: { label: string; time: string; date: string; ticket_url?: string }, idx: number) => {
+                // Extract day and month from label (e.g., "sobota, 20 grudnia 2025" -> "20.12")
+                const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
+                const monthMap: { [key: string]: string } = {
+                  'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
+                  'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
+                  'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
+                };
+                const shortDate = dateMatch
+                  ? `${dateMatch[1]}.${monthMap[dateMatch[2]] || '?'}`
+                  : tab.label.split(',')[0];
+                const shortTime = tab.time.replace('godz. ', '').split(' ')[0]; // Remove extra text like "(3D, DUBBING PL)"
+
+                return (
+                  <button
+                    key={tab.date}
+                    className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
+                      activeTab === idx
+                        ? isAvatar ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white'
+                        : isAvatar ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveTab(idx);
+                    }}
+                  >
+                    {shortDate} {shortTime}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center text-sm text-gray-700 mb-2">
+            <svg
+              className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <time dateTime={event.start_date}>{formatEventDate(event.start_date)}</time>
+          </div>
+        )}
 
         {/* Location */}
         <div className="flex items-center justify-between text-sm text-gray-700 mb-4">

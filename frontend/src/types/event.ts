@@ -55,6 +55,12 @@ export interface Event {
   images?: string[];
   created_at: string;
   updated_at: string;
+  showtimes?: Array<{
+    label: string;
+    time: string;
+    date: string;
+    ticket_url?: string;
+  }>;
 }
 
 export interface EventFilters {

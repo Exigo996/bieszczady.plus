@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="col-span-1">
             <div className="flex items-center space-x-3 mb-4">
@@ -127,6 +127,21 @@ const Footer: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Partners */}
+          <div>
+            <h3 className="text-white font-semibold mb-4">Partnerzy</h3>
+            <div className="flex flex-col space-y-4">
+              <a href="https://ustrzyckidomkultury.pl/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 hover:opacity-80">
+                <img src="/udk.png" alt="Ustrzycki Dom Kultury" className="h-10 w-auto rounded shadow" />
+                <span className="text-sm text-gray-200">Ustrzycki Dom Kultury</span>
+              </a>
+              <a href="https://ustrzyckiteatrdramatyczny.pl/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 hover:opacity-80">
+                <img src="/utd.png" alt="Ustrzycki Teatr Dramatyczny" className="h-10 w-auto rounded shadow" />
+                <span className="text-sm text-gray-200">Ustrzycki Teatr Dramatyczny</span>
               </a>
             </div>
           </div>
