@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { getTranslations } from '../../translations';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { getTranslations } from "../../translations";
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -17,17 +17,20 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Główna nawigacja">
+      <nav
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        aria-label="Główna nawigacja"
+      >
         <div className="flex justify-between items-center h-14">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center -ml-2">
             <Link to="/" className="group">
               <div className="relative z-10">
                 <img
-                  src="/bieszczadyplus1.png"
+                  src="/logo.webp"
                   alt="Bieszczady.plus"
-                  className="h-28 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-2xl"
-                  style={{ marginTop: '-1.5rem', marginBottom: '-1.5rem' }}
+                  className="h-13 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-2xl"
+                  style={{ marginTop: "-1.5rem", marginBottom: "-1.5rem" }}
                 />
               </div>
             </Link>
@@ -38,20 +41,20 @@ const Header: React.FC = () => {
             <Link
               to="/"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                isActive('/')
-                  ? 'text-gray-900 border-blue-600'
-                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+                isActive("/")
+                  ? "text-gray-900 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600"
               }`}
-              aria-current={isActive('/') ? 'page' : undefined}
+              aria-current={isActive("/") ? "page" : undefined}
             >
               {t.events}
             </Link>
             <Link
               to="/produkty"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                isActive('/produkty')
-                  ? 'text-gray-900 border-blue-600'
-                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+                isActive("/produkty")
+                  ? "text-gray-900 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600"
               }`}
             >
               {t.localProducers}
@@ -59,9 +62,9 @@ const Header: React.FC = () => {
             <Link
               to="/mapa"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                isActive('/mapa')
-                  ? 'text-gray-900 border-blue-600'
-                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+                isActive("/mapa")
+                  ? "text-gray-900 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600"
               }`}
             >
               {t.map}
@@ -69,9 +72,9 @@ const Header: React.FC = () => {
             <Link
               to="/o-nas"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                isActive('/o-nas')
-                  ? 'text-gray-900 border-blue-600'
-                  : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600'
+                isActive("/o-nas")
+                  ? "text-gray-900 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600"
               }`}
             >
               {t.aboutUs}
@@ -81,33 +84,33 @@ const Header: React.FC = () => {
           {/* Language Selector - Desktop */}
           <div className="hidden md:flex items-center space-x-2">
             <button
-              onClick={() => setLanguage('pl')}
+              onClick={() => setLanguage("pl")}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                language === 'pl'
-                  ? 'text-white bg-blue-600 hover:bg-blue-700'
-                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                language === "pl"
+                  ? "text-white bg-blue-600 hover:bg-blue-700"
+                  : "text-gray-700 bg-gray-100 hover:bg-gray-200"
               }`}
               aria-label="Język polski"
             >
               PL
             </button>
             <button
-              onClick={() => setLanguage('en')}
+              onClick={() => setLanguage("en")}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                language === 'en'
-                  ? 'text-white bg-blue-600 hover:bg-blue-700'
-                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                language === "en"
+                  ? "text-white bg-blue-600 hover:bg-blue-700"
+                  : "text-gray-700 bg-gray-100 hover:bg-gray-200"
               }`}
               aria-label="English language"
             >
               EN
             </button>
             <button
-              onClick={() => setLanguage('uk')}
+              onClick={() => setLanguage("uk")}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                language === 'uk'
-                  ? 'text-white bg-blue-600 hover:bg-blue-700'
-                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                language === "uk"
+                  ? "text-white bg-blue-600 hover:bg-blue-700"
+                  : "text-gray-700 bg-gray-100 hover:bg-gray-200"
               }`}
               aria-label="Українська мова"
             >
@@ -169,11 +172,11 @@ const Header: React.FC = () => {
               <Link
                 to="/"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/')
-                    ? 'text-white bg-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  isActive("/")
+                    ? "text-white bg-blue-600"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 } transition-colors`}
-                aria-current={isActive('/') ? 'page' : undefined}
+                aria-current={isActive("/") ? "page" : undefined}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {t.events}
@@ -181,9 +184,9 @@ const Header: React.FC = () => {
               <Link
                 to="/produkty"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/produkty')
-                    ? 'text-white bg-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  isActive("/produkty")
+                    ? "text-white bg-blue-600"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -192,9 +195,9 @@ const Header: React.FC = () => {
               <Link
                 to="/mapa"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/mapa')
-                    ? 'text-white bg-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  isActive("/mapa")
+                    ? "text-white bg-blue-600"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -203,9 +206,9 @@ const Header: React.FC = () => {
               <Link
                 to="/o-nas"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/o-nas')
-                    ? 'text-white bg-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  isActive("/o-nas")
+                    ? "text-white bg-blue-600"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 } transition-colors`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -220,33 +223,33 @@ const Header: React.FC = () => {
               </p>
               <div className="flex space-x-2 px-3">
                 <button
-                  onClick={() => setLanguage('pl')}
+                  onClick={() => setLanguage("pl")}
                   className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    language === 'pl'
-                      ? 'text-white bg-blue-600 hover:bg-blue-700'
-                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                    language === "pl"
+                      ? "text-white bg-blue-600 hover:bg-blue-700"
+                      : "text-gray-700 bg-gray-100 hover:bg-gray-200"
                   }`}
                   aria-label="Język polski"
                 >
                   {t.polish}
                 </button>
                 <button
-                  onClick={() => setLanguage('en')}
+                  onClick={() => setLanguage("en")}
                   className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    language === 'en'
-                      ? 'text-white bg-blue-600 hover:bg-blue-700'
-                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                    language === "en"
+                      ? "text-white bg-blue-600 hover:bg-blue-700"
+                      : "text-gray-700 bg-gray-100 hover:bg-gray-200"
                   }`}
                   aria-label="English language"
                 >
                   {t.english}
                 </button>
                 <button
-                  onClick={() => setLanguage('uk')}
+                  onClick={() => setLanguage("uk")}
                   className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                    language === 'uk'
-                      ? 'text-white bg-blue-600 hover:bg-blue-700'
-                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                    language === "uk"
+                      ? "text-white bg-blue-600 hover:bg-blue-700"
+                      : "text-gray-700 bg-gray-100 hover:bg-gray-200"
                   }`}
                   aria-label="Українська мова"
                 >
