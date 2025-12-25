@@ -3,75 +3,16 @@ from django.utils.text import slugify
 from django.utils import timezone
 from django.core.validators import MinValueValidator
 
-
-class Organizer(models.Model):
-    """
-    Organizer model for Bieszczady.plus
-    Stores information about event organizers/groups
-    """
-
-    name = models.CharField(
-        max_length=255,
-        help_text="Nazwa organizatora"
-    )
-    description = models.TextField(
-        blank=True,
-        help_text="Opis organizatora"
-    )
-
-    # Media
-    image = models.ImageField(
-        upload_to='organizers/images/',
-        blank=True,
-        null=True,
-        help_text="Zdjęcie główne organizatora"
-    )
-    logo = models.ImageField(
-        upload_to='organizers/logos/',
-        blank=True,
-        null=True,
-        help_text="Logo organizatora"
-    )
-
-    # External links
-    facebook_link = models.URLField(
-        blank=True,
-        help_text="Link do strony/grupy na Facebooku"
-    )
-    ticketing_site = models.URLField(
-        blank=True,
-        help_text="Link do strony z biletami"
-    )
-    website = models.URLField(
-        blank=True,
-        help_text="Strona internetowa organizatora"
-    )
-
-    # Status
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Czy organizator jest aktywny"
-    )
-
-    # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Organizator'
-        verbose_name_plural = 'Organizatorzy'
-
-    def __str__(self):
-        return self.name
+from .organizer import Organizer
 
 
 class Event(models.Model):
     """
     Event model for Bieszczady.plus
     Stores cultural events, concerts, festivals, workshops, etc.
+    Can have multiple dates via EventDate model
     """
-    
+
     # Category choices
     CONCERT = 'CONCERT'
     FESTIVAL = 'FESTIVAL'
@@ -80,7 +21,7 @@ class Event(models.Model):
     WORKSHOP = 'WORKSHOP'
     FOOD = 'FOOD'
     CULTURAL = 'CULTURAL'
-    
+
     CATEGORY_CHOICES = [
         (CONCERT, 'Koncert'),
         (FESTIVAL, 'Festiwal'),
@@ -105,34 +46,34 @@ class Event(models.Model):
     # Price type choices
     FREE = 'FREE'
     PAID = 'PAID'
-    
+
     PRICE_TYPE_CHOICES = [
         (FREE, 'Darmowy'),
         (PAID, 'Płatny'),
     ]
-    
+
     # Source choices
     MANUAL = 'MANUAL'
     SCRAPED = 'SCRAPED'
     USER_SUBMITTED = 'USER_SUBMITTED'
-    
+
     SOURCE_CHOICES = [
         (MANUAL, 'Ręcznie dodany'),
         (SCRAPED, 'Zescrapowany'),
         (USER_SUBMITTED, 'Dodany przez użytkownika'),
     ]
-    
+
     # Moderation status
     PENDING = 'PENDING'
     APPROVED = 'APPROVED'
     REJECTED = 'REJECTED'
-    
+
     MODERATION_STATUS_CHOICES = [
         (PENDING, 'Oczekuje'),
         (APPROVED, 'Zatwierdzony'),
         (REJECTED, 'Odrzucony'),
     ]
-    
+
     # Basic information
     title = models.JSONField(
         help_text="Event title in multiple languages: {'pl': '', 'en': '', 'uk': ''}"
@@ -141,7 +82,7 @@ class Event(models.Model):
     description = models.JSONField(
         help_text="Event description in multiple languages"
     )
-    
+
     # Category and classification
     category = models.CharField(
         max_length=20,
@@ -154,17 +95,26 @@ class Event(models.Model):
         default=EVENT,
         help_text="Event type: Event, Product, or Workshop"
     )
-    
-    # Date and time
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField(null=True, blank=True)
+
+    # Date and time (DEPRECATED - use EventDate model instead)
+    # Keeping for backwards compatibility, will be removed after migration
+    start_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="DEPRECATED: Użyj EventDate model zamiast tego"
+    )
+    end_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="DEPRECATED: Użyj EventDate model zamiast tego"
+    )
     duration_minutes = models.IntegerField(
         null=True,
         blank=True,
         validators=[MinValueValidator(0)],
-        help_text="Duration in minutes"
+        help_text="DEPRECATED: Użyj EventDate model zamiast tego"
     )
-    
+
     # Location (PostGIS)
     location_name = models.CharField(
         max_length=255,
@@ -175,7 +125,7 @@ class Event(models.Model):
         help_text="Geographic coordinates (longitude, latitude)"
     )
     address = models.TextField(blank=True)
-    
+
     # Pricing
     price_type = models.CharField(
         max_length=10,
@@ -190,7 +140,7 @@ class Event(models.Model):
         validators=[MinValueValidator(0)]
     )
     currency = models.CharField(max_length=3, default='PLN')
-    
+
     # Age restriction
     age_restriction = models.IntegerField(
         null=True,
@@ -198,7 +148,7 @@ class Event(models.Model):
         validators=[MinValueValidator(0)],
         help_text="Minimum age (e.g., 18)"
     )
-    
+
     # Organizer information
     organizer = models.ForeignKey(
         Organizer,
@@ -218,7 +168,7 @@ class Event(models.Model):
         blank=True,
         help_text="Contact info: email, phone, website"
     )
-    
+
     # External links
     external_url = models.URLField(blank=True, help_text="Event website")
     ticket_url = models.URLField(blank=True, help_text="Ticket purchase link")
@@ -242,7 +192,7 @@ class Event(models.Model):
         blank=True,
         help_text="List of additional image URLs"
     )
-    
+
     # Source and moderation
     source = models.CharField(
         max_length=20,
@@ -255,13 +205,13 @@ class Event(models.Model):
         default=APPROVED
     )
     moderation_notes = models.TextField(blank=True)
-    
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
-        ordering = ['start_date']
+        ordering = ['start_date']  # Fallback ordering, use event_dates for actual dates
         indexes = [
             models.Index(fields=['start_date']),
             models.Index(fields=['category']),
@@ -269,14 +219,21 @@ class Event(models.Model):
             models.Index(fields=['location_name']),
         ]
         # Add spatial index for coordinates (PostGIS)
-    
+
     def __str__(self):
         # Get Polish title, fallback to first available language
         title_pl = self.title.get('pl', '')
         if not title_pl:
             title_pl = next(iter(self.title.values()), 'No title')
-        return f"{title_pl} - {self.start_date.strftime('%Y-%m-%d')}"
-    
+
+        # Show first event date if available
+        first_date = self.event_dates.first()
+        if first_date:
+            return f"{title_pl} - {first_date.start_date.strftime('%Y-%m-%d')}"
+        elif self.start_date:  # Fallback to legacy date
+            return f"{title_pl} - {self.start_date.strftime('%Y-%m-%d')}"
+        return title_pl
+
     def save(self, *args, **kwargs):
         # Auto-generate slug from Polish title
         if not self.slug:
@@ -290,22 +247,42 @@ class Event(models.Model):
                     counter += 1
                 self.slug = slug
         super().save(*args, **kwargs)
-    
+
     @property
     def is_past(self):
-        """Check if event has already occurred"""
+        """Check if all event dates have passed"""
+        # Check EventDate entries first
+        last_date = self.event_dates.order_by('-start_date').first()
+        if last_date:
+            return last_date.is_past
+
+        # Fallback to legacy date fields
+        if self.start_date:
+            now = timezone.now()
+            return self.end_date < now if self.end_date else self.start_date < now
+
+        return False
+
+    @property
+    def next_date(self):
+        """Get the next upcoming event date"""
         now = timezone.now()
-        return self.end_date < now if self.end_date else self.start_date < now
-    
+        return self.event_dates.filter(start_date__gte=now).order_by('start_date').first()
+
+    @property
+    def all_dates(self):
+        """Get all event dates ordered by start_date"""
+        return self.event_dates.all().order_by('start_date')
+
     @property
     def is_free(self):
         """Check if event is free"""
         return self.price_type == self.FREE
-    
+
     def get_title(self, language='pl'):
         """Get title in specified language with fallback"""
         return self.title.get(language) or self.title.get('pl') or next(iter(self.title.values()), '')
-    
+
     def get_description(self, language='pl'):
         """Get description in specified language with fallback"""
         return self.description.get(language) or self.description.get('pl') or next(iter(self.description.values()), '')

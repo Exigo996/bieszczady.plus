@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from .models import Event
+from .models import Event, Organizer, EventDate
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -124,3 +124,85 @@ class EventGeoJSONSerializer(GeoFeatureModelSerializer):
             'price_type',
             'image',
         ]
+
+
+class OrganizerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Organizer model
+    Includes event count and upcoming events info
+    """
+    events_count = serializers.SerializerMethodField()
+    upcoming_events_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organizer
+        fields = [
+            'id',
+            'name',
+            'shortname',
+            'description',
+            'image',
+            'logo',
+            'facebook_link',
+            'ticketing_site',
+            'website',
+            'is_active',
+            'events_count',
+            'upcoming_events_count',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'events_count', 'upcoming_events_count']
+
+    def get_events_count(self, obj):
+        """Get total number of events for this organizer"""
+        return obj.events.count()
+
+    def get_upcoming_events_count(self, obj):
+        """Get count of upcoming events"""
+        from django.utils import timezone
+        return obj.events.filter(start_date__gte=timezone.now()).count()
+
+
+class OrganizerListSerializer(serializers.ModelSerializer):
+    """
+    Lightweight serializer for organizer listings
+    Only includes essential fields for better performance
+    """
+    events_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organizer
+        fields = [
+            'id',
+            'name',
+            'shortname',
+            'logo',
+            'is_active',
+            'events_count',
+        ]
+
+    def get_events_count(self, obj):
+        """Get total number of events for this organizer"""
+        return obj.events.count()
+
+
+class EventDateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EventDate model
+    """
+    is_past = serializers.ReadOnlyField()
+
+    class Meta:
+        model = EventDate
+        fields = [
+            'id',
+            'start_date',
+            'end_date',
+            'duration_minutes',
+            'notes',
+            'is_past',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_past']
