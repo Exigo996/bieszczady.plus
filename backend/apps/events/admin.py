@@ -1,6 +1,47 @@
 from django.contrib import admin
 from django.contrib.gis.admin import GISModelAdmin
-from .models import Event
+from .models import Event, Organizer
+
+
+@admin.register(Organizer)
+class OrganizerAdmin(admin.ModelAdmin):
+    """Admin interface for Organizer model"""
+
+    list_display = [
+        'name',
+        'is_active',
+        'facebook_link',
+        'created_at',
+    ]
+
+    list_filter = [
+        'is_active',
+        'created_at',
+    ]
+
+    search_fields = [
+        'name',
+        'description',
+        'facebook_link',
+    ]
+
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Podstawowe informacje', {
+            'fields': ('name', 'description', 'is_active')
+        }),
+        ('Media', {
+            'fields': ('image', 'logo')
+        }),
+        ('Linki zewnętrzne', {
+            'fields': ('facebook_link', 'ticketing_site', 'website')
+        }),
+        ('Metadane', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(Event)
@@ -50,7 +91,7 @@ class EventAdmin(GISModelAdmin):
             'fields': ('price_type', 'price_amount', 'currency')
         }),
         ('Organizator', {
-            'fields': ('organizer_name', 'organizer_contact', 'age_restriction')
+            'fields': ('organizer', 'organizer_name', 'organizer_contact', 'age_restriction')
         }),
         ('Linki zewnętrzne', {
             'fields': ('external_url', 'ticket_url', 'facebook_event_id')

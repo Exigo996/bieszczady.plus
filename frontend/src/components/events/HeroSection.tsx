@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { Event, EventFilters } from "../../types/event";
+import { fetchEvents } from "../../api/events";
 import FilterPanel from "./FilterPanel";
 import EventCard from "./EventCard";
 
-// Mock data - będzie zastąpione przez prawdziwe dane z API
+// Mock data - used as fallback if API fails
 const mockEvents: Event[] = [
     {
       id: 100,
@@ -517,6 +519,21 @@ const HeroSection: React.FC = () => {
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Fetch events from API
+  const {
+    data: apiEvents,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["events", filters],
+    queryFn: () => fetchEvents(filters),
+    retry: 1,
+  });
+
+  // Use API data if available, otherwise fall back to mock data
+  const events = apiEvents || mockEvents;
+
   // Handle filter changes and close mobile sidebar
   const handleFiltersChange = (newFilters: EventFilters) => {
     setFilters(newFilters);
@@ -564,20 +581,15 @@ const HeroSection: React.FC = () => {
     };
   }, [isSidebarOpen]);
 
-  // Filter events based on active filters
+  // Filter events based on active filters (for client-side filtering if API doesn't support all filters)
   const filteredEvents = useMemo(() => {
-    return mockEvents.filter((event) => {
-      // Category filter
-      if (filters.category && event.category !== filters.category) {
-        return false;
-      }
+    if (!events) return [];
 
-      // Price type filter
-      if (filters.price_type && event.price_type !== filters.price_type) {
-        return false;
-      }
+    return events.filter((event) => {
+      // Additional client-side filtering if needed
+      // Most filtering should be handled by the API
 
-      // Search filter
+      // Search filter (client-side backup)
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const titleMatch = event.title.pl.toLowerCase().includes(searchLower);
@@ -593,33 +605,16 @@ const HeroSection: React.FC = () => {
         }
       }
 
-      // Distance filter
+      // Distance filter (client-side backup)
       if (filters.radius && event.location.distance) {
         if (event.location.distance > filters.radius) {
           return false;
         }
       }
 
-      // Date range filter
-      if (filters.date_from) {
-        const eventDate = new Date(event.start_date);
-        const fromDate = new Date(filters.date_from);
-        if (eventDate < fromDate) {
-          return false;
-        }
-      }
-
-      if (filters.date_to) {
-        const eventDate = new Date(event.start_date);
-        const toDate = new Date(filters.date_to);
-        if (eventDate > toDate) {
-          return false;
-        }
-      }
-
       return true;
     });
-  }, [filters]);
+  }, [events, filters]);
 
   // Sort by ID
   const sortedEvents = useMemo(() => {
@@ -712,23 +707,67 @@ const HeroSection: React.FC = () => {
 
           {/* Events Grid - Right Side */}
           <div className="lg:col-span-3 pb-24 lg:pb-0">
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex justify-center items-center py-12" role="status">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Ładowanie wydarzeń...</span>
+              </div>
+            )}
+
+            {/* Error State */}
+            {isError && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6" role="alert">
+                <div className="flex">
+                  <svg
+                    className="w-5 h-5 text-yellow-600 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                  <div>
+                    <p className="font-medium text-yellow-800">
+                      Nie udało się pobrać wydarzeń z API
+                    </p>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      Wyświetlamy przykładowe dane. Błąd: {error?.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Results Count */}
-            <div className="mb-6">
-              <p className="text-gray-700">
-                Znaleziono{" "}
-                <span className="font-bold text-blue-600">
-                  {sortedEvents.length}
-                </span>{" "}
-                {sortedEvents.length === 1
-                  ? "wydarzenie"
-                  : sortedEvents.length < 5
-                  ? "wydarzenia"
-                  : "wydarzeń"}
-              </p>
-            </div>
+            {!isLoading && (
+              <div className="mb-6">
+                <p className="text-gray-700">
+                  Znaleziono{" "}
+                  <span className="font-bold text-blue-600">
+                    {sortedEvents.length}
+                  </span>{" "}
+                  {sortedEvents.length === 1
+                    ? "wydarzenie"
+                    : sortedEvents.length < 5
+                    ? "wydarzenia"
+                    : "wydarzeń"}
+                  {apiEvents && (
+                    <span className="ml-2 text-green-600 text-sm">
+                      (z API)
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
 
             {/* Events Grid */}
-            {sortedEvents.length > 0 ? (
+            {!isLoading && sortedEvents.length > 0 ? (
               <div
                 className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 role="list"
@@ -740,7 +779,7 @@ const HeroSection: React.FC = () => {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : !isLoading && sortedEvents.length === 0 ? (
               <div className="text-center py-12">
                 <svg
                   className="mx-auto h-12 w-12 text-gray-400"
@@ -769,7 +808,7 @@ const HeroSection: React.FC = () => {
                   Wyczyść filtry
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 

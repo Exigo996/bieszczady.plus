@@ -1,0 +1,18 @@
+# Example Facebook URLs for scraping
+# ====================================
+#
+# Format: One URL per line
+# Lines starting with # are comments and will be ignored
+#
+# You can mix page URLs and event URLs
+
+# Example Facebook pages (will scrape posts for event information)
+# https://www.facebook.com/BieszczadyEvents
+# https://www.facebook.com/UstrzykiDolneMiasto
+# https://www.facebook.com/CentrumKulturyIPromocjiLesko
+
+# Example event pages (will scrape structured event data)
+# https://www.facebook.com/events/123456789012345
+# https://www.facebook.com/events/234567890123456
+
+# Add your URLs below:

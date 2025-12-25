@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  facebook-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bieszczady_scraper
+    volumes:
+      # Persist cookies and scraped data
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - SCRAPER_HEADLESS=true
+      - SCRAPER_COOKIE_FILE=/app/data/cookies/facebook_cookies.json
+      - SCRAPER_OUTPUT_DIR=/app/data/scraped_events
+      - SCRAPER_LOG_LEVEL=INFO
+      - SCRAPER_MAX_POSTS=50
+      - SCRAPER_DJANGO_IMPORT=true
+      - SCRAPER_AUTO_TRANSLATE=true
+    # Uncomment to run as a one-off command
+    # command: python cli.py scrape-multiple --urls /app/example_urls.txt
+
+    # Or use for interactive access
+    stdin_open: true
+    tty: true
+
+    networks:
+      - bieszczady-network
+
+networks:
+  bieszczady-network:
+    external: true
+    name: bieszczady_default

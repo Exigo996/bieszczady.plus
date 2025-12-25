@@ -1,0 +1,20 @@
+# Facebook Event Scraper Requirements
+# ====================================
+
+# Core scraping
+playwright==1.41.0
+
+# Async support
+asyncio==3.4.3
+
+# Data handling
+python-dateutil==2.8.2
+
+# Django integration (optional - only needed for importing to Django)
+# django>=5.1
+# psycopg2-binary>=2.9
+# celery>=5.3
+
+# Development tools
+pytest==8.0.0
+pytest-asyncio==0.23.3
