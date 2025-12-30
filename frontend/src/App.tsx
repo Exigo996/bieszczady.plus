@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import MapPage from './pages/MapPage';
 import ProductsPage from './pages/ProductsPage';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { FiltersProvider } from './contexts/FiltersContext';
 import './App.css';
 
 // Create a query client instance
@@ -23,20 +24,22 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <FiltersProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/mapa" element={<MapPage />} />
-                <Route path="/produkty" element={<ProductsPage />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </Router>
-      </LanguageProvider>
+            <div className="min-h-screen bg-gray-50 flex flex-col">
+              <Header />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/mapa" element={<MapPage />} />
+                  <Route path="/produkty" element={<ProductsPage />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </Router>
+        </FiltersProvider>
+    </LanguageProvider>
     </QueryClientProvider>
   );
 }

@@ -5,56 +5,56 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gray-900 text-gray-300 mt-16 overflow-hidden">
+    <footer className="relative bg-gray-900 text-white mt-8 md:mt-16 overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/gory1.jpg)' }}
+        style={{ backgroundImage: 'url(/footerb.jpg)', backgroundPosition: 'center 40%' }}
       />
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/70 via-gray-900/65 to-gray-900/75" />
+      {/* Light Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/60 to-black/70" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-8">
           {/* Brand */}
           <div className="col-span-1">
-            <div className="flex items-center space-x-3 mb-4">
+            <div className="flex items-center space-x-2 md:space-x-3 mb-3 md:mb-4">
               <img
                 src="/bieszczadyplus1.png"
                 alt="Bieszczady.plus Logo"
-                className="h-10 w-auto"
+                className="h-8 md:h-10 w-auto"
               />
-              <span className="text-xl font-bold text-white">
+              <span className="text-lg md:text-xl font-bold text-white">
                 Bieszczady<span className="text-blue-400">.plus</span>
               </span>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs md:text-sm text-gray-200">
               Odkrywaj wydarzenia, kulturę i lokalnych producentów w sercu Podkarpacia.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Szybkie linki</h3>
+            <h3 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">Szybkie linki</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Wydarzenia
                 </Link>
               </li>
               <li>
-                <Link to="/produkty" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/produkty" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Lokalni Producenci
                 </Link>
               </li>
               <li>
-                <Link to="/mapa" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/mapa" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Mapa
                 </Link>
               </li>
               <li>
-                <Link to="/o-nas" className="text-sm hover:text-blue-400 transition-colors">
+                <Link to="/o-nas" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   O nas
                 </Link>
               </li>
@@ -63,25 +63,25 @@ const Footer: React.FC = () => {
 
           {/* Categories */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Kategorie</h3>
+            <h3 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">Kategorie</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/?category=CONCERT" className="text-sm hover:text-blue-400 transition-colors">
+                <a href="/?category=CONCERT" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Koncerty
                 </a>
               </li>
               <li>
-                <a href="/?category=FESTIVAL" className="text-sm hover:text-blue-400 transition-colors">
+                <a href="/?category=FESTIVAL" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Festiwale
                 </a>
               </li>
               <li>
-                <a href="/?category=WORKSHOP" className="text-sm hover:text-blue-400 transition-colors">
+                <a href="/?category=WORKSHOP" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Warsztaty
                 </a>
               </li>
               <li>
-                <a href="/?category=FOOD" className="text-sm hover:text-blue-400 transition-colors">
+                <a href="/?category=FOOD" className="text-xs md:text-sm hover:text-blue-400 transition-colors">
                   Gastronomia
                 </a>
               </li>
@@ -90,14 +90,14 @@ const Footer: React.FC = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Kontakt</h3>
+            <h3 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">Kontakt</h3>
             <ul className="space-y-2">
-              <li className="text-sm">
+              <li className="text-xs md:text-sm">
                 <a href="mailto:kontakt@bieszczady.plus" className="hover:text-blue-400 transition-colors">
                   kontakt@bieszczady.plus
                 </a>
               </li>
-              <li className="text-sm text-gray-400">Bieszczady, Podkarpackie</li>
+              <li className="text-xs md:text-sm text-gray-200">Bieszczady, Podkarpackie</li>
             </ul>
 
             {/* Social Media */}
@@ -133,31 +133,31 @@ const Footer: React.FC = () => {
 
           {/* Partners */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Partnerzy</h3>
-            <div className="flex flex-col space-y-4">
+            <h3 className="text-white font-semibold mb-3 md:mb-4">Partnerzy</h3>
+            <div className="flex flex-col space-y-3 md:space-y-4">
               <a href="https://ustrzyckidomkultury.pl/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 hover:opacity-80">
-                <img src="/udk.png" alt="Ustrzycki Dom Kultury" className="h-10 w-auto rounded shadow" />
-                <span className="text-sm text-gray-200">Ustrzycki Dom Kultury</span>
+                <img src="/udk.png" alt="Ustrzycki Dom Kultury" className="h-8 md:h-10 w-auto rounded shadow" />
+                <span className="text-xs md:text-sm text-gray-200">Ustrzycki Dom Kultury</span>
               </a>
               <a href="https://ustrzyckiteatrdramatyczny.pl/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 hover:opacity-80">
-                <img src="/utd.png" alt="Ustrzycki Teatr Dramatyczny" className="h-10 w-auto rounded shadow" />
-                <span className="text-sm text-gray-200">Ustrzycki Teatr Dramatyczny</span>
+                <img src="/utd.png" alt="Ustrzycki Teatr Dramatyczny" className="h-8 md:h-10 w-auto rounded shadow" />
+                <span className="text-xs md:text-sm text-gray-200">Ustrzycki Teatr Dramatyczny</span>
               </a>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
+        <div className="mt-6 md:mt-8 pt-4 md:pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-xs md:text-sm text-gray-200">
               © {currentYear} Bieszczady.plus. Wszelkie prawa zastrzeżone.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/polityka-prywatnosci" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
+            <div className="flex space-x-4 md:space-x-6 mt-3 md:mt-0">
+              <Link to="/polityka-prywatnosci" className="text-xs md:text-sm text-gray-200 hover:text-blue-400 transition-colors">
                 Polityka prywatności
               </Link>
-              <Link to="/regulamin" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
+              <Link to="/regulamin" className="text-xs md:text-sm text-gray-200 hover:text-blue-400 transition-colors">
                 Regulamin
               </Link>
             </div>

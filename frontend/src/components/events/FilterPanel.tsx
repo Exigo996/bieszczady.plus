@@ -46,13 +46,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
     });
   };
 
-  const handleSearchChange = (search: string) => {
-    onFiltersChange({
-      ...filters,
-      search: search || undefined,
-    });
-  };
-
   const handleClearFilters = () => {
     onFiltersChange({
       radius: 25,
@@ -61,47 +54,21 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
 
   return (
     <aside
-      className="lg:bg-white lg:rounded-lg lg:shadow-lg lg:p-6 lg:sticky lg:top-4"
+      className="w-full space-y-3"
       role="complementary"
       aria-label="Filtry wydarzeń"
     >
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Filtry</h2>
-        <button
-          onClick={handleClearFilters}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors min-h-11 min-w-11"
-          aria-label="Wyczyść filtry"
-        >
-          Wyczyść
-        </button>
-      </div>
-
-      {/* Search */}
-      <div className="mb-6">
-        <label htmlFor="search" className="block text-sm font-semibold text-gray-700 mb-2">
-          Szukaj
-        </label>
-        <input
-          id="search"
-          type="text"
-          placeholder="Nazwa wydarzenia..."
-          value={filters.search || ''}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          aria-label="Wyszukaj wydarzenie"
-        />
-      </div>
 
       {/* Category */}
-      <div className="mb-6">
-        <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-2">
+      <div>
+        <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">
           Kategoria
         </label>
         <select
           id="category"
           value={filters.category || ''}
           onChange={(e) => handleCategoryChange(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
           aria-label="Wybierz kategorię"
         >
           {categories.map((cat) => (
@@ -113,15 +80,15 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
       </div>
 
       {/* Price Type */}
-      <div className="mb-6">
-        <label htmlFor="price-type" className="block text-sm font-semibold text-gray-700 mb-2">
+      <div>
+        <label htmlFor="price-type" className="block text-sm font-semibold text-gray-700 mb-1">
           Cena
         </label>
         <select
           id="price-type"
           value={filters.price_type || ''}
           onChange={(e) => handlePriceTypeChange(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
           aria-label="Wybierz typ ceny"
         >
           {priceTypes.map((type) => (
@@ -133,8 +100,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
       </div>
 
       {/* Radius Slider */}
-      <div className="mb-6">
-        <label htmlFor="radius" className="block text-sm font-semibold text-gray-700 mb-2">
+      <div>
+        <label htmlFor="radius" className="block text-sm font-semibold text-gray-700 mb-1">
           Odległość: <span className="text-blue-600">{filters.radius || 25} km</span>
         </label>
         <input
@@ -155,17 +122,17 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
       </div>
 
       {/* Date Range */}
-      <div className="mb-6">
-        <label htmlFor="date-from" className="block text-sm font-semibold text-gray-700 mb-2">
+      <div>
+        <label htmlFor="date-from" className="block text-sm font-semibold text-gray-700 mb-1">
           Zakres dat
         </label>
-        <div className="space-y-3">
+        <div className="space-y-2">
           <input
             id="date-from"
             type="date"
             value={filters.date_from || ''}
             onChange={(e) => onFiltersChange({ ...filters, date_from: e.target.value || undefined })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             aria-label="Data od"
           />
           <input
@@ -173,16 +140,27 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
             type="date"
             value={filters.date_to || ''}
             onChange={(e) => onFiltersChange({ ...filters, date_to: e.target.value || undefined })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             aria-label="Data do"
           />
         </div>
       </div>
 
+      {/* Clear Filters Button */}
+      <div className="pt-2 border-t border-gray-200">
+        <button
+          onClick={handleClearFilters}
+          className="w-full px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+          aria-label="Wyczyść filtry"
+        >
+          Wyczyść wszystkie filtry
+        </button>
+      </div>
+
       {/* Active Filters Count */}
       {Object.keys(filters).filter(key => key !== 'radius' && filters[key as keyof EventFilters]).length > 0 && (
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
+        <div className="pt-2 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-600">
             Aktywne filtry:{' '}
             <span className="font-semibold text-blue-600">
               {Object.keys(filters).filter(key => key !== 'radius' && filters[key as keyof EventFilters]).length}

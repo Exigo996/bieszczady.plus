@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Event, EventFilters } from "../../types/event";
+import type { Event } from "../../types/event";
 import { fetchEvents } from "../../api/events";
-import FilterPanel from "./FilterPanel";
+import { useFilters } from "../../contexts/FiltersContext";
 import EventCard from "./EventCard";
+import FilterPanel from "./FilterPanel";
 
 // Mock data - used as fallback if API fails
 const mockEvents: Event[] = [
@@ -513,10 +514,10 @@ const mockEvents: Event[] = [
   },
 ];
 
+type ViewMode = 'grid' | 'list';
+
 const HeroSection: React.FC = () => {
-  const [filters, setFilters] = useState<EventFilters>({
-    radius: 25,
-  });
+  const { filters, setFilters } = useFilters();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Fetch events from API
@@ -533,53 +534,66 @@ const HeroSection: React.FC = () => {
 
   // Use API data if available, otherwise fall back to mock data
   const events = apiEvents || mockEvents;
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-  // Handle filter changes and close mobile sidebar
-  const handleFiltersChange = (newFilters: EventFilters) => {
-    setFilters(newFilters);
-    // Close sidebar on mobile when a filter is applied (except radius changes)
-    if (window.innerWidth < 1024) {
-      const filterChanged =
-        JSON.stringify(filters) !== JSON.stringify(newFilters);
-      const onlyRadiusChanged =
-        filterChanged &&
-        Object.keys(newFilters).filter(
-          (key) =>
-            key !== "radius" &&
-            newFilters[key as keyof EventFilters] !==
-              filters[key as keyof EventFilters]
-        ).length === 0;
-
-      if (filterChanged && !onlyRadiusChanged) {
+  // Close sidebar when ESC key is pressed
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSidebarOpen) {
         setIsSidebarOpen(false);
       }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isSidebarOpen]);
+
+  // Handle filter changes (close sidebar on change, except radius)
+  const handleFiltersChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    // Don't close sidebar when only radius changes
+    if (JSON.stringify({ ...newFilters, radius: undefined }) !== JSON.stringify({ ...filters, radius: undefined })) {
+      setIsSidebarOpen(false);
     }
   };
 
-  // Handle Escape key to close sidebar
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isSidebarOpen) {
-        setIsSidebarOpen(false);
-      }
-    };
+  // Remove past events and past showtimes
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isSidebarOpen]);
+    return mockEvents
+      .map((event) => {
+        // Check if event has multiple showtimes
+        const hasShowtimes = Array.isArray((event as any).showtimes) && (event as any).showtimes.length > 0;
 
-  // Prevent body scroll when mobile sidebar is open
-  useEffect(() => {
-    if (isSidebarOpen && window.innerWidth < 1024) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+        if (hasShowtimes) {
+          // Filter out past showtimes
+          const futureShowtimes = (event as any).showtimes.filter((showtime: any) => {
+            return new Date(showtime.date) >= now;
+          });
 
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isSidebarOpen]);
+          // If no future showtimes, skip this event
+          if (futureShowtimes.length === 0) {
+            return null;
+          }
+
+          // Return event with only future showtimes
+          return {
+            ...event,
+            showtimes: futureShowtimes,
+            // Update start_date to the earliest future showtime
+            start_date: futureShowtimes[0].date,
+          };
+        } else {
+          // Single date event - check if it's in the future
+          const eventDate = new Date(event.start_date);
+          if (eventDate < now) {
+            return null;
+          }
+          return event;
+        }
+      })
+      .filter((event): event is Event => event !== null);
+  }, []);
 
   // Filter events based on active filters (for client-side filtering if API doesn't support all filters)
   const filteredEvents = useMemo(() => {
@@ -623,151 +637,110 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
+      id="events-section"
       className="min-h-screen bg-gray-50 py-8"
       aria-label="Sekcja główna z wydarzeniami"
     >
+      {/* Mobile Filter Toggle Button */}
+      <button
+        onClick={() => setIsSidebarOpen(true)}
+        className="lg:hidden fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-3 py-6 rounded-r-lg shadow-lg z-40 hover:bg-blue-700 transition-colors"
+        style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+        aria-label="Otwórz filtry"
+      >
+        <span className="text-sm font-semibold">Filtry</span>
+      </button>
+
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <div
+        className={`lg:hidden fixed inset-y-0 left-0 w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Filtry</h2>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-gray-500 hover:text-gray-700 text-3xl leading-none"
+              aria-label="Zamknij filtry"
+            >
+              ×
+            </button>
+          </div>
+          <FilterPanel filters={filters} onFiltersChange={handleFiltersChange} />
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Wydarzenia w Bieszczadach
+            Bieszczady + Kultura
           </h1>
           <p className="text-lg text-gray-600">
             Odkryj kulturę, tradycje i rozrywkę w sercu Podkarpacia
           </p>
         </header>
 
-        {/* Mobile Overlay */}
-        {isSidebarOpen && (
-          <div
-            className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsSidebarOpen(false)}
-            aria-hidden="true"
-          />
-        )}
+        {/* Results Count and View Toggle */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-gray-700">
+            Znaleziono{" "}
+            <span className="font-bold text-blue-600">
+              {sortedEvents.length}
+            </span>{" "}
+            {sortedEvents.length === 1
+              ? "wydarzenie"
+              : sortedEvents.length < 5
+              ? "wydarzenia"
+              : "wydarzeń"}
+          </p>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filter Panel - Left Side */}
-          <div className="lg:col-span-1">
-            {/* Mobile Bottom Sheet */}
-            <div
-              className={`
-                lg:hidden fixed inset-x-0 bottom-0 bg-white z-50 rounded-t-2xl shadow-2xl
-                transform transition-transform duration-300 ease-in-out
-                max-h-[80vh] overflow-y-auto
-                ${isSidebarOpen ? "translate-y-0" : "translate-y-full"}
-              `}
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded-md transition-colors ${
+                viewMode === 'grid'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+              aria-label="Widok kafelkowy"
+              title="Widok kafelkowy"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setIsSidebarOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
-                aria-label="Zamknij filtry"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-
-              {/* Drag Handle */}
-              <div className="flex justify-center pt-3 pb-2">
-                <div
-                  className="w-12 h-1.5 bg-gray-300 rounded-full"
-                  aria-hidden="true"
-                ></div>
-              </div>
-
-              <div className="px-6 pb-6">
-                <FilterPanel
-                  filters={filters}
-                  onFiltersChange={handleFiltersChange}
-                />
-              </div>
-            </div>
-
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:block">
-              <FilterPanel
-                filters={filters}
-                onFiltersChange={handleFiltersChange}
-              />
-            </div>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded-md transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+              aria-label="Widok listy"
+              title="Widok listy"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+            </button>
           </div>
-
-          {/* Events Grid - Right Side */}
-          <div className="lg:col-span-3 pb-24 lg:pb-0">
-            {/* Loading State */}
-            {isLoading && (
-              <div className="flex justify-center items-center py-12" role="status">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Ładowanie wydarzeń...</span>
-              </div>
-            )}
-
-            {/* Error State */}
-            {isError && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6" role="alert">
-                <div className="flex">
-                  <svg
-                    className="w-5 h-5 text-yellow-600 mr-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <div>
-                    <p className="font-medium text-yellow-800">
-                      Nie udało się pobrać wydarzeń z API
-                    </p>
-                    <p className="text-sm text-yellow-700 mt-1">
-                      Wyświetlamy przykładowe dane. Błąd: {error?.message}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Results Count */}
-            {!isLoading && (
-              <div className="mb-6">
-                <p className="text-gray-700">
-                  Znaleziono{" "}
-                  <span className="font-bold text-blue-600">
-                    {sortedEvents.length}
-                  </span>{" "}
-                  {sortedEvents.length === 1
-                    ? "wydarzenie"
-                    : sortedEvents.length < 5
-                    ? "wydarzenia"
-                    : "wydarzeń"}
-                  {apiEvents && (
-                    <span className="ml-2 text-green-600 text-sm">
-                      (z API)
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
+        </div>
 
             {/* Events Grid */}
-            {!isLoading && sortedEvents.length > 0 ? (
+            {sortedEvents.length > 0 ? (
               <div
                 className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 role="list"
@@ -779,7 +752,7 @@ const HeroSection: React.FC = () => {
                   </div>
                 ))}
               </div>
-            ) : !isLoading && sortedEvents.length === 0 ? (
+            ) : (
               <div className="text-center py-12">
                 <svg
                   className="mx-auto h-12 w-12 text-gray-400"
@@ -808,7 +781,7 @@ const HeroSection: React.FC = () => {
                   Wyczyść filtry
                 </button>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
 

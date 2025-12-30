@@ -1,19 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useFilters } from "../../contexts/FiltersContext";
 import { getTranslations } from "../../translations";
+import FilterPanel from "../events/FilterPanel";
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const location = useLocation();
   const { language, setLanguage } = useLanguage();
+  const { filters, setFilters } = useFilters();
   const t = getTranslations(language);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const toggleFilters = () => {
+    setIsFiltersOpen(!isFiltersOpen);
+  };
+
+  const handleFiltersMouseEnter = () => {
+    setIsFiltersOpen(true);
+  };
+
+  const handleFiltersMouseLeave = () => {
+    setIsFiltersOpen(false);
+  };
+
   const isActive = (path: string) => location.pathname === path;
+
+  // Close dropdowns when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsFiltersOpen(false);
+  }, [location.pathname]);
+
+  // Handle Escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (isFiltersOpen) setIsFiltersOpen(false);
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isFiltersOpen, isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  const handleSearchChange = (search: string) => {
+    setFilters({
+      ...filters,
+      search: search || undefined,
+    });
+  };
+
+  const activeFiltersCount = Object.keys(filters).filter(
+    (key) => key !== "radius" && filters[key as keyof typeof filters]
+  ).length;
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -37,7 +96,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
+          <div className="hidden md:flex md:items-center md:space-x-4">
             <Link
               to="/"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
@@ -79,6 +138,95 @@ const Header: React.FC = () => {
             >
               {t.aboutUs}
             </Link>
+
+            {/* Search Bar - Desktop */}
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Szukaj wydarzeń..."
+                  value={filters.search || ""}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-64 px-4 py-1.5 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  aria-label="Wyszukaj wydarzenie"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                <svg
+                  className="absolute left-3 top-2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <button
+                className="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                aria-label="Szukaj"
+              >
+                Szukaj
+              </button>
+            </div>
+
+            {/* Filters Button - Desktop */}
+            <div
+              className="relative"
+              onMouseEnter={handleFiltersMouseEnter}
+              onMouseLeave={handleFiltersMouseLeave}
+            >
+              <button
+                className={`relative px-4 py-1.5 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
+                  isFiltersOpen
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+                aria-label="Filtry"
+                aria-expanded={isFiltersOpen}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
+                </svg>
+                Filtry
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Filters Dropdown - Desktop */}
+              {isFiltersOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-80 bg-white shadow-2xl z-50 border border-gray-200 rounded-lg max-h-[80vh] overflow-y-auto"
+                  onMouseEnter={handleFiltersMouseEnter}
+                  onMouseLeave={handleFiltersMouseLeave}
+                >
+                  <div className="p-4">
+                    <FilterPanel filters={filters} onFiltersChange={setFilters} />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Language Selector - Desktop */}
@@ -168,7 +316,71 @@ const Header: React.FC = () => {
         {/* Mobile menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200" id="mobile-menu">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+            {/* Search - Mobile */}
+            <div className="px-4 pt-3 pb-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Szukaj wydarzeń..."
+                  value={filters.search || ""}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  aria-label="Wyszukaj wydarzenie"
+                />
+                <svg
+                  className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Filters Button - Mobile */}
+            <div className="px-4 pb-2">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsFiltersOpen(true);
+                }}
+                className={`w-full relative px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                  isFiltersOpen
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+                aria-label="Filtry"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
+                </svg>
+                Filtry
+                {activeFiltersCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
               <Link
                 to="/"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${

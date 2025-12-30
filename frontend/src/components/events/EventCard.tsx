@@ -6,21 +6,19 @@ import { pl } from 'date-fns/locale/pl';
 interface EventCardProps {
   event: Event;
   language?: 'pl' | 'en' | 'uk';
+  viewMode?: 'grid' | 'list';
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl' }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode = 'grid' }) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const title = event.title[language] || event.title.pl;
   const description = event.description[language] || event.description.pl;
 
-  // Sprawdź czy event ma wiele terminów (showtimes)
+  // Check if event has multiple dates (showtimes)
   const hasMultipleDates = Array.isArray((event as any).showtimes) && (event as any).showtimes.length > 0;
   const showtimeTabs = hasMultipleDates ? (event as any).showtimes : [];
-
-  // Kolory dla różnych eventów
-  const isAvatar = event.slug === 'avatar-ogien-i-popiol';
 
   const formatEventDate = (dateString: string) => {
     try {
@@ -59,401 +57,554 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl' }) => {
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
-  return (
-    <>
-      <article
-        className="bg-white rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col h-full cursor-pointer"
-        role="article"
-        aria-label={`Wydarzenie: ${title}`}
-        onClick={() => setIsExpanded(true)}
-      >
-        {/* Image */}
-        <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
-        {event.image ? (
-          <img
-            src={event.image}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white text-lg font-medium opacity-50">zdjęcie</span>
-          </div>
-        )}
-
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          <span
-            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
-              event.category
-            )}`}
-          >
-            {getCategoryLabel(event.category)}
-          </span>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-5 flex flex-col flex-grow">
-        {/* Title */}
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
-          {title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 min-h-[2.5rem]">{description}</p>
-
-        {/* Date (with tabs for events with multiple showtimes) */}
-        {hasMultipleDates ? (
-          <div className="mb-2">
-            {/* Compact tabs for dates */}
-            <div className="flex items-center text-sm text-gray-700 mb-2">
-              <svg
-                className={`w-4 h-4 mr-2 flex-shrink-0 ${isAvatar ? 'text-indigo-600' : 'text-blue-600'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <time dateTime={showtimeTabs[activeTab]?.date} className="font-medium">
-                {showtimeTabs[activeTab]?.label}, {showtimeTabs[activeTab]?.time}
-              </time>
-            </div>
-            {/* Date tabs - scrollable horizontal */}
-            <div className="flex gap-1 mb-2 overflow-x-auto scrollbar-hide">
-              {showtimeTabs.map((tab: { label: string; time: string; date: string; ticket_url?: string }, idx: number) => {
-                // Extract day and month from label (e.g., "sobota, 20 grudnia 2025" -> "20.12")
-                const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
-                const monthMap: { [key: string]: string } = {
-                  'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
-                  'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
-                  'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
-                };
-                const shortDate = dateMatch
-                  ? `${dateMatch[1]}.${monthMap[dateMatch[2]] || '?'}`
-                  : tab.label.split(',')[0];
-                const shortTime = tab.time.replace('godz. ', '').split(' ')[0]; // Remove extra text like "(3D, DUBBING PL)"
-
-                return (
-                  <button
-                    key={tab.date}
-                    className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
-                      activeTab === idx
-                        ? isAvatar ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white'
-                        : isAvatar ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveTab(idx);
-                    }}
-                  >
-                    {shortDate} {shortTime}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center text-sm text-gray-700 mb-2">
-            <svg
-              className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <time dateTime={event.start_date}>{formatEventDate(event.start_date)}</time>
-          </div>
-        )}
-
-        {/* Location */}
-        <div className="flex items-center justify-between text-sm text-gray-700 mb-4">
-          <div className="flex items-center flex-1 min-w-0">
-            <svg
-              className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-            <span className="truncate">{event.location.name}</span>
-          </div>
-          {event.location.distance !== undefined && (
-            <span className="ml-2 font-semibold text-blue-600 flex-shrink-0">
-              {event.location.distance.toFixed(1)} km
-            </span>
-          )}
-        </div>
-
-        {/* Spacer to push button to bottom */}
-        <div className="flex-grow"></div>
-
-        {/* Action Button */}
-        {event.ticket_url && (
-          <a
-            href={event.ticket_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-center inline-flex items-center justify-center"
-            aria-label={`Kup bilet na wydarzenie: ${title}`}
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-              />
-            </svg>
-            Kup bilet
-          </a>
-        )}
-      </div>
-    </article>
-
-      {/* Modal */}
-      {isExpanded && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          onClick={() => setIsExpanded(false)}
+  // List view layout
+  if (viewMode === 'list') {
+    return (
+      <>
+        {/* Horizontal Event Card for List View */}
+        <article
+          className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group cursor-pointer flex flex-row gap-4"
+          role="article"
+          aria-label={`Wydarzenie: ${title}`}
+          onClick={() => setIsExpanded(true)}
         >
-          <div
-            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
-              <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
-                aria-label="Zamknij"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+          {/* Square Image Container */}
+          <div className="relative w-32 h-32 md:w-40 md:h-40 overflow-hidden flex-shrink-0 rounded-lg">
+            {event.image ? (
+              <img
+                src={event.image}
+                alt={title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
+            )}
+
+            {/* Category Badge - Top Left */}
+            <div className="absolute top-3 left-3 z-10">
+              <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}>
+                {getCategoryLabel(event.category)}
+              </span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 py-3 pr-4">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+              {title}
+            </h3>
+
+            <div className="space-y-1.5 mb-3">
+              {/* Date */}
+              <div className="flex items-center text-sm text-gray-600">
+                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                 </svg>
-              </button>
+                {hasMultipleDates ? (
+                  <span>{showtimeTabs.length} terminów</span>
+                ) : (
+                  <span>{formatEventDate(event.start_date)}</span>
+                )}
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center text-sm text-gray-600">
+                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                {event.location.name}
+                {event.location.distance && (
+                  <span className="ml-2 text-blue-600">
+                    ({event.location.distance.toFixed(1)} km)
+                  </span>
+                )}
+              </div>
+
+              {/* Price */}
+              {event.price_type && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                  </svg>
+                  {event.price_type === 'FREE' ? 'Bezpłatne' : `${event.price_amount} ${event.price_currency}`}
+                </div>
+              )}
             </div>
 
-            {/* Content */}
-            <div className="p-6">
-              {/* Image */}
-              <div className="mb-6 relative">
+            {/* Description Preview */}
+            <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3">
+              {description}
+            </p>
+
+            {/* Action Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(true);
+              }}
+              className="inline-flex items-center px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Zobacz szczegóły
+            </button>
+          </div>
+        </article>
+
+        {/* Modal - same as grid view */}
+        {isExpanded && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+            onClick={() => setIsExpanded(false)}
+          >
+            <div
+              className="bg-white rounded-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden shadow-2xl animate-slideUp"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Hero Image with Close Button */}
+              <div className="relative h-72 overflow-hidden">
                 {event.image ? (
                   <img
                     src={event.image}
                     alt={title}
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-lg font-medium opacity-50">zdjęcie</span>
-                  </div>
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
                 )}
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsExpanded(false)}
+                  className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
+                  aria-label="Zamknij"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
                 {/* Category Badge */}
-                <div className="absolute top-3 left-3">
-                  <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
-                      event.category
-                    )}`}
-                  >
+                <div className="absolute top-4 left-4">
+                  <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}>
                     {getCategoryLabel(event.category)}
                   </span>
                 </div>
+
+                {/* Title and Date at Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <h2 className="text-3xl font-bold text-white drop-shadow-lg flex-1">
+                      {title}
+                    </h2>
+                    <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
+                      <div className="text-xs font-semibold text-gray-600 uppercase">
+                        {new Date(event.start_date).toLocaleDateString('pl-PL', { month: 'short' })}
+                      </div>
+                      <div className="text-3xl font-bold text-blue-600">
+                        {new Date(event.start_date).getDate()}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(event.start_date).toLocaleDateString('pl-PL', { weekday: 'short' })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Event Details */}
-              <div className="space-y-4 mb-6">
-                {/* Date */}
-                <div className="flex items-center text-gray-700">
-                  <svg
-                    className="w-5 h-5 mr-3 text-blue-600 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span className="font-medium">{formatEventDate(event.start_date)}</span>
+              {/* Scrollable Content */}
+              <div className="overflow-y-auto max-h-[calc(95vh-18rem)] p-8">
+                {/* Quick Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  {/* Date & Time */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-xs font-semibold text-blue-900 uppercase">Data i godzina</span>
+                    </div>
+                    <p className="text-lg font-bold text-blue-900">{formatEventDate(event.start_date)}</p>
+                  </div>
+
+                  {/* Location */}
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="text-xs font-semibold text-purple-900 uppercase">Miejsce</span>
+                    </div>
+                    <p className="text-lg font-bold text-purple-900">{event.location.name}</p>
+                    {event.location.distance !== undefined && (
+                      <p className="text-sm text-purple-700 mt-1">📍 {event.location.distance.toFixed(1)} km od Ciebie</p>
+                    )}
+                  </div>
+
+                  {/* Price */}
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-xs font-semibold text-green-900 uppercase">Cena</span>
+                    </div>
+                    <p className="text-lg font-bold text-green-900">
+                      {event.price_type === 'FREE' ? 'Wstęp wolny 🎉' : `${event.price_amount} ${event.price_currency}`}
+                    </p>
+                  </div>
+
+                  {/* Duration & Age */}
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-xs font-semibold text-orange-900 uppercase">Informacje dodatkowe</span>
+                    </div>
+                    {event.duration_minutes && (
+                      <p className="text-lg font-bold text-orange-900">{event.duration_minutes} min</p>
+                    )}
+                    {event.age_restriction && (
+                      <p className="text-sm text-orange-700 mt-1">Wiek: {event.age_restriction}+</p>
+                    )}
+                    {!event.duration_minutes && !event.age_restriction && (
+                      <p className="text-lg font-bold text-orange-900">—</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description Section */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
+                    Opis wydarzenia
+                  </h3>
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4">
+                  {event.ticket_url && (
+                    <a
+                      href={event.ticket_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
+                    >
+                      <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                      </svg>
+                      Kup bilet
+                    </a>
+                  )}
+                  {event.external_url && (
+                    <a
+                      href={event.external_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      Więcej informacji
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // Grid view layout (default)
+  return (
+    <>
+      {/* Minimal Event Card */}
+      <article
+        className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer relative"
+        role="article"
+        aria-label={`Wydarzenie: ${title}`}
+        onClick={() => setIsExpanded(true)}
+      >
+        {/* Image Container */}
+        <div className="relative h-64 overflow-hidden">
+          {event.image ? (
+            <img
+              src={event.image}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
+          )}
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+          {/* Category Badge - Top Left */}
+          <div className="absolute top-3 left-3 z-10">
+            <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}>
+              {getCategoryLabel(event.category)}
+            </span>
+          </div>
+
+          {/* Date Tabs - Top Right */}
+          <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 max-w-[60%]">
+            {hasMultipleDates ? (
+              <>
+                {showtimeTabs.map((tab: { label: string; time: string; date: string }, idx: number) => {
+                  // Extract day and month from label
+                  const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
+                  const monthMap: { [key: string]: string } = {
+                    'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
+                    'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
+                    'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
+                  };
+                  const day = dateMatch ? dateMatch[1] : '';
+                  const monthNum = dateMatch && monthMap[dateMatch[2]] ? monthMap[dateMatch[2]] : '';
+                  const shortTime = tab.time.replace('godz. ', '').split(' ')[0];
+
+                  return (
+                    <button
+                      key={tab.date}
+                      className={`px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all backdrop-blur-sm ${
+                        activeTab === idx
+                          ? 'bg-white text-blue-600 shadow-lg'
+                          : 'bg-white/90 text-gray-700 hover:bg-white'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveTab(idx);
+                      }}
+                    >
+                      {day && monthNum ? `${day}.${monthNum}` : tab.label.split(',')[0]} • {shortTime}
+                    </button>
+                  );
+                })}
+              </>
+            ) : (
+              <div className="px-3 py-2 rounded-lg text-xs font-bold bg-white/90 backdrop-blur-sm text-gray-700">
+                {new Date(event.start_date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' })} • {new Date(event.start_date).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            )}
+          </div>
+
+          {/* Title and Location - Bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 drop-shadow-lg">
+              {title}
+            </h3>
+
+            {/* Location */}
+            <div className="flex items-center text-white/90 text-sm">
+              <svg
+                className="w-4 h-4 mr-1.5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              <span className="truncate drop-shadow-lg">{event.location.name}</span>
+              {event.location.distance !== undefined && (
+                <span className="ml-auto font-bold pl-2 flex-shrink-0">
+                  {event.location.distance.toFixed(1)} km
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Hover Indicator */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40">
+            <div className="bg-white rounded-full p-3 transform group-hover:scale-110 transition-transform">
+              <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      {/* Professional Modal */}
+      {isExpanded && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setIsExpanded(false)}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden shadow-2xl animate-slideUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Hero Image with Close Button */}
+            <div className="relative h-72 overflow-hidden">
+              {event.image ? (
+                <img
+                  src={event.image}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
+              )}
+
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsExpanded(false)}
+                className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
+                aria-label="Zamknij"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Category Badge */}
+              <div className="absolute top-4 left-4">
+                <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}>
+                  {getCategoryLabel(event.category)}
+                </span>
+              </div>
+
+              {/* Title and Date at Bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-3xl font-bold text-white drop-shadow-lg flex-1">
+                    {title}
+                  </h2>
+                  <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
+                    <div className="text-xs font-semibold text-gray-600 uppercase">
+                      {new Date(event.start_date).toLocaleDateString('pl-PL', { month: 'short' })}
+                    </div>
+                    <div className="text-3xl font-bold text-blue-600">
+                      {new Date(event.start_date).getDate()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(event.start_date).toLocaleDateString('pl-PL', { weekday: 'short' })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto max-h-[calc(95vh-18rem)] p-8">
+              {/* Quick Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {/* Date & Time */}
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs font-semibold text-blue-900 uppercase">Data i godzina</span>
+                  </div>
+                  <p className="text-lg font-bold text-blue-900">{formatEventDate(event.start_date)}</p>
                 </div>
 
                 {/* Location */}
-                <div className="flex items-center text-gray-700">
-                  <svg
-                    className="w-5 h-5 mr-3 text-blue-600 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span className="font-medium">{event.location.name}</span>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="text-xs font-semibold text-purple-900 uppercase">Miejsce</span>
+                  </div>
+                  <p className="text-lg font-bold text-purple-900">{event.location.name}</p>
                   {event.location.distance !== undefined && (
-                    <span className="ml-2 text-blue-600 font-semibold">
-                      ({event.location.distance.toFixed(1)} km)
-                    </span>
+                    <p className="text-sm text-purple-700 mt-1">📍 {event.location.distance.toFixed(1)} km od Ciebie</p>
                   )}
                 </div>
 
                 {/* Price */}
-                <div className="flex items-center text-gray-700">
-                  <svg
-                    className="w-5 h-5 mr-3 text-blue-600 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="font-medium">
-                    {event.price_type === 'FREE'
-                      ? 'Wstęp wolny'
-                      : `${event.price_amount} ${event.price_currency}`}
-                  </span>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-xs font-semibold text-green-900 uppercase">Cena</span>
+                  </div>
+                  <p className="text-lg font-bold text-green-900">
+                    {event.price_type === 'FREE' ? 'Wstęp wolny 🎉' : `${event.price_amount} ${event.price_currency}`}
+                  </p>
                 </div>
 
-                {/* Duration */}
-                {event.duration_minutes && (
-                  <div className="flex items-center text-gray-700">
-                    <svg
-                      className="w-5 h-5 mr-3 text-blue-600 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                {/* Duration & Age */}
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="font-medium">
-                      Czas trwania: {event.duration_minutes} minut
-                    </span>
+                    <span className="text-xs font-semibold text-orange-900 uppercase">Informacje dodatkowe</span>
                   </div>
-                )}
-
-                {/* Age Restriction */}
-                {event.age_restriction && (
-                  <div className="flex items-center text-gray-700">
-                    <svg
-                      className="w-5 h-5 mr-3 text-blue-600 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="font-medium">Wiek: {event.age_restriction}+</span>
-                  </div>
-                )}
+                  {event.duration_minutes && (
+                    <p className="text-lg font-bold text-orange-900">{event.duration_minutes} min</p>
+                  )}
+                  {event.age_restriction && (
+                    <p className="text-sm text-orange-700 mt-1">Wiek: {event.age_restriction}+</p>
+                  )}
+                  {!event.duration_minutes && !event.age_restriction && (
+                    <p className="text-lg font-bold text-orange-900">—</p>
+                  )}
+                </div>
               </div>
 
-              {/* Description */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Opis</h3>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                  {description}
-                </p>
+              {/* Description Section */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
+                  Opis wydarzenia
+                </h3>
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
+                    {description}
+                  </p>
+                </div>
               </div>
 
-              {/* Ticket Button */}
-              {event.ticket_url && (
-                <div className="pt-6 border-t border-gray-200">
+              {/* Action Buttons */}
+              <div className="flex gap-4">
+                {event.ticket_url && (
                   <a
                     href={event.ticket_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
                   >
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                      />
+                    <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                     </svg>
                     Kup bilet
                   </a>
-                </div>
-              )}
+                )}
+                {event.external_url && (
+                  <a
+                    href={event.external_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Więcej informacji
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
