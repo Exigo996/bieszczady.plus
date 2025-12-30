@@ -783,7 +783,6 @@ const HeroSection: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
 
         {/* Mobile Filter Toggle Button - Fixed at bottom with margin */}
         <button
@@ -818,7 +817,6 @@ const HeroSection: React.FC = () => {
             </span>
           )}
         </button>
-      </div>
     </section>
   );
 };

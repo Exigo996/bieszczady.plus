@@ -191,7 +191,7 @@ export const mockEvents: Event[] = [
     slug: "przeglad-filmow-gorskich",
     category: "CULTURAL",
     event_type: "EVENT",
-    start_date: getRelativeDate(7, 17, 0), // In 7 days at 17:00
+    start_date: "2026-01-10T17:00:00Z",
     duration_minutes: 180,
     location: {
       id: 1,
