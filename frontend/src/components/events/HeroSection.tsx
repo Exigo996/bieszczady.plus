@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Event } from "../../types/event";
+import type { Event, EventFilters } from "../../types/event";
 import { fetchEvents } from "../../api/events";
 import { useFilters } from "../../contexts/FiltersContext";
 import EventCard from "./EventCard";
