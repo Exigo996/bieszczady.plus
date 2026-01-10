@@ -38,8 +38,9 @@ class ImageAdmin(admin.ModelAdmin):
             'fields': ('image', 'image_preview')
         }),
         ('Tagi', {
-            'fields': ('tags_with_autocomplete',),
-            'description': 'Wprowadź tagi oddzielone przecinkami. Użyj istniejących tagów lub dodaj nowe.'
+            'fields': ('tags',),
+            'description': 'Wprowadź tagi jako tablicę JSON lub użyj naszego widgetu poniżej. '
+                          'Format: ["landscape", "nature", "mountains"] lub wpisz: landscape, nature, mountains'
         }),
         ('Metadane', {
             'fields': ('file_size', 'width', 'height', 'uploaded_at', 'updated_at'),
