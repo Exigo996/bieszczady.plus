@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = 'https://bplus-scraper.fly.dev/api';
+const API_BASE_URL = "https://api.bieszczady.plus/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000, // 10 seconds
 });
@@ -16,13 +16,13 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response) {
       // Server responded with error status
-      console.error('API Error:', error.response.status, error.response.data);
+      console.error("API Error:", error.response.status, error.response.data);
     } else if (error.request) {
       // Request made but no response
-      console.error('Network Error: No response received');
+      console.error("Network Error: No response received");
     } else {
       // Something else happened
-      console.error('Request Error:', error.message);
+      console.error("Request Error:", error.message);
     }
     return Promise.reject(error);
   }

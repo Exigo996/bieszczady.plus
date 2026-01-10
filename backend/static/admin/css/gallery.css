@@ -1,0 +1,51 @@
+/* Custom styles for Gallery admin */
+
+/* Tag styling in autocomplete/suggestions */
+.gallery-tag-suggestion {
+    background: #4178be;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin: 2px;
+    display: inline-block;
+    font-size: 12px;
+}
+
+/* Improve tag input field */
+#id_tags {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+/* Tag badges in list view */
+.tag-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 500;
+    margin: 2px;
+    display: inline-block;
+    text-transform: lowercase;
+}
+
+/* Image preview styling */
+.image-preview-container {
+    text-align: center;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+/* Thumbnail in list view */
+.thumbnail-img {
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.thumbnail-img:hover {
+    transform: scale(1.1);
+}

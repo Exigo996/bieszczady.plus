@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'rest_framework',
     'corsheaders',
-    'apps.events'
+    'apps.events',
+    'apps.gallery'
 ]
 
 MIDDLEWARE = [
