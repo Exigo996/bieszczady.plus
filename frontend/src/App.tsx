@@ -5,6 +5,7 @@ import Footer from './components/common/Footer';
 import HomePage from './pages/HomePage';
 import MapPage from './pages/MapPage';
 import ProductsPage from './pages/ProductsPage';
+import OrganizerPage from './pages/OrganizerPage';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { FiltersProvider } from './contexts/FiltersContext';
 import './App.css';
@@ -33,6 +34,7 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/mapa" element={<MapPage />} />
                   <Route path="/produkty" element={<ProductsPage />} />
+                  <Route path="/organizator/:slug" element={<OrganizerPage />} />
                 </Routes>
               </main>
               <Footer />
