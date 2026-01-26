@@ -1,13 +1,14 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import OrganizerHeroSplitScreen from '../components/organizers/OrganizerHeroSplitScreen';
-import OrganizerEventsSection from '../components/organizers/OrganizerEventsSection';
-import { fetchOrganizerBySlug, fetchOrganizerEvents } from '../api/organizers';
-import type { Event } from '../types/event';
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import OrganizerHeroSplitScreen from "../components/organizers/OrganizerHeroSplitScreen";
+import OrganizerEventsSection from "../components/organizers/OrganizerEventsSection";
+import { fetchOrganizerBySlug, fetchOrganizerEvents } from "../api/organizers";
+import type { Event } from "../types/event";
 
 const OrganizerPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  console.log(slug);
   const navigate = useNavigate();
 
   // Fetch organizer by slug
@@ -16,18 +17,15 @@ const OrganizerPage: React.FC = () => {
     isLoading: isLoadingOrganizer,
     isError: isOrganizerError,
   } = useQuery({
-    queryKey: ['organizer', slug],
+    queryKey: ["organizer", slug],
     queryFn: () => fetchOrganizerBySlug(slug!),
     enabled: !!slug,
     retry: false,
   });
 
   // Fetch organizer events
-  const {
-    data: events = [],
-    isLoading: isLoadingEvents,
-  } = useQuery({
-    queryKey: ['organizer-events', slug],
+  const { data: events = [], isLoading: isLoadingEvents } = useQuery({
+    queryKey: ["organizer-events", slug],
     queryFn: () => fetchOrganizerEvents(slug!),
     enabled: !!slug && !isOrganizerError,
     retry: 1,
@@ -67,13 +65,18 @@ const OrganizerPage: React.FC = () => {
             Organizator nie został znaleziony
           </h1>
           <p className="text-gray-600 mb-6">
-            Organizator o podanym identyfikatorze nie istnieje lub został usunięty.
+            Organizator o podanym identyfikatorze nie istnieje lub został
+            usunięty.
           </p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path
                 fillRule="evenodd"
                 d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
@@ -89,7 +92,10 @@ const OrganizerPage: React.FC = () => {
 
   return (
     <>
-      <OrganizerHeroSplitScreen organizer={organizer} events={events as Event[]} />
+      <OrganizerHeroSplitScreen
+        organizer={organizer}
+        events={events as Event[]}
+      />
       {!isLoadingEvents && <OrganizerEventsSection organizer={organizer} />}
     </>
   );

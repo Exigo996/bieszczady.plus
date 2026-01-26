@@ -1,14 +1,14 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Header from './components/common/Header';
-import Footer from './components/common/Footer';
-import HomePage from './pages/HomePage';
-import MapPage from './pages/MapPage';
-import ProductsPage from './pages/ProductsPage';
-import OrganizerPage from './pages/OrganizerPage';
-import { LanguageProvider } from './contexts/LanguageContext';
-import { FiltersProvider } from './contexts/FiltersContext';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Header from "./components/common/Header";
+import Footer from "./components/common/Footer";
+import HomePage from "./pages/HomePage";
+import MapPage from "./pages/MapPage";
+import ProductsPage from "./pages/ProductsPage";
+import OrganizerPage from "./pages/OrganizerPage";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { FiltersProvider } from "./contexts/FiltersContext";
+import "./App.css";
 
 // Create a query client instance
 const queryClient = new QueryClient({
@@ -26,7 +26,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <FiltersProvider>
-        <Router>
+          <Router>
             <div className="min-h-screen bg-gray-50 flex flex-col">
               <Header />
               <main className="flex-grow">
@@ -34,14 +34,17 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/mapa" element={<MapPage />} />
                   <Route path="/produkty" element={<ProductsPage />} />
-                  <Route path="/organizator/:slug" element={<OrganizerPage />} />
+                  <Route
+                    path="/organizator/:slug"
+                    element={<OrganizerPage />}
+                  />
                 </Routes>
               </main>
               <Footer />
             </div>
           </Router>
         </FiltersProvider>
-    </LanguageProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
