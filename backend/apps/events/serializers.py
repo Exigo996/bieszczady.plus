@@ -79,6 +79,7 @@ class EventListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
+            'description',
             'slug',
             'category',
             'event_type',

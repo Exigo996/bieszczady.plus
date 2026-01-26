@@ -645,11 +645,11 @@ const HeroSection: React.FC = () => {
       }
 
       // Distance filter (client-side backup)
-      if (filters.radius && event.location.distance) {
-        if (event.location.distance > filters.radius) {
-          return false;
-        }
-      }
+      // if (filters.radius && event.location.distance) {
+      //   if (event.location.distance > filters.radius) {
+      //     return false;
+      //   }
+      // }
 
       return true;
     });
