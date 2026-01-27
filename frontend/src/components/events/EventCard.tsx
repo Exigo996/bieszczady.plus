@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
-import type { Event } from '../../types/event';
-import { format } from 'date-fns';
-import { pl } from 'date-fns/locale/pl';
+import React, { useState } from "react";
+import type { Event } from "../../types/event";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale/pl";
 
 interface EventCardProps {
   event: Event;
-  language?: 'pl' | 'en' | 'uk';
-  viewMode?: 'grid' | 'list';
+  language?: "pl" | "en" | "uk";
+  viewMode?: "grid" | "list";
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode = 'grid' }) => {
-
+const EventCard: React.FC<EventCardProps> = ({
+  event,
+  language = "pl",
+  viewMode = "grid",
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const title = event.title[language] || event.title.pl;
-  const description = event.description[language] || event.description.pl;
+  // const description = event.description[language] || event.description.pl;
 
   // Check if event has multiple dates (showtimes)
-  const hasMultipleDates = Array.isArray((event as any).showtimes) && (event as any).showtimes.length > 0;
+  const hasMultipleDates =
+    Array.isArray((event as any).showtimes) &&
+    (event as any).showtimes.length > 0;
   const showtimeTabs = hasMultipleDates ? (event as any).showtimes : [];
 
   const formatEventDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return format(date, 'd MMMM yyyy, HH:mm', { locale: pl });
+      return format(date, "d MMMM yyyy, HH:mm", { locale: pl });
     } catch {
       return dateString;
     }
@@ -31,34 +36,34 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      CONCERT: 'Koncert',
-      FESTIVAL: 'Festiwal',
-      THEATRE: 'Teatr',
-      CINEMA: 'Kino',
-      WORKSHOP: 'Warsztat',
-      FOOD: 'Gastronomia',
-      CULTURAL: 'Kultura',
-      OTHER: 'Inne',
+      CONCERT: "Koncert",
+      FESTIVAL: "Festiwal",
+      THEATRE: "Teatr",
+      CINEMA: "Kino",
+      WORKSHOP: "Warsztat",
+      FOOD: "Gastronomia",
+      CULTURAL: "Kultura",
+      OTHER: "Inne",
     };
     return labels[category] || category;
   };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      CONCERT: 'bg-purple-100 text-purple-800',
-      FESTIVAL: 'bg-pink-100 text-pink-800',
-      THEATRE: 'bg-red-100 text-red-800',
-      CINEMA: 'bg-indigo-100 text-indigo-800',
-      WORKSHOP: 'bg-green-100 text-green-800',
-      FOOD: 'bg-orange-100 text-orange-800',
-      CULTURAL: 'bg-blue-100 text-blue-800',
-      OTHER: 'bg-gray-100 text-gray-800',
+      CONCERT: "bg-purple-100 text-purple-800",
+      FESTIVAL: "bg-pink-100 text-pink-800",
+      THEATRE: "bg-red-100 text-red-800",
+      CINEMA: "bg-indigo-100 text-indigo-800",
+      WORKSHOP: "bg-green-100 text-green-800",
+      FOOD: "bg-orange-100 text-orange-800",
+      CULTURAL: "bg-blue-100 text-blue-800",
+      OTHER: "bg-gray-100 text-gray-800",
     };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+    return colors[category] || "bg-gray-100 text-gray-800";
   };
 
   // List view layout
-  if (viewMode === 'list') {
+  if (viewMode === "list") {
     return (
       <>
         {/* Horizontal Event Card for List View */}
@@ -82,7 +87,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
 
             {/* Category Badge - Top Left */}
             <div className="absolute top-3 left-3 z-10">
-              <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}>
+              <span
+                className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
+              >
                 {getCategoryLabel(event.category)}
               </span>
             </div>
@@ -97,8 +104,16 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
             <div className="space-y-1.5 mb-3">
               {/* Date */}
               <div className="flex items-center text-sm text-gray-600">
-                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 mr-2 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 {hasMultipleDates ? (
                   <span>{showtimeTabs.length} terminów</span>
@@ -109,8 +124,16 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
 
               {/* Location */}
               <div className="flex items-center text-sm text-gray-600">
-                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 mr-2 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 {event.location.name}
                 {event.location.distance && (
@@ -123,19 +146,29 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
               {/* Price */}
               {event.price_type && (
                 <div className="flex items-center text-sm text-gray-600">
-                  <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-5 h-5 mr-2 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                      clipRule="evenodd"
+                    />
                   </svg>
-                  {event.price_type === 'FREE' ? 'Bezpłatne' : `${event.price_amount} ${event.price_currency}`}
+                  {event.price_type === "FREE"
+                    ? "Bezpłatne"
+                    : `${event.price_amount} ${event.price_currency}`}
                 </div>
               )}
             </div>
 
             {/* Description Preview */}
-            <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3">
+            {/* <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3">
               {description}
-            </p>
+            </p> */}
 
             {/* Action Button */}
             <button
@@ -181,14 +214,26 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                   className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
                   aria-label="Zamknij"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4">
-                  <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}>
+                  <span
+                    className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}
+                  >
                     {getCategoryLabel(event.category)}
                   </span>
                 </div>
@@ -201,13 +246,19 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                     </h2>
                     <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
                       <div className="text-xs font-semibold text-gray-600 uppercase">
-                        {new Date(event.start_date).toLocaleDateString('pl-PL', { month: 'short' })}
+                        {new Date(event.start_date).toLocaleDateString(
+                          "pl-PL",
+                          { month: "short" },
+                        )}
                       </div>
                       <div className="text-3xl font-bold text-blue-600">
                         {new Date(event.start_date).getDate()}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {new Date(event.start_date).toLocaleDateString('pl-PL', { weekday: 'short' })}
+                        {new Date(event.start_date).toLocaleDateString(
+                          "pl-PL",
+                          { weekday: "short" },
+                        )}
                       </div>
                     </div>
                   </div>
@@ -221,55 +272,120 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                   {/* Date & Time */}
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
                     <div className="flex items-center mb-2">
-                      <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <svg
+                        className="w-5 h-5 mr-2 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
                       </svg>
-                      <span className="text-xs font-semibold text-blue-900 uppercase">Data i godzina</span>
+                      <span className="text-xs font-semibold text-blue-900 uppercase">
+                        Data i godzina
+                      </span>
                     </div>
-                    <p className="text-lg font-bold text-blue-900">{formatEventDate(event.start_date)}</p>
+                    <p className="text-lg font-bold text-blue-900">
+                      {formatEventDate(event.start_date)}
+                    </p>
                   </div>
 
                   {/* Location */}
                   <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
                     <div className="flex items-center mb-2">
-                      <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-5 h-5 mr-2 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                       </svg>
-                      <span className="text-xs font-semibold text-purple-900 uppercase">Miejsce</span>
+                      <span className="text-xs font-semibold text-purple-900 uppercase">
+                        Miejsce
+                      </span>
                     </div>
-                    <p className="text-lg font-bold text-purple-900">{event.location.name}</p>
+                    <p className="text-lg font-bold text-purple-900">
+                      {event.location.name}
+                    </p>
                     {event.location.distance !== undefined && (
-                      <p className="text-sm text-purple-700 mt-1">📍 {event.location.distance.toFixed(1)} km od Ciebie</p>
+                      <p className="text-sm text-purple-700 mt-1">
+                        📍 {event.location.distance.toFixed(1)} km od Ciebie
+                      </p>
                     )}
                   </div>
 
                   {/* Price */}
                   <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
                     <div className="flex items-center mb-2">
-                      <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-5 h-5 mr-2 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
-                      <span className="text-xs font-semibold text-green-900 uppercase">Cena</span>
+                      <span className="text-xs font-semibold text-green-900 uppercase">
+                        Cena
+                      </span>
                     </div>
                     <p className="text-lg font-bold text-green-900">
-                      {event.price_type === 'FREE' ? 'Wstęp wolny 🎉' : `${event.price_amount} ${event.price_currency}`}
+                      {event.price_type === "FREE"
+                        ? "Wstęp wolny 🎉"
+                        : `${event.price_amount} ${event.price_currency}`}
                     </p>
                   </div>
 
                   {/* Duration & Age */}
                   <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
                     <div className="flex items-center mb-2">
-                      <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-5 h-5 mr-2 text-orange-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
-                      <span className="text-xs font-semibold text-orange-900 uppercase">Informacje dodatkowe</span>
+                      <span className="text-xs font-semibold text-orange-900 uppercase">
+                        Informacje dodatkowe
+                      </span>
                     </div>
                     {event.duration_minutes && (
-                      <p className="text-lg font-bold text-orange-900">{event.duration_minutes} min</p>
+                      <p className="text-lg font-bold text-orange-900">
+                        {event.duration_minutes} min
+                      </p>
                     )}
                     {event.age_restriction && (
-                      <p className="text-sm text-orange-700 mt-1">Wiek: {event.age_restriction}+</p>
+                      <p className="text-sm text-orange-700 mt-1">
+                        Wiek: {event.age_restriction}+
+                      </p>
                     )}
                     {!event.duration_minutes && !event.age_restriction && (
                       <p className="text-lg font-bold text-orange-900">—</p>
@@ -299,8 +415,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                       rel="noopener noreferrer"
                       className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
                     >
-                      <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                      <svg
+                        className="w-6 h-6 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                        />
                       </svg>
                       Kup bilet
                     </a>
@@ -312,8 +438,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                       rel="noopener noreferrer"
                       className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
                     >
-                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      <svg
+                        className="w-5 h-5 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
                       </svg>
                       Więcej informacji
                     </a>
@@ -354,7 +490,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
 
           {/* Category Badge - Top Left */}
           <div className="absolute top-3 left-3 z-10">
-            <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}>
+            <span
+              className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
+            >
               {getCategoryLabel(event.category)}
             </span>
           </div>
@@ -363,39 +501,69 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
           <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 max-w-[60%]">
             {hasMultipleDates ? (
               <>
-                {showtimeTabs.map((tab: { label: string; time: string; date: string }, idx: number) => {
-                  // Extract day and month from label
-                  const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
-                  const monthMap: { [key: string]: string } = {
-                    'stycznia': '01', 'lutego': '02', 'marca': '03', 'kwietnia': '04',
-                    'maja': '05', 'czerwca': '06', 'lipca': '07', 'sierpnia': '08',
-                    'września': '09', 'października': '10', 'listopada': '11', 'grudnia': '12'
-                  };
-                  const day = dateMatch ? dateMatch[1] : '';
-                  const monthNum = dateMatch && monthMap[dateMatch[2]] ? monthMap[dateMatch[2]] : '';
-                  const shortTime = tab.time.replace('godz. ', '').split(' ')[0];
+                {showtimeTabs.map(
+                  (
+                    tab: { label: string; time: string; date: string },
+                    idx: number,
+                  ) => {
+                    // Extract day and month from label
+                    const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
+                    const monthMap: { [key: string]: string } = {
+                      stycznia: "01",
+                      lutego: "02",
+                      marca: "03",
+                      kwietnia: "04",
+                      maja: "05",
+                      czerwca: "06",
+                      lipca: "07",
+                      sierpnia: "08",
+                      września: "09",
+                      października: "10",
+                      listopada: "11",
+                      grudnia: "12",
+                    };
+                    const day = dateMatch ? dateMatch[1] : "";
+                    const monthNum =
+                      dateMatch && monthMap[dateMatch[2]]
+                        ? monthMap[dateMatch[2]]
+                        : "";
+                    const shortTime = tab.time
+                      .replace("godz. ", "")
+                      .split(" ")[0];
 
-                  return (
-                    <button
-                      key={tab.date}
-                      className={`px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all backdrop-blur-sm ${
-                        activeTab === idx
-                          ? 'bg-white text-blue-600 shadow-lg'
-                          : 'bg-white/90 text-gray-700 hover:bg-white'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveTab(idx);
-                      }}
-                    >
-                      {day && monthNum ? `${day}.${monthNum}` : tab.label.split(',')[0]} • {shortTime}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={tab.date}
+                        className={`px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all backdrop-blur-sm ${
+                          activeTab === idx
+                            ? "bg-white text-blue-600 shadow-lg"
+                            : "bg-white/90 text-gray-700 hover:bg-white"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTab(idx);
+                        }}
+                      >
+                        {day && monthNum
+                          ? `${day}.${monthNum}`
+                          : tab.label.split(",")[0]}{" "}
+                        • {shortTime}
+                      </button>
+                    );
+                  },
+                )}
               </>
             ) : (
               <div className="px-3 py-2 rounded-lg text-xs font-bold bg-white/90 backdrop-blur-sm text-gray-700">
-                {new Date(event.start_date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' })} • {new Date(event.start_date).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}
+                {new Date(event.start_date).toLocaleDateString("pl-PL", {
+                  day: "numeric",
+                  month: "short",
+                })}{" "}
+                •{" "}
+                {new Date(event.start_date).toLocaleTimeString("pl-PL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
             )}
           </div>
@@ -413,23 +581,44 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <span className="truncate drop-shadow-lg">{event.location.name}</span>
-              {event.location.distance !== undefined && (
+              <span className="truncate drop-shadow-lg">
+                {/* {event.location.name} */}
+              </span>
+              {/* {event.location.distance !== undefined && (
                 <span className="ml-auto font-bold pl-2 flex-shrink-0">
                   {event.location.distance.toFixed(1)} km
                 </span>
-              )}
+              )} */}
             </div>
           </div>
 
           {/* Hover Indicator */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40">
             <div className="bg-white rounded-full p-3 transform group-hover:scale-110 transition-transform">
-              <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              <svg
+                className="w-6 h-6 text-blue-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
               </svg>
             </div>
           </div>
@@ -467,14 +656,26 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                 className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
                 aria-label="Zamknij"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
 
               {/* Category Badge */}
               <div className="absolute top-4 left-4">
-                <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}>
+                <span
+                  className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}
+                >
                   {getCategoryLabel(event.category)}
                 </span>
               </div>
@@ -487,13 +688,17 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                   </h2>
                   <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
                     <div className="text-xs font-semibold text-gray-600 uppercase">
-                      {new Date(event.start_date).toLocaleDateString('pl-PL', { month: 'short' })}
+                      {new Date(event.start_date).toLocaleDateString("pl-PL", {
+                        month: "short",
+                      })}
                     </div>
                     <div className="text-3xl font-bold text-blue-600">
                       {new Date(event.start_date).getDate()}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {new Date(event.start_date).toLocaleDateString('pl-PL', { weekday: 'short' })}
+                      {new Date(event.start_date).toLocaleDateString("pl-PL", {
+                        weekday: "short",
+                      })}
                     </div>
                   </div>
                 </div>
@@ -507,55 +712,120 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                 {/* Date & Time */}
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
                   <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      className="w-5 h-5 mr-2 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
-                    <span className="text-xs font-semibold text-blue-900 uppercase">Data i godzina</span>
+                    <span className="text-xs font-semibold text-blue-900 uppercase">
+                      Data i godzina
+                    </span>
                   </div>
-                  <p className="text-lg font-bold text-blue-900">{formatEventDate(event.start_date)}</p>
+                  <p className="text-lg font-bold text-blue-900">
+                    {formatEventDate(event.start_date)}
+                  </p>
                 </div>
 
                 {/* Location */}
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
                   <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-5 h-5 mr-2 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
-                    <span className="text-xs font-semibold text-purple-900 uppercase">Miejsce</span>
+                    <span className="text-xs font-semibold text-purple-900 uppercase">
+                      Miejsce
+                    </span>
                   </div>
-                  <p className="text-lg font-bold text-purple-900">{event.location.name}</p>
+                  <p className="text-lg font-bold text-purple-900">
+                    {event.location.name}
+                  </p>
                   {event.location.distance !== undefined && (
-                    <p className="text-sm text-purple-700 mt-1">📍 {event.location.distance.toFixed(1)} km od Ciebie</p>
+                    <p className="text-sm text-purple-700 mt-1">
+                      📍 {event.location.distance.toFixed(1)} km od Ciebie
+                    </p>
                   )}
                 </div>
 
                 {/* Price */}
                 <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
                   <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 mr-2 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <span className="text-xs font-semibold text-green-900 uppercase">Cena</span>
+                    <span className="text-xs font-semibold text-green-900 uppercase">
+                      Cena
+                    </span>
                   </div>
                   <p className="text-lg font-bold text-green-900">
-                    {event.price_type === 'FREE' ? 'Wstęp wolny 🎉' : `${event.price_amount} ${event.price_currency}`}
+                    {event.price_type === "FREE"
+                      ? "Wstęp wolny 🎉"
+                      : `${event.price_amount} ${event.price_currency}`}
                   </p>
                 </div>
 
                 {/* Duration & Age */}
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
                   <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 mr-2 text-orange-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <span className="text-xs font-semibold text-orange-900 uppercase">Informacje dodatkowe</span>
+                    <span className="text-xs font-semibold text-orange-900 uppercase">
+                      Informacje dodatkowe
+                    </span>
                   </div>
                   {event.duration_minutes && (
-                    <p className="text-lg font-bold text-orange-900">{event.duration_minutes} min</p>
+                    <p className="text-lg font-bold text-orange-900">
+                      {event.duration_minutes} min
+                    </p>
                   )}
                   {event.age_restriction && (
-                    <p className="text-sm text-orange-700 mt-1">Wiek: {event.age_restriction}+</p>
+                    <p className="text-sm text-orange-700 mt-1">
+                      Wiek: {event.age_restriction}+
+                    </p>
                   )}
                   {!event.duration_minutes && !event.age_restriction && (
                     <p className="text-lg font-bold text-orange-900">—</p>
@@ -585,8 +855,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                     rel="noopener noreferrer"
                     className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
                   >
-                    <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                    <svg
+                      className="w-6 h-6 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                      />
                     </svg>
                     Kup bilet
                   </a>
@@ -598,8 +878,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, language = 'pl', viewMode 
                     rel="noopener noreferrer"
                     className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                     Więcej informacji
                   </a>
