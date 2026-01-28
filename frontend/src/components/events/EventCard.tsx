@@ -402,7 +402,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   </h3>
                   <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
                     <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
-                      {description}
+                      {/* {description} */}
                     </p>
                   </div>
                 </div>
@@ -842,7 +842,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 </h3>
                 <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
                   <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
-                    {description}
+                    {/* {description} */}
                   </p>
                 </div>
               </div>
