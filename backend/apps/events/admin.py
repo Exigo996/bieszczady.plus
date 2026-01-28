@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.contrib.gis.admin import GISModelAdmin
-from .models import Event, EventDate, Organizer
+from .models import Event, EventDate, Organizer, EventImage, Location
 
 
 class EventDateInline(admin.TabularInline):
@@ -9,6 +8,46 @@ class EventDateInline(admin.TabularInline):
     extra = 1
     fields = ['start_date', 'end_date', 'duration_minutes', 'notes']
     ordering = ['start_date']
+
+
+class EventImageInline(admin.TabularInline):
+    """Inline admin for EventImage model - manage event images"""
+    model = EventImage
+    extra = 1
+    fields = ['image', 'order', 'is_main']
+    ordering = ['order']
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    """Admin interface for Location model"""
+    list_display = ['name', 'city', 'shortname', 'location_type', 'is_active']
+    list_filter = ['location_type', 'is_active', 'city']
+    search_fields = ['name', 'shortname', 'city', 'address']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Podstawowe informacje', {
+            'fields': ('name', 'shortname', 'location_type', 'is_active')
+        }),
+        ('Adres', {
+            'fields': ('city', 'address')
+        }),
+        ('Współrzędne', {
+            'fields': ('latitude', 'longitude', 'google_maps_url'),
+            'description': 'Wpisz współrzędne ręcznie lub wklej link Google Maps'
+        }),
+        ('Kontakt', {
+            'fields': ('website', 'phone', 'email')
+        }),
+        ('Dodatkowe informacje', {
+            'fields': ('capacity', 'amenities', 'description')
+        }),
+        ('Metadane', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(EventDate)
@@ -29,7 +68,7 @@ class EventDateAdmin(admin.ModelAdmin):
     ]
 
     search_fields = [
-        'event__title',
+        'event__title_pl',
         'notes',
     ]
 
@@ -92,17 +131,26 @@ class OrganizerAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(EventImage)
+class EventImageAdmin(admin.ModelAdmin):
+    """Admin interface for EventImage model"""
+    list_display = ['event', 'image', 'order', 'is_main']
+    list_filter = ['is_main', 'order']
+    search_fields = ['event__title_pl', 'image__title']
+    ordering = ['event', 'order']
+
+
 @admin.register(Event)
-class EventAdmin(GISModelAdmin):
-    """Admin interface for Event model with PostGIS map widget"""
+class EventAdmin(admin.ModelAdmin):
+    """Admin interface for Event model"""
 
     list_display = [
-        'get_title_pl',
+        'title_pl',
         'category',
         'event_type',
+        'get_location',
         'get_next_date',
         'get_dates_count',
-        'location_name',
         'price_type',
         'moderation_status',
         'source'
@@ -114,64 +162,70 @@ class EventAdmin(GISModelAdmin):
         'price_type',
         'moderation_status',
         'source',
+        'location',
         'start_date',
     ]
 
     search_fields = [
-        'location_name',
-        'organizer_name',
+        'title_pl',
+        'title_en',
+        'title_uk',
+        'location__name',
+        'location__city',
+        'organizer__name',
         'facebook_event_id'
     ]
 
     readonly_fields = ['created_at', 'updated_at', 'slug']
 
-    # Add inline for EventDate
-    inlines = [EventDateInline]
+    # Add inlines for EventDate and EventImage
+    inlines = [EventDateInline, EventImageInline]
 
     fieldsets = (
         ('Podstawowe informacje', {
-            'fields': ('title', 'slug', 'description', 'category', 'event_type')
+            'fields': (
+                'title_pl',
+                'title_en',
+                'title_uk',
+                'description_pl',
+                'description_en',
+                'description_uk',
+                'category',
+                'event_type'
+            )
+        }),
+        ('Lokalizacja i Organizator', {
+            'fields': ('location', 'organizer')
         }),
         ('Data i czas (STARE - użyj sekcji "Terminy wydarzeń" poniżej)', {
             'fields': ('start_date', 'end_date', 'duration_minutes'),
             'classes': ('collapse',),
             'description': 'PRZESTARZAŁE: Dodaj daty używając sekcji "Terminy wydarzeń" poniżej'
         }),
-        ('Lokalizacja', {
-            'fields': ('location_name', 'coordinates', 'address'),
-            'description': 'Użyj mapy, aby ustawić współrzędne'
-        }),
         ('Cennik', {
             'fields': ('price_type', 'price_amount', 'currency')
         }),
         ('Organizator', {
-            'fields': ('organizer', 'organizer_name', 'organizer_contact', 'age_restriction')
+            'fields': ('age_restriction',)
         }),
         ('Linki zewnętrzne', {
             'fields': ('external_url', 'ticket_url', 'facebook_event_id')
-        }),
-        ('Media', {
-            'fields': ('image', 'images')
         }),
         ('Moderacja', {
             'fields': ('source', 'moderation_status', 'moderation_notes')
         }),
         ('Metadane', {
-            'fields': ('created_at', 'updated_at'),
+            'fields': ('slug', 'created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
 
-    # PostGIS map widget
-    map_template = 'gis/admin/openlayers.html'
-    default_lon = 2523000  # Longitude for Bieszczady region (EPSG:3857)
-    default_lat = 6335000  # Latitude for Bieszczady region (EPSG:3857)
-    default_zoom = 10
-
-    def get_title_pl(self, obj):
-        """Display Polish title in admin list"""
-        return obj.title.get('pl', 'Brak tytułu')
-    get_title_pl.short_description = 'Tytuł'
+    def get_location(self, obj):
+        """Display location in admin list"""
+        if obj.location:
+            return f"{obj.location.name} ({obj.location.city})" if obj.location.city else obj.location.name
+        return '-'
+    get_location.short_description = 'Lokalizacja'
 
     def get_next_date(self, obj):
         """Display next event date"""
@@ -190,6 +244,8 @@ class EventAdmin(GISModelAdmin):
     get_dates_count.short_description = 'Liczba terminów'
 
     def get_queryset(self, request):
-        """Optimize queryset with prefetch_related for event_dates"""
+        """Optimize queryset with prefetch_related"""
         qs = super().get_queryset(request)
-        return qs.prefetch_related('event_dates', 'organizer')
+        return qs.select_related('location', 'organizer').prefetch_related(
+            'event_dates', 'event_images__image'
+        )

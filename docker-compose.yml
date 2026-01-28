@@ -53,7 +53,7 @@ services:
       REDIS_URL: "redis://redis:6379/0"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-      ALLOWED_HOSTS: "localhost,127.0.0.1,backend"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,backend,0.0.0.0"
       CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
     depends_on:
       db:

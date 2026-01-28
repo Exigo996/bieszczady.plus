@@ -32,6 +32,9 @@ Pillow>=10.1,<11.0
 # Calendar export
 icalendar>=5.0,<6.0
 
+# Rich text editor
+django-prose-editor[sanitize]>=0.22,<1.0
+
 # Utilities
 python-dotenv>=1.0,<2.0
 python-dateutil>=2.8,<3.0

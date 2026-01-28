@@ -2,8 +2,34 @@ from django.contrib.gis.db import models
 from django.utils.text import slugify
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from django_prose_editor.fields import ProseEditorField
 
 from .organizer import Organizer
+from .location import Location
+
+
+# Rich text editor configuration with security-focused extensions
+PROSE_EDITOR_EXTENSIONS = {
+    # Text formatting
+    "Bold": True,
+    "Italic": True,
+    "Strike": True,
+    "Underline": True,
+    "HardBreak": True,
+
+    # Structure (H2-H3 only, H1 reserved for page structure)
+    "Heading": {"levels": [2, 3]},
+    "BulletList": True,
+    "OrderedList": True,
+    "ListItem": True,  # Required by BulletList and OrderedList
+    "Blockquote": True,
+
+    # Links with restricted protocols for security
+    "Link": {
+        "enableTarget": True,
+        "protocols": ["http", "https", "mailto"]  # No javascript:, data:, etc.
+    },
+}
 
 
 class Event(models.Model):
@@ -11,6 +37,7 @@ class Event(models.Model):
     Event model for Bieszczady.plus
     Stores cultural events, concerts, festivals, workshops, etc.
     Can have multiple dates via EventDate model
+    Images are managed through the Gallery app with EventImage through model.
     """
 
     # Category choices
@@ -75,12 +102,31 @@ class Event(models.Model):
     ]
 
     # Basic information
-    title = models.JSONField(
-        help_text="Event title in multiple languages: {'pl': '', 'en': '', 'uk': ''}"
-    )
+    # Title fields (plain text - titles shouldn't have formatting)
+    title_pl = models.CharField(max_length=500, blank=True, null=True, help_text="Event title in Polish")
+    title_en = models.CharField(max_length=500, blank=True, null=True, help_text="Event title in English")
+    title_uk = models.CharField(max_length=500, blank=True, null=True, help_text="Event title in Ukrainian")
+
     slug = models.SlugField(max_length=255, unique=True, blank=True)
-    description = models.JSONField(
-        help_text="Event description in multiple languages"
+
+    # Description fields (rich text with sanitization)
+    description_pl = ProseEditorField(
+        blank=True,
+        extensions=PROSE_EDITOR_EXTENSIONS,
+        sanitize=True,  # Server-side sanitization for security
+        help_text="Event description in Polish (rich text)"
+    )
+    description_en = ProseEditorField(
+        blank=True,
+        extensions=PROSE_EDITOR_EXTENSIONS,
+        sanitize=True,
+        help_text="Event description in English (rich text)"
+    )
+    description_uk = ProseEditorField(
+        blank=True,
+        extensions=PROSE_EDITOR_EXTENSIONS,
+        sanitize=True,
+        help_text="Event description in Ukrainian (rich text)"
     )
 
     # Category and classification
@@ -115,16 +161,15 @@ class Event(models.Model):
         help_text="DEPRECATED: Użyj EventDate model zamiast tego"
     )
 
-    # Location (PostGIS)
-    location_name = models.CharField(
-        max_length=255,
-        help_text="Town/village name (e.g., Ustrzyki Dolne)"
+    # Location
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='events',
+        help_text="Miejsce wydarzenia"
     )
-    coordinates = models.PointField(
-        srid=4326,
-        help_text="Geographic coordinates (longitude, latitude)"
-    )
-    address = models.TextField(blank=True)
 
     # Pricing
     price_type = models.CharField(
@@ -158,16 +203,6 @@ class Event(models.Model):
         related_name='events',
         help_text="Powiązany organizator"
     )
-    organizer_name = models.CharField(
-        max_length=255,
-        blank=True,
-        help_text="Nazwa organizatora (używane gdy brak powiązanego organizatora)"
-    )
-    organizer_contact = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Contact info: email, phone, website"
-    )
 
     # External links
     external_url = models.URLField(blank=True, help_text="Event website")
@@ -180,18 +215,9 @@ class Event(models.Model):
         help_text="Facebook event ID (for scraped events)"
     )
 
-    # Media
-    image = models.ImageField(
-        upload_to='events/',
-        blank=True,
-        null=True,
-        help_text="Main event image"
-    )
-    images = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="List of additional image URLs"
-    )
+    # Images - linked to Gallery through EventImage model
+    # Use event_images.all() to get all images, main_image property to get cover image
+    # Images are managed via Django admin or API through the EventImage model
 
     # Source and moderation
     source = models.CharField(
@@ -216,30 +242,27 @@ class Event(models.Model):
             models.Index(fields=['start_date']),
             models.Index(fields=['category']),
             models.Index(fields=['moderation_status']),
-            models.Index(fields=['location_name']),
+            models.Index(fields=['location']),
         ]
         # Add spatial index for coordinates (PostGIS)
 
     def __str__(self):
-        # Get Polish title, fallback to first available language
-        title_pl = self.title.get('pl', '')
-        if not title_pl:
-            title_pl = next(iter(self.title.values()), 'No title')
+        # Get Polish title, fallback to other languages
+        title_val = self.title_pl or self.title_en or self.title_uk or 'No title'
 
         # Show first event date if available
         first_date = self.event_dates.first()
         if first_date:
-            return f"{title_pl} - {first_date.start_date.strftime('%Y-%m-%d')}"
+            return f"{title_val} - {first_date.start_date.strftime('%Y-%m-%d')}"
         elif self.start_date:  # Fallback to legacy date
-            return f"{title_pl} - {self.start_date.strftime('%Y-%m-%d')}"
-        return title_pl
+            return f"{title_val} - {self.start_date.strftime('%Y-%m-%d')}"
+        return title_val
 
     def save(self, *args, **kwargs):
         # Auto-generate slug from Polish title
         if not self.slug:
-            title_pl = self.title.get('pl', '')
-            if title_pl:
-                base_slug = slugify(title_pl)
+            if self.title_pl:
+                base_slug = slugify(self.title_pl)
                 slug = base_slug
                 counter = 1
                 while Event.objects.filter(slug=slug).exists():
@@ -279,10 +302,30 @@ class Event(models.Model):
         """Check if event is free"""
         return self.price_type == self.FREE
 
+    @property
+    def main_image(self):
+        """Get the main/cover image for this event"""
+        # Try to get marked main image first
+        main = self.event_images.filter(is_main=True).first()
+        if main:
+            return main.image
+        # Fallback to first image by order
+        first = self.event_images.order_by('order').first()
+        if first:
+            return first.image
+        return None
+
+    @property
+    def all_images(self):
+        """Get all images for this event, ordered"""
+        return [ei.image for ei in self.event_images.select_related('image').order_by('order')]
+
     def get_title(self, language='pl'):
         """Get title in specified language with fallback"""
-        return self.title.get(language) or self.title.get('pl') or next(iter(self.title.values()), '')
+        lang_map = {'pl': self.title_pl, 'en': self.title_en, 'uk': self.title_uk}
+        return lang_map.get(language) or self.title_pl or self.title_en or self.title_uk or ''
 
     def get_description(self, language='pl'):
         """Get description in specified language with fallback"""
-        return self.description.get(language) or self.description.get('pl') or next(iter(self.description.values()), '')
+        lang_map = {'pl': self.description_pl, 'en': self.description_en, 'uk': self.description_uk}
+        return lang_map.get(language) or self.description_pl or self.description_en or self.description_uk or ''
