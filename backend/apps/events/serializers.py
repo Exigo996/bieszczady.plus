@@ -26,74 +26,46 @@ class LocationSerializer(serializers.ModelSerializer):
         ]
 
 
-class TranslatedTitleField(serializers.SerializerMethodField):
-    """Groups title_pl, title_en, title_uk into nested structure
+class TranslatedField(serializers.DictField):
+    """Base field for translated content with language filtering"""
 
-    If ?lang= is specified in query params, returns only that language:
-    - ?lang=pl → {"pl": "..."}
-    - No lang param → {"pl": "...", "en": "...", "uk": "..."}
-    """
-    def to_representation(self, _value):
-        obj = self.parent.instance
-        if obj is None:
-            return self._get_filtered({})
+    def __init__(self, *args, **kwargs):
+        self.fields = kwargs.pop('fields', [])
+        super().__init__(*args, **kwargs)
 
+    def to_representation(self, value):
+        if not value:
+            return {}
+
+        # value is a dict with pl, en, uk keys from the model's @property
         data = {
-            'pl': obj.title_pl or '',
-            'en': obj.title_en or '',
-            'uk': obj.title_uk or '',
+            'pl': value.get('pl', ''),
+            'en': value.get('en', ''),
+            'uk': value.get('uk', ''),
         }
-        return self._get_filtered(data)
 
-    def _get_filtered(self, data):
-        """Filter by language if specified in context"""
+        # Filter by language if specified in query params
         request = self.context.get('request')
         if request:
             lang = request.query_params.get('lang', '').lower()
             if lang in ('pl', 'en', 'uk'):
-                # Return only the requested language
                 return {lang: data.get(lang, '')}
         return data
 
-
-class TranslatedDescriptionField(serializers.SerializerMethodField):
-    """Groups description_pl, description_en, description_uk into nested structure
-
-    If ?lang= is specified in query params, returns only that language:
-    - ?lang=pl → {"pl": "..."}
-    - No lang param → {"pl": "...", "en": "...", "uk": "..."}
-    """
-    def to_representation(self, _value):
-        obj = self.parent.instance
-        if obj is None:
-            return self._get_filtered({})
-
-        data = {
-            'pl': obj.description_pl or '',
-            'en': obj.description_en or '',
-            'uk': obj.description_uk or '',
+    def get_attribute(self, obj):
+        # Get all language versions from model
+        return {
+            'pl': getattr(obj, f'{self.field_name}_pl', ''),
+            'en': getattr(obj, f'{self.field_name}_en', ''),
+            'uk': getattr(obj, f'{self.field_name}_uk', ''),
         }
-        return self._get_filtered(data)
-
-    def _get_filtered(self, data):
-        """Filter by language if specified in context"""
-        request = self.context.get('request')
-        if request:
-            lang = request.query_params.get('lang', '').lower()
-            if lang in ('pl', 'en', 'uk'):
-                # Return only the requested language
-                return {lang: data.get(lang, '')}
-        return data
 
 
-class EventImageField(serializers.SerializerMethodField):
+class EventImageField(serializers.Field):
     """Returns event images as array of URLs from Gallery"""
-    def to_representation(self, _value):
-        obj = self.parent.instance
-        if obj is None:
-            return []
 
-        # Build image URLs from gallery images
+    def to_representation(self, obj):
+        # obj is the Event instance
         images = []
         for event_image in obj.event_images.select_related('image').order_by('order'):
             image = event_image.image
@@ -105,6 +77,10 @@ class EventImageField(serializers.SerializerMethodField):
                 'order': event_image.order,
             })
         return images
+
+    def get_attribute(self, obj):
+        # Return the Event instance itself
+        return obj
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -119,8 +95,8 @@ class EventSerializer(serializers.ModelSerializer):
     is_free = serializers.ReadOnlyField()
 
     # Group language fields into nested structure for frontend
-    title = TranslatedTitleField(read_only=True)
-    description = TranslatedDescriptionField(read_only=True)
+    title = TranslatedField(read_only=True)
+    description = TranslatedField(read_only=True)
 
     # Nested location
     location = LocationSerializer(read_only=True)
@@ -188,7 +164,7 @@ class EventListSerializer(serializers.ModelSerializer):
     longitude = serializers.SerializerMethodField()
 
     # Group language fields into nested structure for frontend
-    title = TranslatedTitleField(read_only=True)
+    title = TranslatedField(read_only=True)
 
     # Simplified location info for list
     location_name = serializers.SerializerMethodField()

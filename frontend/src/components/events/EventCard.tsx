@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Event } from "../../types/event";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
+import { API_BASE_URL } from "../../api/client";
 
 interface EventCardProps {
   event: Event;
@@ -68,25 +69,25 @@ const EventCard: React.FC<EventCardProps> = ({
       <>
         {/* Horizontal Event Card for List View */}
         <article
-          className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group cursor-pointer flex flex-row gap-4"
+          className="flex flex-row gap-4 overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-md group"
           role="article"
           aria-label={`Wydarzenie: ${title}`}
           onClick={() => setIsExpanded(true)}
         >
           {/* Square Image Container */}
-          <div className="relative w-32 h-32 md:w-40 md:h-40 overflow-hidden flex-shrink-0 rounded-lg">
+          <div className="relative flex-shrink-0 w-32 h-32 overflow-hidden rounded-lg md:w-40 md:h-40">
             {event.image ? (
               <img
-                src={event.image}
+                src={new URL(event.image, API_BASE_URL).toString()}
                 alt={title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
             )}
 
             {/* Category Badge - Top Left */}
-            <div className="absolute top-3 left-3 z-10">
+            <div className="absolute z-10 top-3 left-3">
               <span
                 className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
               >
@@ -97,7 +98,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
           {/* Content */}
           <div className="flex-1 py-3 pr-4">
-            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+            <h3 className="mb-2 text-lg font-bold text-gray-900 md:text-xl line-clamp-2">
               {title}
             </h3>
 
@@ -105,7 +106,7 @@ const EventCard: React.FC<EventCardProps> = ({
               {/* Date */}
               <div className="flex items-center text-sm text-gray-600">
                 <svg
-                  className="w-5 h-5 mr-2 flex-shrink-0"
+                  className="flex-shrink-0 w-5 h-5 mr-2"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -125,7 +126,7 @@ const EventCard: React.FC<EventCardProps> = ({
               {/* Location */}
               <div className="flex items-center text-sm text-gray-600">
                 <svg
-                  className="w-5 h-5 mr-2 flex-shrink-0"
+                  className="flex-shrink-0 w-5 h-5 mr-2"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -147,7 +148,7 @@ const EventCard: React.FC<EventCardProps> = ({
               {event.price_type && (
                 <div className="flex items-center text-sm text-gray-600">
                   <svg
-                    className="w-5 h-5 mr-2 flex-shrink-0"
+                    className="flex-shrink-0 w-5 h-5 mr-2"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -166,7 +167,7 @@ const EventCard: React.FC<EventCardProps> = ({
             </div>
 
             {/* Description Preview */}
-            {/* <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3">
+            {/* <p className="mb-3 text-xs text-gray-600 md:text-sm line-clamp-2">
               {description}
             </p> */}
 
@@ -186,7 +187,7 @@ const EventCard: React.FC<EventCardProps> = ({
         {/* Modal - same as grid view */}
         {isExpanded && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
             onClick={() => setIsExpanded(false)}
           >
             <div
@@ -194,12 +195,12 @@ const EventCard: React.FC<EventCardProps> = ({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Hero Image with Close Button */}
-              <div className="relative h-72 overflow-hidden">
+              <div className="relative overflow-hidden h-72">
                 {event.image ? (
                   <img
-                    src={event.image}
+                    src={new URL(event.image, API_BASE_URL).toString()}
                     alt={title}
-                    className="w-full h-full object-cover"
+                    className="object-cover w-full h-full"
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
@@ -211,7 +212,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 {/* Close Button */}
                 <button
                   onClick={() => setIsExpanded(false)}
-                  className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
+                  className="absolute p-2 text-white transition-all rounded-full top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 hover:scale-110"
                   aria-label="Zamknij"
                 >
                   <svg
@@ -241,7 +242,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 {/* Title and Date at Bottom */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="flex items-start justify-between gap-4">
-                    <h2 className="text-3xl font-bold text-white drop-shadow-lg flex-1">
+                    <h2 className="flex-1 text-3xl font-bold text-white drop-shadow-lg">
                       {title}
                     </h2>
                     <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
@@ -268,9 +269,9 @@ const EventCard: React.FC<EventCardProps> = ({
               {/* Scrollable Content */}
               <div className="overflow-y-auto max-h-[calc(95vh-18rem)] p-8">
                 {/* Quick Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2">
                   {/* Date & Time */}
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="p-4 border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                     <div className="flex items-center mb-2">
                       <svg
                         className="w-5 h-5 mr-2 text-blue-600"
@@ -295,7 +296,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   </div>
 
                   {/* Location */}
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                  <div className="p-4 border border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
                     <div className="flex items-center mb-2">
                       <svg
                         className="w-5 h-5 mr-2 text-purple-600"
@@ -324,14 +325,14 @@ const EventCard: React.FC<EventCardProps> = ({
                       {event.location.name}
                     </p>
                     {event.location.distance !== undefined && (
-                      <p className="text-sm text-purple-700 mt-1">
+                      <p className="mt-1 text-sm text-purple-700">
                         📍 {event.location.distance.toFixed(1)} km od Ciebie
                       </p>
                     )}
                   </div>
 
                   {/* Price */}
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="p-4 border border-green-200 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
                     <div className="flex items-center mb-2">
                       <svg
                         className="w-5 h-5 mr-2 text-green-600"
@@ -358,7 +359,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   </div>
 
                   {/* Duration & Age */}
-                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                  <div className="p-4 border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
                     <div className="flex items-center mb-2">
                       <svg
                         className="w-5 h-5 mr-2 text-orange-600"
@@ -383,7 +384,7 @@ const EventCard: React.FC<EventCardProps> = ({
                       </p>
                     )}
                     {event.age_restriction && (
-                      <p className="text-sm text-orange-700 mt-1">
+                      <p className="mt-1 text-sm text-orange-700">
                         Wiek: {event.age_restriction}+
                       </p>
                     )}
@@ -395,12 +396,12 @@ const EventCard: React.FC<EventCardProps> = ({
 
                 {/* Description Section */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
+                  <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
+                    <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
                     Opis wydarzenia
                   </h3>
-                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
+                  <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
+                    <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
                       {description}
                     </p>
                   </div>
@@ -413,7 +414,7 @@ const EventCard: React.FC<EventCardProps> = ({
                       href={event.ticket_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
+                      className="inline-flex items-center justify-center flex-1 px-6 py-4 font-bold text-white transition-all transform shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl hover:scale-105 hover:shadow-xl"
                     >
                       <svg
                         className="w-6 h-6 mr-2"
@@ -436,7 +437,7 @@ const EventCard: React.FC<EventCardProps> = ({
                       href={event.external_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
+                      className="inline-flex items-center justify-center px-6 py-4 font-medium text-gray-900 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"
                     >
                       <svg
                         className="w-5 h-5 mr-2"
@@ -468,7 +469,7 @@ const EventCard: React.FC<EventCardProps> = ({
     <>
       {/* Minimal Event Card */}
       <article
-        className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer relative"
+        className="relative overflow-hidden transition-all duration-300 bg-white shadow-sm cursor-pointer rounded-2xl hover:shadow-2xl group"
         role="article"
         aria-label={`Wydarzenie: ${title}`}
         onClick={() => setIsExpanded(true)}
@@ -477,9 +478,9 @@ const EventCard: React.FC<EventCardProps> = ({
         <div className="relative h-64 overflow-hidden">
           {event.image ? (
             <img
-              src={event.image}
+              src={new URL(event.image, API_BASE_URL).toString()}
               alt={title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
@@ -489,7 +490,7 @@ const EventCard: React.FC<EventCardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
           {/* Category Badge - Top Left */}
-          <div className="absolute top-3 left-3 z-10">
+          <div className="absolute z-10 top-3 left-3">
             <span
               className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
             >
@@ -554,7 +555,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 )}
               </>
             ) : (
-              <div className="px-3 py-2 rounded-lg text-xs font-bold bg-white/90 backdrop-blur-sm text-gray-700">
+              <div className="px-3 py-2 text-xs font-bold text-gray-700 rounded-lg bg-white/90 backdrop-blur-sm">
                 {new Date(event.start_date).toLocaleDateString("pl-PL", {
                   day: "numeric",
                   month: "short",
@@ -570,12 +571,12 @@ const EventCard: React.FC<EventCardProps> = ({
 
           {/* Title and Location - Bottom */}
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 drop-shadow-lg">
+            <h3 className="mb-2 text-lg font-bold text-white line-clamp-2 drop-shadow-lg">
               {title}
             </h3>
 
             {/* Location */}
-            <div className="flex items-center text-white/90 text-sm">
+            <div className="flex items-center text-sm text-white/90">
               <svg
                 className="w-4 h-4 mr-1.5 flex-shrink-0"
                 fill="currentColor"
@@ -591,7 +592,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 {/* {event.location.name} */}
               </span>
               {/* {event.location.distance !== undefined && (
-                <span className="ml-auto font-bold pl-2 flex-shrink-0">
+                <span className="flex-shrink-0 pl-2 ml-auto font-bold">
                   {event.location.distance.toFixed(1)} km
                 </span>
               )} */}
@@ -599,8 +600,8 @@ const EventCard: React.FC<EventCardProps> = ({
           </div>
 
           {/* Hover Indicator */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40">
-            <div className="bg-white rounded-full p-3 transform group-hover:scale-110 transition-transform">
+          <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-black/40">
+            <div className="p-3 transition-transform transform bg-white rounded-full group-hover:scale-110">
               <svg
                 className="w-6 h-6 text-blue-600"
                 fill="none"
@@ -628,7 +629,7 @@ const EventCard: React.FC<EventCardProps> = ({
       {/* Professional Modal */}
       {isExpanded && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
           onClick={() => setIsExpanded(false)}
         >
           <div
@@ -636,12 +637,12 @@ const EventCard: React.FC<EventCardProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Hero Image with Close Button */}
-            <div className="relative h-72 overflow-hidden">
+            <div className="relative overflow-hidden h-72">
               {event.image ? (
                 <img
-                  src={event.image}
+                  src={new URL(event.image, API_BASE_URL).toString()}
                   alt={title}
-                  className="w-full h-full object-cover"
+                  className="object-cover w-full h-full"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
@@ -653,7 +654,7 @@ const EventCard: React.FC<EventCardProps> = ({
               {/* Close Button */}
               <button
                 onClick={() => setIsExpanded(false)}
-                className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2 transition-all hover:scale-110"
+                className="absolute p-2 text-white transition-all rounded-full top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 hover:scale-110"
                 aria-label="Zamknij"
               >
                 <svg
@@ -683,7 +684,7 @@ const EventCard: React.FC<EventCardProps> = ({
               {/* Title and Date at Bottom */}
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-3xl font-bold text-white drop-shadow-lg flex-1">
+                  <h2 className="flex-1 text-3xl font-bold text-white drop-shadow-lg">
                     {title}
                   </h2>
                   <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
@@ -708,9 +709,9 @@ const EventCard: React.FC<EventCardProps> = ({
             {/* Scrollable Content */}
             <div className="overflow-y-auto max-h-[calc(95vh-18rem)] p-8">
               {/* Quick Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2">
                 {/* Date & Time */}
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                <div className="p-4 border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                   <div className="flex items-center mb-2">
                     <svg
                       className="w-5 h-5 mr-2 text-blue-600"
@@ -735,7 +736,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 </div>
 
                 {/* Location */}
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                <div className="p-4 border border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
                   <div className="flex items-center mb-2">
                     <svg
                       className="w-5 h-5 mr-2 text-purple-600"
@@ -764,14 +765,14 @@ const EventCard: React.FC<EventCardProps> = ({
                     {event.location.name}
                   </p>
                   {event.location.distance !== undefined && (
-                    <p className="text-sm text-purple-700 mt-1">
+                    <p className="mt-1 text-sm text-purple-700">
                       📍 {event.location.distance.toFixed(1)} km od Ciebie
                     </p>
                   )}
                 </div>
 
                 {/* Price */}
-                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                <div className="p-4 border border-green-200 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
                   <div className="flex items-center mb-2">
                     <svg
                       className="w-5 h-5 mr-2 text-green-600"
@@ -798,7 +799,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 </div>
 
                 {/* Duration & Age */}
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                <div className="p-4 border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
                   <div className="flex items-center mb-2">
                     <svg
                       className="w-5 h-5 mr-2 text-orange-600"
@@ -823,7 +824,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     </p>
                   )}
                   {event.age_restriction && (
-                    <p className="text-sm text-orange-700 mt-1">
+                    <p className="mt-1 text-sm text-orange-700">
                       Wiek: {event.age_restriction}+
                     </p>
                   )}
@@ -835,12 +836,12 @@ const EventCard: React.FC<EventCardProps> = ({
 
               {/* Description Section */}
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                  <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
+                <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
+                  <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
                   Opis wydarzenia
                 </h3>
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
+                <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
+                  <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
                     {description}
                   </p>
                 </div>
@@ -853,7 +854,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     href={event.ticket_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center"
+                    className="inline-flex items-center justify-center flex-1 px-6 py-4 font-bold text-white transition-all transform shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl hover:scale-105 hover:shadow-xl"
                   >
                     <svg
                       className="w-6 h-6 mr-2"
@@ -876,7 +877,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     href={event.external_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-4 px-6 rounded-xl transition-all inline-flex items-center justify-center"
+                    className="inline-flex items-center justify-center px-6 py-4 font-medium text-gray-900 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"
                   >
                     <svg
                       className="w-5 h-5 mr-2"

@@ -1,5 +1,5 @@
-import { apiClient } from './client';
-import type { Event, EventFilters } from '../types/event';
+import { apiClient } from "./client";
+import type { Event, EventFilters } from "../types/event";
 
 export interface EventsResponse {
   count: number;
@@ -35,10 +35,10 @@ export const fetchEvents = async (filters?: EventFilters): Promise<Event[]> => {
   }
 
   if (filters?.radius) {
-    params.radius = filters.radius;
+    // params.radius = filters.radius;
   }
 
-  const response = await apiClient.get<EventsResponse>('/events/', { params });
+  const response = await apiClient.get<EventsResponse>("/events/", { params });
 
   // Handle both paginated and non-paginated responses
   if (response.data.results) {

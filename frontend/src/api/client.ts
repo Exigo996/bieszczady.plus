@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://api.bieszczady.plus/api";
+export const API_BASE_URL = "https://api.bieszczady.plus/api";
+// export const API_BASE_URL = "http://0.0.0.0:8000/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -25,5 +26,5 @@ apiClient.interceptors.response.use(
       console.error("Request Error:", error.message);
     }
     return Promise.reject(error);
-  }
+  },
 );
