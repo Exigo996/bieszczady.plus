@@ -25,8 +25,9 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
     error,
   } = useQuery({
     queryKey: ["organizer-events", organizer.slug],
-    queryFn: () => fetchOrganizerEvents(organizer.slug),
+    queryFn: () => fetchOrganizerEvents(organizer.slug || organizer.id.toString()),
     retry: 1,
+    enabled: !!organizer.slug || !!organizer.id,
   });
 
   const events = apiEvents || [];
@@ -64,8 +65,8 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
         const descMatch = event.description.pl
           .toLowerCase()
           .includes(searchLower);
-        const locationMatch = event.location.name
-          .toLowerCase()
+        const locationMatch = event.location?.name
+          ?.toLowerCase()
           .includes(searchLower);
 
         if (!titleMatch && !descMatch && !locationMatch) {
@@ -74,7 +75,7 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
       }
 
       // Distance filter (client-side backup)
-      if (filters.radius && event.location.distance) {
+      if (filters.radius && event.location?.distance) {
         if (event.location.distance > filters.radius) {
           return false;
         }

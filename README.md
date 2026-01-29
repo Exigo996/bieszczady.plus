@@ -2,7 +2,7 @@
 
 **A community-driven platform showcasing events, local producers, and craftspeople in the Bieszczady region of Podkarpackie, Poland.**
 
-## 🎯 Project Vision
+## Project Vision
 
 Bieszczady.plus serves as a centralized notice board for tourists and local citizens to discover:
 
@@ -13,285 +13,201 @@ Bieszczady.plus serves as a centralized notice board for tourists and local citi
 
 The platform bridges the gap between event organizers, local producers, and visitors, making the Bieszczady region more accessible and vibrant.
 
-## 🌟 Core Features
+## Current Implementation Status
 
-### Phase 1: MVP (Current Focus)
+### ✅ Completed (MVP Foundation)
 
-- **Event Discovery**
-  - Browse events by category, location, and date
-  - Location-based suggestions (GPS on mobile, IP-based on desktop)
-  - Distance-based filtering with user-defined radius
-  - Multi-language support (Polish, English, Ukrainian)
-- **Local Market**
+**Backend (Django 5.1)**
+- ✅ Django project with PostgreSQL database
+- ✅ Events app with models:
+  - `Event` - Multi-language titles/descriptions (PL/EN/UK), categories, pricing
+  - `Organizer` - Event organizers with social links and logos
+  - `Location` - Venues with lat/lng coordinates and amenities
+  - `EventDate` - Multiple dates per event support
+  - `EventImage` - Image management through Gallery app
+- ✅ Gallery app - Image model with metadata and tagging
+- ✅ Scraper app - Playwright-based Facebook event scraper
+- ✅ REST API (DRF) - Events and Organizers endpoints
+- ✅ Rich text editor (django-prose-editor) for event descriptions
+- ✅ Docker development environment
 
-  - Dedicated section for local producers and craftspeople
-  - Product listings with contact information
-  - Support local agriculture and crafts
+**Frontend (React 19 + Vite)**
+- ✅ React 19 with TypeScript and Vite
+- ✅ React Router for navigation
+- ✅ TanStack Query (React Query) for server state
+- ✅ Tailwind CSS v4 for styling
+- ✅ i18n support (Polish, English, Ukrainian)
+- ✅ Leaflet maps integration (react-leaflet)
+- ✅ Components:
+  - `Header`, `Footer`, `HeroSection`, `HeroSplitScreen`
+  - `EventCard` with full event details display
+  - `FilterPanel` with category, price, search filters
+  - `ProducerCard`, `OrganizerEventsSection`
+- ✅ Pages: `HomePage`, `MapPage`, `ProductsPage`, `OrganizerPage`
+- ✅ Language and Filters contexts
 
-- **Smart Search**
+**Infrastructure**
+- ✅ Docker Compose for local development
+- ✅ Production Dockerfiles (Coolify-ready)
+- ✅ Deployment documentation for Coolify
 
-  - Search by keyword, location, type
-  - Filter by date range, distance, price, category
-  - Save favorite event organizers
+### 🚧 In Progress / Planned
 
-- **Calendar Integration**
+- [ ] Distance-based filtering using decimal coordinates
+- [ ] IP-based geolocation (GeoIP2)
+- [ ] GPS location request (mobile)
+- [ ] Calendar export (.ics)
+- [ ] Browser push notifications
+- [ ] AI-powered translations (DeepL integration)
+- [ ] Event detail page
+- [ ] User registration system
+- [ ] Social media integration
 
-  - Download individual events (.ics format)
-  - Subscribe to event organizer calendars
-  - Google Calendar integration
-
-- **Notifications**
-
-  - Event reminders (1 week, 1 day, or custom before event)
-  - Browser-based notifications (no user accounts required)
-  - Privacy-focused (no personal data storage)
-
-- **Facebook Event Scraper**
-  - Automated scraping from approved Pages/Groups
-  - Manual moderation workflow
-  - Partner organization integration
-
-### Phase 2: Enhanced Platform
-
-- **User Registration System** (Priority 2)
-  - Event creator accounts
-  - Direct event submission
-  - Producer/craftsperson profiles
-- **Social Media Integration** (Priority 1)
-  - Cross-posting to Facebook, Instagram, TikTok, Twitter
-  - Unified event promotion
-- **Ticket Sales Integration** (Priority 3)
-  - Partner with ticketing platforms
-  - Embedded ticket purchasing
-
-### Phase 3: Advanced Features
-
-- AI-powered event descriptions (Priority 5)
-- Event reviews and ratings (Priority 5)
-- Photo galleries from attendees (Priority 5)
-
-## 🗺️ Geographic Scope
-
-**Current Coverage:**
-
-- Bieszczady region, Podkarpackie Voivodeship, Poland
-- Village/town-level granularity (e.g., Ustrzyki Dolne, Solina, Wetlina, Cisna)
-
-**Planned Expansion:**
-
-- Full Podkarpackie Voivodeship
-- Cross-border partnerships (Slovakia, Ukraine)
-
-## 🏗️ Technical Architecture
+## Architecture
 
 ### Backend
 
-- **Framework**: Django 5.1+
-- **API**: Django REST Framework
-- **Database**: PostgreSQL with PostGIS (geospatial queries)
-- **Cache/Queue**: Redis + Celery
-- **Scraping**: Selenium + Beautiful Soup
-- **Geolocation**: GeoIP2, browser Geolocation API
-- **i18n**: Django translation framework + AI translation service
+```
+backend/
+├── config/              # Django settings, URLs
+├── apps/
+│   ├── events/         # Event, Organizer, Location, EventDate models
+│   ├── gallery/        # Image model with EventImage through model
+│   └── scraper/        # Playwright-based Facebook scraper
+├── requirements/        # Python dependencies
+└── manage.py
+```
 
 ### Frontend
 
-- **Framework**: React 18+ with TypeScript
-- **Build Tool**: Vite
-- **State Management**: TanStack Query (React Query)
-- **UI Components**: Tailwind CSS + shadcn/ui
-- **Maps**: Leaflet or Mapbox
-- **PWA**: Service Workers for offline capability
-- **Mobile-First**: Responsive design with mobile priority
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── common/     # Header, Footer, HeroSplitScreen
+│   │   ├── events/     # EventCard, FilterPanel, HeroSection
+│   │   ├── organizers/ # OrganizerEventsSection, ProducerCard
+│   │   └── products/   # Product-related components
+│   ├── pages/          # HomePage, MapPage, ProductsPage, OrganizerPage
+│   ├── api/            # API client (events, organizers)
+│   ├── contexts/       # LanguageContext, FiltersContext
+│   ├── types/          # TypeScript types
+│   └── translations/   # PL/EN/UK translations
+└── package.json
+```
 
-### Infrastructure
-
-- **Hosting**: OVH VPS with Coolify
-- **Domain**: bieszczady.plus
-- **SSL**: Let's Encrypt (via Coolify/Traefik)
-- **CDN**: Cloudflare (for static assets)
-
-## 📊 Data Models
+## Data Models
 
 ### Event
 
 ```python
-- title (translated: PL, EN, UK)
-- description (translated: PL, EN, UK)
-- category (Concert, Festival, Theatre, Cinema, Workshop, Food, Cultural)
-- event_type (Event, Product, Workshop)
-- start_date, end_date
-- location (town/village)
-- coordinates (lat, lng)
-- price (free/paid, amount)
-- age_restriction
-- organizer (name, contact, facebook_page)
-- images
-- external_links (tickets, registration)
-- source (scraped/manual/user_submitted)
-- moderation_status
-- duration (for workshops/events)
+# Multi-language title fields (not JSONField)
+title_pl, title_en, title_uk
+
+# Rich text descriptions with sanitization
+description_pl, description_en, description_uk
+
+# Classification
+category (CONCERT, FESTIVAL, THEATRE, CINEMA, WORKSHOP, FOOD, CULTURAL)
+event_type (EVENT, PRODUCT, WORKSHOP)
+
+# Dates via EventDate model (multiple dates supported)
+event_dates (related_name)
+
+# Location
+location (ForeignKey to Location)
+
+# Pricing
+price_type (FREE, PAID)
+price_amount, currency
+
+# Organizer
+organizer (ForeignKey to Organizer)
+
+# Images via Gallery
+event_images (through EventImage model)
+
+# Moderation
+source (MANUAL, SCRAPED, USER_SUBMITTED)
+moderation_status (PENDING, APPROVED, REJECTED)
 ```
 
-### Product (Local Market)
+### Location
 
 ```python
-- title (translated)
-- description (translated)
-- category (Honey, Jam, Vegetables, Oils, Crafts, etc.)
-- producer_name
-- location
-- contact_info
-- price
-- images
-- availability
+name, shortname
+address, city
+latitude, longitude  # Decimal fields (not PostGIS Point)
+google_maps_url
+location_type (VENUE, OUTDOOR, PRIVATE, VIRTUAL)
+amenities (JSONField)
+capacity, website, phone, email
 ```
 
 ### Organizer
 
 ```python
-- name
-- description
-- location
-- contact
-- facebook_page
-- website
-- verified_partner (bool)
+name, shortname
+description
+image, logo
+facebook_link, ticketing_site, website
+is_active
 ```
 
-## 🔧 Development Setup
+## Development Setup
+
+### Docker (Recommended)
 
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/bieszczady-plus.git
-cd bieszczady-plus
-
-# Backend setup
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-
-# Frontend setup (in new terminal)
-cd frontend
-npm install
-npm run dev
+# Start all services
+docker-compose up -d --build
 
 # Access application
 # Frontend: http://localhost:5173
 # Backend API: http://localhost:8000/api
-# Admin: http://localhost:8000/admin
+# Django Admin: http://localhost:8000/admin (admin/admin123)
 ```
 
-## 🌍 Internationalization
+### Manual Setup
 
-### Translation Strategy
-
-- **Static Content**: JSON files for UI strings (Polish, English, Ukrainian)
-- **Dynamic Content**: AI-powered translation for event descriptions
-- **User Preference**: Auto-detect browser language, allow manual override
-- **SEO**: Proper hreflang tags for each language variant
-
-### AI Translation Service
-
-- Primary: DeepL API (high-quality Polish/Ukrainian translations)
-- Fallback: Google Translate API
-- Cache translations to avoid repeated API calls
-
-## 🔔 Notification System
-
-### Implementation (No User Accounts)
-
-- **Browser Push Notifications** (via Service Workers)
-- **IndexedDB Storage** (user's saved events and preferences)
-- **No Server-Side User Data** (GDPR-friendly)
-- **Reminder Flow**:
-  1. User marks event as "Interested"
-  2. Event saved to IndexedDB with reminder preference (1 week/1 day/custom)
-  3. Service Worker checks periodically for upcoming events
-  4. Push notification sent at configured time
-  5. Notification links directly to event details
-
-### User Transparency
-
-- Clear messaging: "Events saved locally in your browser"
-- Warning: "Clear browser data = lose saved events"
-- Export option: Download saved events as .ics file
-
-## 🤖 Facebook Event Scraper
-
-### Architecture
-
-```python
-# Celery periodic task (runs daily)
-- Fetch approved Facebook Pages/Groups
-- Extract event data (title, date, location, description)
-- Store in database with status='pending_moderation'
-- Notify admin for review
-- Admin approves → status='published'
+**Backend:**
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements/development.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 ```
 
-### Approved Partners
-
-- Tracked in database (FacebookSource model)
-- Easy to add/remove pages
-- Scraping frequency configurable per source
-
-### Rate Limiting
-
-- Respect Facebook's rate limits
-- Randomized delays between requests
-- User-agent rotation
-- Headless browser with Selenium (avoid detection)
-
-## 📱 Progressive Web App (PWA)
-
-- **Offline Capability**: Cache event listings for offline viewing
-- **Install Prompt**: "Add to Home Screen" for mobile users
-- **App-like Experience**: Full-screen mode, splash screen
-- **Background Sync**: Update events when connection restored
-
-## 🚀 Deployment
-
-### Coolify Configuration
-
-```yaml
-# Production deployment on OVH VPS
-- Backend: Django with Gunicorn
-- Frontend: Static build served via Nginx
-- Database: PostgreSQL with PostGIS extension
-- Cache: Redis
-- Worker: Celery for scraping tasks
-- SSL: Automatic via Let's Encrypt
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-### Environment Variables
+## API Endpoints
 
-```env
-# Django
-SECRET_KEY=
-DEBUG=False
-ALLOWED_HOSTS=bieszczady.plus,www.bieszczady.plus
-DATABASE_URL=postgresql://...
-REDIS_URL=redis://...
-
-# Geolocation
-GEOIP2_DATABASE_PATH=/path/to/GeoLite2-City.mmdb
-
-# Translation
-DEEPL_API_KEY=
-GOOGLE_TRANSLATE_API_KEY=
-
-# Social Media (Phase 2)
-FACEBOOK_APP_ID=
-FACEBOOK_APP_SECRET=
-# ... etc
+```
+GET    /api/events/              # List all events
+GET    /api/events/{id}/         # Get event by ID
+GET    /api/events/{slug}/       # Get event by slug
+GET    /api/organizers/          # List all organizers
+GET    /api/organizers/{id}/     # Get organizer by ID
+GET    /api/organizers/{id}/events/  # Get organizer's events
+GET    /api/gallery/             # Gallery endpoints
 ```
 
-## 🎨 Design Principles
+## Internationalization
+
+- **Backend**: Separate fields for each language (title_pl, title_en, title_uk)
+- **Frontend**: i18next with context-based translations
+- **Supported Languages**: Polish (primary), English, Ukrainian
+- **Planned**: AI-powered translations using DeepL API
+
+## Design Principles
 
 - **Mobile-First**: Optimized for phones (primary use case)
 - **Minimal Design**: Clean, fast, distraction-free
@@ -299,23 +215,53 @@ FACEBOOK_APP_SECRET=
 - **Performance**: <3s load time on 3G
 - **Nature-Themed**: Subtle Bieszczady mountains imagery
 
-## 📈 Success Metrics
+## Deployment
 
-### MVP Goals
+Production deployment on OVH VPS with Coolify:
 
-- [ ] 50+ events listed within first month
+```bash
+# Push to GitHub
+git push origin main
+
+# Coolify handles:
+# - Docker builds
+# - SSL certificates (Let's Encrypt)
+# - Reverse proxy (Traefik)
+# - Auto-deployment on push
+```
+
+See **[COOLIFY-DEPLOYMENT.md](COOLIFY-DEPLOYMENT.md)** for complete guide.
+
+## Tech Stack
+
+### Backend
+- Django 5.1+
+- Django REST Framework
+- PostgreSQL 16
+- Celery + Redis
+- Playwright (scraping)
+- django-prose-editor (rich text)
+
+### Frontend
+- React 19
+- TypeScript
+- Vite 7
+- TanStack Query
+- React Router 7
+- Tailwind CSS 4
+- Leaflet + react-leaflet
+- i18next
+
+## Success Metrics
+
+### MVP Goals (Current Phase)
+
+- [ ] 50+ events listed
 - [ ] 10+ local producers featured
 - [ ] 1000+ monthly visitors
 - [ ] 5+ verified partner organizations
 
-### Long-term Vision
-
-- Regional hub for Bieszczady events and local economy
-- Cross-border expansion (Slovakia, Ukraine)
-- Sustainable monetization supporting continued development
-- Community ownership and engagement
-
-## 🤝 Contributing
+## Contributing
 
 This is a community-focused open-source project. Contributions welcome!
 
@@ -325,12 +271,22 @@ This is a community-focused open-source project. Contributions welcome!
 2. Translation quality
 3. Mobile UX optimization
 4. Event categorization accuracy
+5. Distance-based filtering implementation
 
-## 📄 License
+## Documentation
+
+- **[CLAUDE.md](CLAUDE.md)** - AI assistant development guide
+- **[PROJECT-STRUCTURE.md](PROJECT-STRUCTURE.md)** - Detailed file structure
+- **[DOCKER-GUIDE.md](DOCKER-GUIDE.md)** - Docker setup guide
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide
+- **[ROADMAP.md](ROADMAP.md)** - Development phases and timeline
+- **[COOLIFY-DEPLOYMENT.md](COOLIFY-DEPLOYMENT.md)** - Production deployment
+
+## License
 
 MIT License - Free to use, modify, and distribute.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Built with support from:
 
@@ -341,6 +297,6 @@ Built with support from:
 
 ---
 
-**Contact**: [Your contact information]  
-**Website**: https://bieszczady.plus  
+**Contact**: [Your contact information]
+**Website**: https://bieszczady.plus
 **Region**: Bieszczady, Podkarpackie, Poland 🇵🇱

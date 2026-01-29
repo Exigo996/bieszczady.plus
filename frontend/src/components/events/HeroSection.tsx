@@ -6,8 +6,8 @@ import { useFilters } from "../../contexts/FiltersContext";
 import EventCard from "./EventCard";
 import FilterPanel from "./FilterPanel";
 
-// Mock data - used as fallback if API fails
-const mockEvents: Event[] = [
+// Mock data - used as fallback if API fails (type: any for custom mock structure)
+const mockEvents: any[] = [
   {
     id: 100,
     title: {

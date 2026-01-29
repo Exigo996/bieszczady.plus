@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useFilters } from '../../contexts/FiltersContext';
-import type { Event } from '../../types/event';
+import type { Event, EventList } from '../../types/event';
 
 interface HeroSplitScreenProps {
-  events: Event[];
+  events: EventList[];
 }
 
 const HeroSplitScreen: React.FC<HeroSplitScreenProps> = ({ events }) => {
   const { filters } = useFilters();
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventList | null>(null);
 
   // Get upcoming events (next 2) - filter out past dates from showtimes
   const upcomingEvents = useMemo(() => {
@@ -118,7 +118,7 @@ const HeroSplitScreen: React.FC<HeroSplitScreenProps> = ({ events }) => {
                           })}
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          {event.location.name}
+                          {event.location?.name}
                         </p>
                       </div>
                     </div>
@@ -218,8 +218,8 @@ const HeroSplitScreen: React.FC<HeroSplitScreenProps> = ({ events }) => {
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  {selectedEvent.location.name}
-                  {selectedEvent.location.distance && (
+                  {selectedEvent.location?.name}
+                  {selectedEvent.location?.distance && (
                     <span className="ml-2 text-blue-600">
                       ({selectedEvent.location.distance.toFixed(1)} km)
                     </span>
@@ -240,7 +240,7 @@ const HeroSplitScreen: React.FC<HeroSplitScreenProps> = ({ events }) => {
               {/* Description */}
               <div className="prose max-w-none mb-6">
                 <p className="text-gray-700 whitespace-pre-line">
-                  {selectedEvent.description.pl}
+                  {selectedEvent.description?.pl}
                 </p>
               </div>
 

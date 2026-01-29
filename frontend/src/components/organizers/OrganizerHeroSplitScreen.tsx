@@ -84,7 +84,7 @@ const OrganizerHeroSplitScreen: React.FC<OrganizerHeroSplitScreenProps> = ({ org
               </h1>
               {organizer.location && (
                 <p className="text-white/90 text-sm mt-1">
-                  {organizer.location.name}
+                  {'name' in organizer.location ? organizer.location.name : organizer.location.city}
                 </p>
               )}
             </div>
@@ -132,7 +132,7 @@ const OrganizerHeroSplitScreen: React.FC<OrganizerHeroSplitScreenProps> = ({ org
                           })}
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          {event.location.name}
+                          {event.location?.name}
                         </p>
                       </div>
                     </div>
@@ -232,8 +232,8 @@ const OrganizerHeroSplitScreen: React.FC<OrganizerHeroSplitScreenProps> = ({ org
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  {selectedEvent.location.name}
-                  {selectedEvent.location.distance && (
+                  {selectedEvent.location?.name}
+                  {selectedEvent.location?.distance && (
                     <span className="ml-2 text-blue-600">
                       ({selectedEvent.location.distance.toFixed(1)} km)
                     </span>

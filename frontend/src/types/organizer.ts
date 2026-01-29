@@ -1,24 +1,20 @@
-export interface OrganizerLocation {
-  id: number;
-  name: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-}
+import type { Location } from './event';
 
 export interface Organizer {
   id: number;
   name: string;
+  shortname?: string;
+  slug?: string;
   description?: string;
-  slug: string;
   image?: string;
-  location?: OrganizerLocation;
-  contact_email?: string;
-  contact_phone?: string;
+  logo?: string;
+  facebook_link?: string;
+  ticketing_site?: string;
   website?: string;
-  facebook_page?: string;
-  is_verified_partner?: boolean;
+  is_active: boolean;
+  events_count?: number;
+  upcoming_events_count?: number;
+  location?: Location | { city?: string; address?: string };
   created_at: string;
   updated_at: string;
 }

@@ -7,331 +7,336 @@ bieszczady-plus/
 ├── README.md                 # Project overview and documentation
 ├── CLAUDE.md                 # AI assistant development guide
 ├── ROADMAP.md                # Development phases and timeline
-├── LICENSE                   # MIT License
+├── PROJECT-STRUCTURE.md      # This file
+├── DOCKER-GUIDE.md           # Docker setup guide
+├── QUICKSTART.md             # Quick start guide
+├── COOLIFY-DEPLOYMENT.md     # Production deployment guide
 ├── .gitignore               # Git ignore patterns
 │
 ├── backend/                  # Django backend application
 │   ├── config/              # Django project settings
 │   │   ├── __init__.py
-│   │   ├── settings/        # Split settings (base, dev, prod)
-│   │   │   ├── __init__.py
-│   │   │   ├── base.py
-│   │   │   ├── development.py
-│   │   │   └── production.py
+│   │   ├── settings.py      # Main settings file
 │   │   ├── urls.py          # Root URL configuration
 │   │   ├── wsgi.py
 │   │   └── asgi.py
 │   │
 │   ├── apps/                # Django applications
 │   │   ├── __init__.py
+│   │   │
 │   │   ├── events/          # Event management
-│   │   │   ├── migrations/
-│   │   │   ├── models.py    # Event, Organizer models
-│   │   │   ├── views.py
-│   │   │   ├── serializers.py
+│   │   │   ├── migrations/  # Database migrations
+│   │   │   ├── models/      # Model definitions
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── event.py         # Event model
+│   │   │   │   ├── event_image.py   # EventImage through model
+│   │   │   │   ├── event_date.py    # EventDate model (multiple dates)
+│   │   │   │   ├── organizer.py     # Organizer model
+│   │   │   │   └── location.py      # Location model
+│   │   │   ├── views.py      # ViewSets (Event, Organizer)
+│   │   │   ├── serializers.py # DRF serializers
 │   │   │   ├── admin.py     # Admin customization
-│   │   │   ├── filters.py   # Django filters
-│   │   │   ├── urls.py
-│   │   │   └── tests/
+│   │   │   ├── urls.py      # API routes
+│   │   │   └── tests.py
 │   │   │
-│   │   ├── products/        # Local market (producers, crafts)
+│   │   ├── gallery/         # Image management
 │   │   │   ├── migrations/
-│   │   │   ├── models.py    # Product, Producer models
-│   │   │   ├── views.py
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── image.py  # Image model with metadata
+│   │   │   ├── views.py      # Gallery API views
 │   │   │   ├── serializers.py
-│   │   │   ├── admin.py
 │   │   │   ├── urls.py
-│   │   │   └── tests/
+│   │   │   └── tests.py
 │   │   │
-│   │   ├── locations/       # Geographic data
-│   │   │   ├── migrations/
-│   │   │   ├── models.py    # Location model (towns, villages)
-│   │   │   ├── views.py
-│   │   │   ├── serializers.py
-│   │   │   ├── admin.py
-│   │   │   ├── management/  # Management commands
-│   │   │   │   └── commands/
-│   │   │   │       └── import_locations.py
-│   │   │   └── tests/
-│   │   │
-│   │   ├── scraper/         # Facebook event scraping
-│   │   │   ├── models.py    # FacebookSource model
-│   │   │   ├── tasks.py     # Celery tasks
-│   │   │   ├── scraper.py   # Selenium scraping logic
-│   │   │   ├── admin.py
-│   │   │   └── tests/
-│   │   │
-│   │   ├── notifications/   # Browser push notifications
-│   │   │   ├── models.py
-│   │   │   ├── views.py     # Subscription endpoints
-│   │   │   ├── tasks.py     # Notification sending
-│   │   │   └── tests/
-│   │   │
-│   │   └── translations/    # AI-powered translation
-│   │       ├── services.py  # DeepL/Google Translate integration
-│   │       ├── tasks.py     # Celery translation tasks
-│   │       └── tests/
+│   │   └── scraper/         # Facebook event scraping
+│   │       ├── facebook_scraper.py  # Playwright-based scraper
+│   │       ├── config.py             # Scraper configuration
+│   │       ├── utils.py              # Helper functions
+│   │       ├── django_integration.py # Django integration
+│   │       ├── cli.py                # CLI interface
+│   │       └── test_scraper.py
 │   │
-│   ├── api/                 # DRF API configuration
-│   │   ├── __init__.py
-│   │   ├── urls.py          # API URL routing
-│   │   ├── permissions.py   # Custom permissions
-│   │   ├── pagination.py    # Pagination classes
-│   │   └── versioning.py    # API versioning
-│   │
-│   ├── utils/               # Shared utilities
-│   │   ├── geolocation.py   # GeoIP, distance calculations
-│   │   ├── calendar.py      # .ics file generation
-│   │   ├── validators.py    # Custom validators
-│   │   └── helpers.py       # Misc helpers
-│   │
-│   ├── locale/              # Translation files (Django i18n)
-│   │   ├── pl/
-│   │   │   └── LC_MESSAGES/
-│   │   │       └── django.po
-│   │   ├── en/
-│   │   └── uk/
-│   │
-│   ├── static/              # Static files (admin, etc.)
+│   ├── static/              # Collected static files
 │   ├── media/               # User uploads (event images)
+│   ├── staticfiles/         # Collected static files (production)
 │   │
 │   ├── requirements/        # Python dependencies
-│   │   ├── base.txt
-│   │   ├── development.txt
-│   │   └── production.txt
+│   │   ├── base.txt         # Core dependencies
+│   │   ├── development.txt  # Dev tools
+│   │   └── production.txt   # Production server
 │   │
 │   ├── manage.py            # Django management script
-│   ├── pytest.ini           # Pytest configuration
-│   ├── .env.example         # Environment variables template
-│   └── Dockerfile           # Docker container definition
+│   ├── Dockerfile           # Docker container definition
+│   ├── Dockerfile.prod      # Production Dockerfile
+│   └── docker-entrypoint.sh # Entry point script
 │
 ├── frontend/                # React frontend application
 │   ├── public/
 │   │   ├── index.html
-│   │   ├── manifest.json    # PWA manifest
-│   │   ├── sw.js            # Service Worker
-│   │   ├── robots.txt
-│   │   └── icons/           # PWA icons (various sizes)
+│   │   └── icons/           # PWA icons
 │   │
 │   ├── src/
 │   │   ├── components/      # React components
-│   │   │   ├── events/
-│   │   │   │   ├── EventCard.tsx
-│   │   │   │   ├── EventList.tsx
-│   │   │   │   ├── EventDetail.tsx
-│   │   │   │   ├── EventFilters.tsx
-│   │   │   │   └── EventMap.tsx
-│   │   │   ├── products/
-│   │   │   │   ├── ProductCard.tsx
-│   │   │   │   ├── ProductList.tsx
-│   │   │   │   └── ProducerProfile.tsx
-│   │   │   ├── map/
-│   │   │   │   ├── MapView.tsx
-│   │   │   │   ├── EventMarker.tsx
-│   │   │   │   └── LocationPicker.tsx
-│   │   │   ├── calendar/
-│   │   │   │   ├── CalendarButton.tsx
-│   │   │   │   └── CalendarExport.tsx
-│   │   │   ├── search/
-│   │   │   │   ├── SearchBar.tsx
-│   │   │   │   ├── FilterPanel.tsx
-│   │   │   │   └── CategoryFilter.tsx
-│   │   │   ├── notifications/
-│   │   │   │   ├── NotificationPrompt.tsx
-│   │   │   │   └── ReminderSettings.tsx
-│   │   │   └── common/
-│   │   │       ├── Header.tsx
-│   │   │       ├── Footer.tsx
-│   │   │       ├── Navbar.tsx
-│   │   │       ├── LanguageSwitcher.tsx
-│   │   │       ├── LoadingSpinner.tsx
-│   │   │       └── ErrorBoundary.tsx
+│   │   │   ├── common/      # Shared components
+│   │   │   │   ├── Header.tsx        # Navigation header
+│   │   │   │   ├── Footer.tsx        # Site footer
+│   │   │   │   └── HeroSplitScreen.tsx  # Hero layout
+│   │   │   │
+│   │   │   ├── events/      # Event-related components
+│   │   │   │   ├── EventCard.tsx      # Event card with full details
+│   │   │   │   ├── FilterPanel.tsx    # Filter sidebar
+│   │   │   │   └── HeroSection.tsx    # Events hero section
+│   │   │   │
+│   │   │   ├── organizers/  # Organizer components
+│   │   │   │   ├── OrganizerEventsSection.tsx
+│   │   │   │   └── ProducerCard.tsx
+│   │   │   │
+│   │   │   └── products/    # Product-related components
+│   │   │       └── (planned)
 │   │   │
 │   │   ├── pages/           # Page components
-│   │   │   ├── HomePage.tsx
-│   │   │   ├── EventsPage.tsx
-│   │   │   ├── EventDetailPage.tsx
-│   │   │   ├── ProductsPage.tsx
-│   │   │   ├── AboutPage.tsx
-│   │   │   └── NotFoundPage.tsx
-│   │   │
-│   │   ├── hooks/           # Custom React hooks
-│   │   │   ├── useGeolocation.ts
-│   │   │   ├── useEvents.ts
-│   │   │   ├── useProducts.ts
-│   │   │   ├── useNotifications.ts
-│   │   │   └── useLanguage.ts
+│   │   │   ├── HomePage.tsx         # Main page
+│   │   │   ├── MapPage.tsx           # Interactive map
+│   │   │   ├── ProductsPage.tsx      # Local market
+│   │   │   └── OrganizerPage.tsx     # Organizer profile
 │   │   │
 │   │   ├── api/             # API client
 │   │   │   ├── client.ts    # Axios instance
-│   │   │   ├── events.ts    # Event endpoints
-│   │   │   ├── products.ts  # Product endpoints
-│   │   │   ├── locations.ts # Location endpoints
-│   │   │   └── types.ts     # API response types
+│   │   │   ├── events.ts    # Event API calls
+│   │   │   ├── organizers.ts # Organizer API calls
+│   │   │   └── index.ts     # API exports
 │   │   │
-│   │   ├── utils/           # Utility functions
-│   │   │   ├── date.ts      # Date formatting
-│   │   │   ├── distance.ts  # Distance calculations
-│   │   │   ├── location.ts  # Location helpers
-│   │   │   └── storage.ts   # IndexedDB helpers
+│   │   ├── contexts/        # React contexts
+│   │   │   ├── LanguageContext.tsx   # i18n state
+│   │   │   └── FiltersContext.tsx    # Filter state
 │   │   │
-│   │   ├── i18n/            # Internationalization
-│   │   │   ├── index.ts     # i18next configuration
-│   │   │   ├── pl.json      # Polish translations
-│   │   │   ├── en.json      # English translations
-│   │   │   └── uk.json      # Ukrainian translations
+│   │   ├── types/           # TypeScript types
+│   │   │   ├── event.ts     # Event interfaces
+│   │   │   └── organizer.ts # Organizer interfaces
 │   │   │
-│   │   ├── types/           # TypeScript type definitions
-│   │   │   ├── event.ts
-│   │   │   ├── product.ts
-│   │   │   ├── location.ts
-│   │   │   └── common.ts
+│   │   ├── translations/    # i18n translations
+│   │   │   └── index.ts     # PL/EN/UK translations
 │   │   │
-│   │   ├── styles/          # Global styles
-│   │   │   ├── index.css    # Tailwind imports
-│   │   │   └── custom.css   # Custom styles
+│   │   ├── data/            # Static data
+│   │   │   └── mockEvents.ts # Mock data for development
 │   │   │
+│   │   ├── assets/          # Static assets (images)
 │   │   ├── App.tsx          # Root component
-│   │   ├── main.tsx         # Entry point
-│   │   └── vite-env.d.ts    # Vite TypeScript declarations
+│   │   ├── App.css          # Global styles
+│   │   ├── index.css        # Tailwind imports
+│   │   └── main.tsx         # Entry point
 │   │
 │   ├── package.json         # Node dependencies
-│   ├── package-lock.json
-│   ├── tsconfig.json        # TypeScript configuration
 │   ├── vite.config.ts       # Vite configuration
+│   ├── tsconfig.json        # TypeScript configuration
 │   ├── tailwind.config.js   # Tailwind CSS configuration
-│   ├── postcss.config.js    # PostCSS configuration
-│   ├── .eslintrc.json       # ESLint rules
-│   ├── .prettierrc          # Prettier configuration
-│   └── .env.example         # Environment variables template
+│   ├── eslint.config.js     # ESLint rules
+│   ├── Dockerfile           # Docker container definition
+│   ├── Dockerfile.prod      # Production Dockerfile
+│   └── README.md            # Frontend documentation
 │
-├── deployment/              # Deployment configurations
-│   ├── docker-compose.yml   # Local development
-│   ├── docker-compose.prod.yml  # Production
-│   ├── nginx.conf           # Nginx configuration
-│   └── coolify/             # Coolify-specific configs
-│       └── .env.production
+├── deployment/              # Deployment configurations (planned)
+│   └── (Coolify uses docker-compose directly)
 │
-├── scripts/                 # Utility scripts
-│   ├── setup_dev.sh         # Setup development environment
-│   ├── deploy.sh            # Deployment script
-│   ├── backup_db.sh         # Database backup
-│   └── import_locations.py  # Import Bieszczady locations
-│
-└── docs/                    # Additional documentation
-    ├── API.md               # API documentation
-    ├── DEPLOYMENT.md        # Deployment guide
-    ├── TRANSLATION.md       # Translation guide
-    └── SCRAPER.md           # Scraper documentation
+├── venv/                    # Python virtual environment
+├── .venv/                   # Additional Python venv
+└── node_modules/            # Frontend dependencies
 ```
+
+## Backend Models
+
+### events app
+
+**Event** (`models/event.py`)
+- Multi-language titles: `title_pl`, `title_en`, `title_uk`
+- Rich text descriptions: `description_pl`, `description_en`, `description_uk`
+- Categories: CONCERT, FESTIVAL, THEATRE, CINEMA, WORKSHOP, FOOD, CULTURAL
+- Relations: `location` (FK), `organizer` (FK)
+- Images: via `event_images` (EventImage through model)
+- Dates: via `event_dates` (EventDate reverse FK)
+- Pricing: `price_type`, `price_amount`, `currency`
+- Moderation: `source`, `moderation_status`
+
+**EventDate** (`models/event_date.py`)
+- Supports multiple dates per event
+- `start_date`, `end_date`, `duration_minutes`
+- `notes` for date-specific information
+- `is_past` property
+
+**Location** (`models/location.py`)
+- `name`, `shortname`
+- `address`, `city`
+- `latitude`, `longitude` (DecimalField)
+- `google_maps_url`
+- `location_type`: VENUE, OUTDOOR, PRIVATE, VIRTUAL
+- `amenities` (JSONField): parking, wifi, accessible, etc.
+- `capacity`, `website`, `phone`, `email`
+
+**Organizer** (`models/organizer.py`)
+- `name`, `shortname`, `description`
+- `image`, `logo`
+- `facebook_link`, `ticketing_site`, `website`
+- `is_active` status
+
+**EventImage** (`models/event_image.py`)
+- Through model connecting Event and Image
+- `order` field for sorting
+- `is_main` for cover image
+
+### gallery app
+
+**Image** (`models/image.py`)
+- `title`, `description`
+- `image` file
+- `tags` (JSONField)
+- Auto-populated metadata: `file_size`, `width`, `height`
+
+### scraper app
+
+**FacebookEventScraper** (`facebook_scraper.py`)
+- Playwright-based async scraper
+- Anti-detection measures
+- Cookie persistence
+- Date parsing, location extraction
+- Event detection in text
+
+## Frontend Components
+
+### Pages
+
+| Component | Route | Description |
+|-----------|-------|-------------|
+| `HomePage` | `/` | Main page with events listing |
+| `MapPage` | `/mapa` | Interactive map with events |
+| `ProductsPage` | `/produkty` | Local market page |
+| `OrganizerPage` | `/organizator/:slug` | Organizer profile page |
+
+### Components
+
+**common/**
+- `Header` - Navigation with language switcher
+- `Footer` - Site footer with links
+- `HeroSplitScreen` - Two-column hero layout
+
+**events/**
+- `EventCard` - Full event card with images, dates, location
+- `FilterPanel` - Category, price, search filters
+- `HeroSection` - Events page hero
+
+**organizers/**
+- `OrganizerEventsSection` - Events list for organizer
+- `ProducerCard` - Producer/organizer card
+
+### API Endpoints
+
+```
+GET    /api/events/              # List all events
+GET    /api/events/{id}/         # Get event by ID
+GET    /api/events/{slug}/       # Get event by slug
+GET    /api/organizers/          # List all organizers
+GET    /api/organizers/{id}/     # Get organizer by ID
+GET    /api/organizers/{id}/events/  # Get organizer's events
+GET    /api/gallery/             # Gallery endpoints
+POST   /api/gallery/upload/      # Upload images
+```
+
+## Configuration Files
+
+### Backend
+
+**settings.py** - Key settings:
+- `INSTALLED_APPS`: rest_framework, corsheaders, events, gallery
+- `DATABASE_URL`: PostgreSQL connection
+- `REDIS_URL`: Redis/Celery connection
+- `CORS_ALLOWED_ORIGINS`: Frontend URLs
+- `MEDIA_ROOT`, `STATIC_ROOT`: File storage
+
+### Frontend
+
+**vite.config.ts**:
+- Build target, plugins (@vitejs/plugin-react)
+- Proxy configuration for API calls
+
+**tailwind.config.js**:
+- Content paths for scanning
+- Theme customization
+
+**tsconfig.json**:
+- TypeScript compiler options
+- Path aliases
 
 ## Key Design Decisions
 
 ### Backend Architecture
 
-- **Django Apps**: Modular design, each feature in separate app
-- **DRF**: RESTful API for frontend consumption
-- **PostGIS**: Geospatial queries for location-based features
-- **Celery**: Async tasks (scraping, translations)
-- **Redis**: Cache and message broker
+- **Separate language fields** instead of JSONField for better DB querying
+- **Decimal lat/lng** in Location instead of PostGIS PointField (simpler for now)
+- **EventDate model** for multi-date events
+- **Gallery app** with through model for flexible image management
+- **Playwright** for scraping (more reliable than Selenium for FB)
 
 ### Frontend Architecture
 
-- **React + TypeScript**: Type-safe, modern React
-- **Vite**: Fast build tool, HMR for development
-- **React Query**: Server state management, caching
-- **Tailwind CSS**: Utility-first, mobile-first styling
-- **PWA**: Offline capability, installable app
+- **React 19** with TypeScript for type safety
+- **TanStack Query** for server state management and caching
+- **Context API** for shared state (language, filters)
+- **Tailwind CSS v4** for utility-first styling
+- **React Router v7** for navigation
+- **Leaflet** for maps (no API key needed)
 
 ### Data Flow
 
-1. **User requests events** → Frontend API call
-2. **DRF view** → Query database with filters
-3. **PostGIS** → Calculate distances, sort by proximity
-4. **Serializer** → Transform data, select language
-5. **Response** → Frontend renders event cards
-
-### File Organization Principles
-
-- **Separation of concerns**: Each app handles one domain
-- **DRY**: Shared utilities in `utils/`
-- **Testability**: Tests alongside code
-- **Configuration**: Environment-based settings (dev/prod)
-- **Scalability**: Easy to add new apps/features
+1. User opens page → React Router renders component
+2. Component uses TanStack Query hook to fetch data
+3. Axios client makes API call to Django backend
+4. DRF ViewSet queries DB with select_related/prefetch_related
+5. Serializer transforms data, returns JSON
+6. Frontend renders components with data
 
 ## Development Workflow
 
 ### 1. Starting Development
 
 ```bash
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements/development.txt
-python manage.py migrate
-python manage.py runserver
+# Docker (recommended)
+docker-compose up -d
 
-# Frontend
-cd frontend
-npm install
-npm run dev
+# Manual
+cd backend && python manage.py runserver
+cd frontend && npm run dev
 ```
 
 ### 2. Adding New Feature
 
+**Backend:**
 ```bash
-# Create Django app
-cd backend
-python manage.py startapp new_feature apps/new_feature
-
-# Create React component
-cd frontend/src/components
-mkdir new_feature
-touch new_feature/NewFeature.tsx
+cd backend/apps/events
+# Create/modify models in models/
+python manage.py makemigrations
+python manage.py migrate
+# Update views.py, serializers.py
 ```
 
-### 3. Running Tests
-
+**Frontend:**
 ```bash
-# Backend
-cd backend
-pytest
-
-# Frontend
-cd frontend
-npm run test
-```
-
-## Configuration Files
-
-### Backend `.env`
-
-```env
-DEBUG=True
-SECRET_KEY=your-secret-key
-DATABASE_URL=postgresql://user:pass@localhost:5432/bieszczady
-REDIS_URL=redis://localhost:6379/0
-DEEPL_API_KEY=your-deepl-key
-GEOIP2_DATABASE=/path/to/GeoLite2-City.mmdb
-ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ALLOWED_ORIGINS=http://localhost:5173
-```
-
-### Frontend `.env`
-
-```env
-VITE_API_URL=http://localhost:8000/api
-VITE_GOOGLE_MAPS_API_KEY=your-key
+cd frontend/src
+# Create component in components/
+# Add route in App.tsx
+# Add API call in api/
+# Add type in types/
 ```
 
 ## Next Steps
 
-1. Review this structure
-2. Set up backend skeleton
-3. Set up frontend skeleton
-4. Implement core models
-5. Create basic API endpoints
-6. Build MVP features
+Based on current implementation:
 
-Ready to start coding! 🚀
+1. ✅ Core models and API - **DONE**
+2. ✅ Frontend pages and components - **DONE**
+3. ⏳ Distance-based filtering - **TODO**
+4. ⏳ Event detail page - **TODO**
+5. ⏳ Calendar export (.ics) - **TODO**
+6. ⏳ Push notifications - **TODO**
+7. ⏳ DeepL translations - **TODO**
+
+Last updated: 2025-01-28

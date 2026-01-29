@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import type { Event } from "../../types/event";
+import type { EventList, Event } from "../../types/event";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
 import { API_BASE_URL } from "../../api/client";
 
 interface EventCardProps {
-  event: Event;
+  event: EventList | Event;
   language?: "pl" | "en" | "uk";
   viewMode?: "grid" | "list";
 }
@@ -17,8 +17,16 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+
+  // Get title with fallback
   const title = event.title[language] || event.title.pl;
-  // const description = event.description[language] || event.description.pl;
+
+  // Get image (handle both list and detail views)
+  const imageUrl = 'image' in event && event.image
+    ? new URL(event.image, API_BASE_URL).toString()
+    : 'images' in event && event.images && event.images.length > 0 && event.images[0]?.url
+    ? new URL(event.images[0].url, API_BASE_URL).toString()
+    : null;
 
   // Check if event has multiple dates (showtimes)
   const hasMultipleDates =
@@ -76,9 +84,9 @@ const EventCard: React.FC<EventCardProps> = ({
         >
           {/* Square Image Container */}
           <div className="relative flex-shrink-0 w-32 h-32 overflow-hidden rounded-lg md:w-40 md:h-40">
-            {event.image ? (
+            {imageUrl ? (
               <img
-                src={new URL(event.image, API_BASE_URL).toString()}
+                src={imageUrl}
                 alt={title}
                 className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
@@ -136,12 +144,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {event.location.name}
-                {event.location.distance && (
-                  <span className="ml-2 text-blue-600">
-                    ({event.location.distance.toFixed(1)} km)
-                  </span>
-                )}
+                {('location_name' in event && event.location_name) || (event.location && event.location.name) || "Brak lokalizacji"}
               </div>
 
               {/* Price */}
@@ -161,7 +164,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   </svg>
                   {event.price_type === "FREE"
                     ? "Bezpłatne"
-                    : `${event.price_amount} ${event.price_currency}`}
+                    : `${event.price_amount} ${event.currency}`}
                 </div>
               )}
             </div>
@@ -196,9 +199,9 @@ const EventCard: React.FC<EventCardProps> = ({
             >
               {/* Hero Image with Close Button */}
               <div className="relative overflow-hidden h-72">
-                {event.image ? (
+                {imageUrl ? (
                   <img
-                    src={new URL(event.image, API_BASE_URL).toString()}
+                    src={imageUrl}
                     alt={title}
                     className="object-cover w-full h-full"
                   />
@@ -322,11 +325,11 @@ const EventCard: React.FC<EventCardProps> = ({
                       </span>
                     </div>
                     <p className="text-lg font-bold text-purple-900">
-                      {event.location.name}
+                      {('location_name' in event && event.location_name) || (event.location && event.location.name) || "Brak lokalizacji"}
                     </p>
-                    {event.location.distance !== undefined && (
+                    {event.location && event.location.city && (
                       <p className="mt-1 text-sm text-purple-700">
-                        📍 {event.location.distance.toFixed(1)} km od Ciebie
+                        📍 {event.location.city}
                       </p>
                     )}
                   </div>
@@ -476,9 +479,9 @@ const EventCard: React.FC<EventCardProps> = ({
       >
         {/* Image Container */}
         <div className="relative h-64 overflow-hidden">
-          {event.image ? (
+          {imageUrl ? (
             <img
-              src={new URL(event.image, API_BASE_URL).toString()}
+              src={imageUrl}
               alt={title}
               className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
             />
@@ -762,9 +765,9 @@ const EventCard: React.FC<EventCardProps> = ({
                     </span>
                   </div>
                   <p className="text-lg font-bold text-purple-900">
-                    {event.location.name}
+                    {event.location?.name}
                   </p>
-                  {event.location.distance !== undefined && (
+                  {event.location?.distance !== undefined && (
                     <p className="mt-1 text-sm text-purple-700">
                       📍 {event.location.distance.toFixed(1)} km od Ciebie
                     </p>
@@ -794,7 +797,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   <p className="text-lg font-bold text-green-900">
                     {event.price_type === "FREE"
                       ? "Wstęp wolny 🎉"
-                      : `${event.price_amount} ${event.price_currency}`}
+                      : `${event.price_amount} ${event.currency}`}
                   </p>
                 </div>
 

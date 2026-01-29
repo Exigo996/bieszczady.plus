@@ -51,7 +51,7 @@ docker-compose up -d --build
 
 - Download all necessary images (PostgreSQL, Redis, Python, Node)
 - Install all dependencies
-- Set up the database with PostGIS
+- Set up the database
 - Run migrations
 - Create a superuser (admin / admin123)
 - Start backend on http://localhost:8000

@@ -16,7 +16,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
     { value: 'WORKSHOP', label: 'Warsztaty' },
     { value: 'FOOD', label: 'Gastronomia' },
     { value: 'CULTURAL', label: 'Kultura' },
-    { value: 'OTHER', label: 'Inne' },
   ];
 
   const priceTypes: { value: PriceType | ''; label: string }[] = [
