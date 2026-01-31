@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import type { EventList, Event } from "../../types/event";
+import type { ZrobieEvent } from "../../types/zrobie-event";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
-import { API_BASE_URL } from "../../api/client";
+import { getEventDateTime, parsePrice, getCurrency, isEventFree } from "../../types/zrobie-event";
 
 interface EventCardProps {
-  event: EventList | Event;
+  event: ZrobieEvent;
   language?: "pl" | "en" | "uk";
   viewMode?: "grid" | "list";
 }
@@ -16,60 +16,47 @@ const EventCard: React.FC<EventCardProps> = ({
   viewMode = "grid",
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
 
-  // Get title with fallback
-  const title = event.title[language] || event.title.pl;
+  // Title is now a simple string (no multi-language support in new API)
+  const title = event.Title;
 
-  // Get image (handle both list and detail views)
-  const imageUrl = 'image' in event && event.image
-    ? new URL(event.image, API_BASE_URL).toString()
-    : 'images' in event && event.images && event.images.length > 0 && event.images[0]?.url
-    ? new URL(event.images[0].url, API_BASE_URL).toString()
-    : null;
+  // ImageURL is absolute in the new API
+  const imageUrl = event.ImageURL || null;
 
-  // Check if event has multiple dates (showtimes)
-  const hasMultipleDates =
-    Array.isArray((event as any).showtimes) &&
-    (event as any).showtimes.length > 0;
-  const showtimeTabs = hasMultipleDates ? (event as any).showtimes : [];
+  // Get combined datetime
+  const eventDateTime = getEventDateTime(event);
 
-  const formatEventDate = (dateString: string) => {
+  const formatEventDate = (date: Date | null) => {
+    if (!date) return "Data do ustalenia";
     try {
-      const date = new Date(dateString);
       return format(date, "d MMMM yyyy, HH:mm", { locale: pl });
     } catch {
-      return dateString;
+      return "Data nieprawidłowa";
     }
   };
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      CONCERT: "Koncert",
-      FESTIVAL: "Festiwal",
-      THEATRE: "Teatr",
-      CINEMA: "Kino",
-      WORKSHOP: "Warsztat",
-      FOOD: "Gastronomia",
-      CULTURAL: "Kultura",
-      OTHER: "Inne",
-    };
-    return labels[category] || category;
+  const formatEventTime = (date: Date | null) => {
+    if (!date) return "";
+    try {
+      return format(date, "HH:mm");
+    } catch {
+      return "";
+    }
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      CONCERT: "bg-purple-100 text-purple-800",
-      FESTIVAL: "bg-pink-100 text-pink-800",
-      THEATRE: "bg-red-100 text-red-800",
-      CINEMA: "bg-indigo-100 text-indigo-800",
-      WORKSHOP: "bg-green-100 text-green-800",
-      FOOD: "bg-orange-100 text-orange-800",
-      CULTURAL: "bg-blue-100 text-blue-800",
-      OTHER: "bg-gray-100 text-gray-800",
-    };
-    return colors[category] || "bg-gray-100 text-gray-800";
+  const formatEventDay = (date: Date | null) => {
+    if (!date) return "";
+    try {
+      return format(date, "d MMM", { locale: pl });
+    } catch {
+      return "";
+    }
   };
+
+  // Price display
+  const displayPrice = event.Price || "Bezpłatne";
+  const isFree = isEventFree(event);
+  const currency = getCurrency(event.Price);
 
   // List view layout
   if (viewMode === "list") {
@@ -93,15 +80,6 @@ const EventCard: React.FC<EventCardProps> = ({
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500"></div>
             )}
-
-            {/* Category Badge - Top Left */}
-            <div className="absolute z-10 top-3 left-3">
-              <span
-                className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
-              >
-                {getCategoryLabel(event.category)}
-              </span>
-            </div>
           </div>
 
           {/* Content */}
@@ -124,11 +102,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {hasMultipleDates ? (
-                  <span>{showtimeTabs.length} terminów</span>
-                ) : (
-                  <span>{formatEventDate(event.start_date)}</span>
-                )}
+                <span>{formatEventDate(eventDateTime)}</span>
               </div>
 
               {/* Location */}
@@ -144,35 +118,26 @@ const EventCard: React.FC<EventCardProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {('location_name' in event && event.location_name) || (event.location && event.location.name) || "Brak lokalizacji"}
+                <span>{event.Venue || "Brak lokalizacji"}</span>
               </div>
 
               {/* Price */}
-              {event.price_type && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <svg
-                    className="flex-shrink-0 w-5 h-5 mr-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {event.price_type === "FREE"
-                    ? "Bezpłatne"
-                    : `${event.price_amount} ${event.currency}`}
-                </div>
-              )}
+              <div className="flex items-center text-sm text-gray-600">
+                <svg
+                  className="flex-shrink-0 w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {isFree ? "Bezpłatne" : displayPrice}
+              </div>
             </div>
-
-            {/* Description Preview */}
-            {/* <p className="mb-3 text-xs text-gray-600 md:text-sm line-clamp-2">
-              {description}
-            </p> */}
 
             {/* Action Button */}
             <button
@@ -187,7 +152,7 @@ const EventCard: React.FC<EventCardProps> = ({
           </div>
         </article>
 
-        {/* Modal - same as grid view */}
+        {/* Modal */}
         {isExpanded && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
@@ -233,38 +198,25 @@ const EventCard: React.FC<EventCardProps> = ({
                   </svg>
                 </button>
 
-                {/* Category Badge */}
-                <div className="absolute top-4 left-4">
-                  <span
-                    className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}
-                  >
-                    {getCategoryLabel(event.category)}
-                  </span>
-                </div>
-
                 {/* Title and Date at Bottom */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="flex items-start justify-between gap-4">
                     <h2 className="flex-1 text-3xl font-bold text-white drop-shadow-lg">
                       {title}
                     </h2>
-                    <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
-                      <div className="text-xs font-semibold text-gray-600 uppercase">
-                        {new Date(event.start_date).toLocaleDateString(
-                          "pl-PL",
-                          { month: "short" },
-                        )}
+                    {eventDateTime && (
+                      <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
+                        <div className="text-xs font-semibold text-gray-600 uppercase">
+                          {format(eventDateTime, "MMM", { locale: pl })}
+                        </div>
+                        <div className="text-3xl font-bold text-blue-600">
+                          {format(eventDateTime, "d")}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {format(eventDateTime, "EEE", { locale: pl })}
+                        </div>
                       </div>
-                      <div className="text-3xl font-bold text-blue-600">
-                        {new Date(event.start_date).getDate()}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(event.start_date).toLocaleDateString(
-                          "pl-PL",
-                          { weekday: "short" },
-                        )}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -294,7 +246,7 @@ const EventCard: React.FC<EventCardProps> = ({
                       </span>
                     </div>
                     <p className="text-lg font-bold text-blue-900">
-                      {formatEventDate(event.start_date)}
+                      {formatEventDate(eventDateTime)}
                     </p>
                   </div>
 
@@ -325,11 +277,11 @@ const EventCard: React.FC<EventCardProps> = ({
                       </span>
                     </div>
                     <p className="text-lg font-bold text-purple-900">
-                      {('location_name' in event && event.location_name) || (event.location && event.location.name) || "Brak lokalizacji"}
+                      {event.Venue || "Brak lokalizacji"}
                     </p>
-                    {event.location && event.location.city && (
+                    {event.Site?.Name && (
                       <p className="mt-1 text-sm text-purple-700">
-                        📍 {event.location.city}
+                        📍 {event.Site.Name}
                       </p>
                     )}
                   </div>
@@ -355,13 +307,11 @@ const EventCard: React.FC<EventCardProps> = ({
                       </span>
                     </div>
                     <p className="text-lg font-bold text-green-900">
-                      {event.price_type === "FREE"
-                        ? "Wstęp wolny 🎉"
-                        : `${event.price_amount} ${event.price_currency}`}
+                      {isFree ? "Wstęp wolny 🎉" : displayPrice}
                     </p>
                   </div>
 
-                  {/* Duration & Age */}
+                  {/* Duration */}
                   <div className="p-4 border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
                     <div className="flex items-center mb-2">
                       <svg
@@ -381,40 +331,37 @@ const EventCard: React.FC<EventCardProps> = ({
                         Informacje dodatkowe
                       </span>
                     </div>
-                    {event.duration_minutes && (
+                    {event.Duration > 0 ? (
                       <p className="text-lg font-bold text-orange-900">
-                        {event.duration_minutes} min
+                        {event.Duration} min
                       </p>
-                    )}
-                    {event.age_restriction && (
-                      <p className="mt-1 text-sm text-orange-700">
-                        Wiek: {event.age_restriction}+
-                      </p>
-                    )}
-                    {!event.duration_minutes && !event.age_restriction && (
+                    ) : (
                       <p className="text-lg font-bold text-orange-900">—</p>
                     )}
                   </div>
                 </div>
 
                 {/* Description Section */}
-                <div className="mb-8">
-                  <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
-                    <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
-                    Opis wydarzenia
-                  </h3>
-                  <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
-                    <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
-                      {/* {description} */}
-                    </p>
+                {event.Description && (
+                  <div className="mb-8">
+                    <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
+                      <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
+                      Opis wydarzenia
+                    </h3>
+                    <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
+                      <p
+                        className="text-base leading-relaxed text-gray-700"
+                        dangerouslySetInnerHTML={{ __html: event.Description }}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-                  {event.ticket_url && (
+                  {event.SourceURL && (
                     <a
-                      href={event.ticket_url}
+                      href={event.SourceURL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center flex-1 px-6 py-4 font-bold text-white transition-all transform shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl hover:scale-105 hover:shadow-xl"
@@ -435,9 +382,9 @@ const EventCard: React.FC<EventCardProps> = ({
                       Kup bilet
                     </a>
                   )}
-                  {event.external_url && (
+                  {event.Site?.BaseURL && (
                     <a
-                      href={event.external_url}
+                      href={event.Site.BaseURL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center px-6 py-4 font-medium text-gray-900 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"
@@ -492,82 +439,11 @@ const EventCard: React.FC<EventCardProps> = ({
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
-          {/* Category Badge - Top Left */}
-          <div className="absolute z-10 top-3 left-3">
-            <span
-              className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm ${getCategoryColor(event.category)}`}
-            >
-              {getCategoryLabel(event.category)}
-            </span>
-          </div>
-
-          {/* Date Tabs - Top Right */}
-          <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 max-w-[60%]">
-            {hasMultipleDates ? (
-              <>
-                {showtimeTabs.map(
-                  (
-                    tab: { label: string; time: string; date: string },
-                    idx: number,
-                  ) => {
-                    // Extract day and month from label
-                    const dateMatch = tab.label.match(/(\d+)\s+(\w+)/);
-                    const monthMap: { [key: string]: string } = {
-                      stycznia: "01",
-                      lutego: "02",
-                      marca: "03",
-                      kwietnia: "04",
-                      maja: "05",
-                      czerwca: "06",
-                      lipca: "07",
-                      sierpnia: "08",
-                      września: "09",
-                      października: "10",
-                      listopada: "11",
-                      grudnia: "12",
-                    };
-                    const day = dateMatch ? dateMatch[1] : "";
-                    const monthNum =
-                      dateMatch && monthMap[dateMatch[2]]
-                        ? monthMap[dateMatch[2]]
-                        : "";
-                    const shortTime = tab.time
-                      .replace("godz. ", "")
-                      .split(" ")[0];
-
-                    return (
-                      <button
-                        key={tab.date}
-                        className={`px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all backdrop-blur-sm ${
-                          activeTab === idx
-                            ? "bg-white text-blue-600 shadow-lg"
-                            : "bg-white/90 text-gray-700 hover:bg-white"
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveTab(idx);
-                        }}
-                      >
-                        {day && monthNum
-                          ? `${day}.${monthNum}`
-                          : tab.label.split(",")[0]}{" "}
-                        • {shortTime}
-                      </button>
-                    );
-                  },
-                )}
-              </>
-            ) : (
+          {/* Date Badge - Top Right */}
+          <div className="absolute top-3 right-3 z-10">
+            {eventDateTime && (
               <div className="px-3 py-2 text-xs font-bold text-gray-700 rounded-lg bg-white/90 backdrop-blur-sm">
-                {new Date(event.start_date).toLocaleDateString("pl-PL", {
-                  day: "numeric",
-                  month: "short",
-                })}{" "}
-                •{" "}
-                {new Date(event.start_date).toLocaleTimeString("pl-PL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatEventDay(eventDateTime)} • {formatEventTime(eventDateTime)}
               </div>
             )}
           </div>
@@ -592,13 +468,8 @@ const EventCard: React.FC<EventCardProps> = ({
                 />
               </svg>
               <span className="truncate drop-shadow-lg">
-                {/* {event.location.name} */}
+                {event.Venue || "Brak lokalizacji"}
               </span>
-              {/* {event.location.distance !== undefined && (
-                <span className="flex-shrink-0 pl-2 ml-auto font-bold">
-                  {event.location.distance.toFixed(1)} km
-                </span>
-              )} */}
             </div>
           </div>
 
@@ -641,9 +512,9 @@ const EventCard: React.FC<EventCardProps> = ({
           >
             {/* Hero Image with Close Button */}
             <div className="relative overflow-hidden h-72">
-              {event.image ? (
+              {imageUrl ? (
                 <img
-                  src={new URL(event.image, API_BASE_URL).toString()}
+                  src={imageUrl}
                   alt={title}
                   className="object-cover w-full h-full"
                 />
@@ -675,36 +546,25 @@ const EventCard: React.FC<EventCardProps> = ({
                 </svg>
               </button>
 
-              {/* Category Badge */}
-              <div className="absolute top-4 left-4">
-                <span
-                  className={`inline-block px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${getCategoryColor(event.category)}`}
-                >
-                  {getCategoryLabel(event.category)}
-                </span>
-              </div>
-
               {/* Title and Date at Bottom */}
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex items-start justify-between gap-4">
                   <h2 className="flex-1 text-3xl font-bold text-white drop-shadow-lg">
                     {title}
                   </h2>
-                  <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
-                    <div className="text-xs font-semibold text-gray-600 uppercase">
-                      {new Date(event.start_date).toLocaleDateString("pl-PL", {
-                        month: "short",
-                      })}
+                  {eventDateTime && (
+                    <div className="bg-white rounded-xl shadow-lg px-4 py-3 text-center min-w-[80px] flex-shrink-0">
+                      <div className="text-xs font-semibold text-gray-600 uppercase">
+                        {format(eventDateTime, "MMM", { locale: pl })}
+                      </div>
+                      <div className="text-3xl font-bold text-blue-600">
+                        {format(eventDateTime, "d")}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {format(eventDateTime, "EEE", { locale: pl })}
+                      </div>
                     </div>
-                    <div className="text-3xl font-bold text-blue-600">
-                      {new Date(event.start_date).getDate()}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(event.start_date).toLocaleDateString("pl-PL", {
-                        weekday: "short",
-                      })}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -734,7 +594,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     </span>
                   </div>
                   <p className="text-lg font-bold text-blue-900">
-                    {formatEventDate(event.start_date)}
+                    {formatEventDate(eventDateTime)}
                   </p>
                 </div>
 
@@ -765,11 +625,11 @@ const EventCard: React.FC<EventCardProps> = ({
                     </span>
                   </div>
                   <p className="text-lg font-bold text-purple-900">
-                    {event.location?.name}
+                    {event.Venue || "Brak lokalizacji"}
                   </p>
-                  {event.location?.distance !== undefined && (
+                  {event.Site?.Name && (
                     <p className="mt-1 text-sm text-purple-700">
-                      📍 {event.location.distance.toFixed(1)} km od Ciebie
+                      📍 {event.Site.Name}
                     </p>
                   )}
                 </div>
@@ -795,13 +655,11 @@ const EventCard: React.FC<EventCardProps> = ({
                     </span>
                   </div>
                   <p className="text-lg font-bold text-green-900">
-                    {event.price_type === "FREE"
-                      ? "Wstęp wolny 🎉"
-                      : `${event.price_amount} ${event.currency}`}
+                    {isFree ? "Wstęp wolny 🎉" : displayPrice}
                   </p>
                 </div>
 
-                {/* Duration & Age */}
+                {/* Duration */}
                 <div className="p-4 border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
                   <div className="flex items-center mb-2">
                     <svg
@@ -821,40 +679,37 @@ const EventCard: React.FC<EventCardProps> = ({
                       Informacje dodatkowe
                     </span>
                   </div>
-                  {event.duration_minutes && (
+                  {event.Duration > 0 ? (
                     <p className="text-lg font-bold text-orange-900">
-                      {event.duration_minutes} min
+                      {event.Duration} min
                     </p>
-                  )}
-                  {event.age_restriction && (
-                    <p className="mt-1 text-sm text-orange-700">
-                      Wiek: {event.age_restriction}+
-                    </p>
-                  )}
-                  {!event.duration_minutes && !event.age_restriction && (
+                  ) : (
                     <p className="text-lg font-bold text-orange-900">—</p>
                   )}
                 </div>
               </div>
 
               {/* Description Section */}
-              <div className="mb-8">
-                <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
-                  <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
-                  Opis wydarzenia
-                </h3>
-                <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
-                  <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
-                    {/* {description} */}
-                  </p>
+              {event.Description && (
+                <div className="mb-8">
+                  <h3 className="flex items-center mb-4 text-xl font-bold text-gray-900">
+                    <div className="w-1 h-6 mr-3 bg-blue-600 rounded-full"></div>
+                    Opis wydarzenia
+                  </h3>
+                  <div className="p-6 border border-gray-200 bg-gray-50 rounded-xl">
+                    <p
+                      className="text-base leading-relaxed text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: event.Description }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-4">
-                {event.ticket_url && (
+                {event.SourceURL && (
                   <a
-                    href={event.ticket_url}
+                    href={event.SourceURL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center flex-1 px-6 py-4 font-bold text-white transition-all transform shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl hover:scale-105 hover:shadow-xl"
@@ -875,9 +730,9 @@ const EventCard: React.FC<EventCardProps> = ({
                     Kup bilet
                   </a>
                 )}
-                {event.external_url && (
+                {event.Site?.BaseURL && (
                   <a
-                    href={event.external_url}
+                    href={event.Site.BaseURL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-6 py-4 font-medium text-gray-900 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"

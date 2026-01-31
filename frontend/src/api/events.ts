@@ -1,26 +1,19 @@
 import { apiClient } from "./client";
-import type { Event, EventFilters } from "../types/event";
+import type { ZrobieEvent, ZrobieEventsResponse } from "../types/zrobie-event";
 
-export interface EventsResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Event[];
+export interface EventFilters {
+  search?: string;
+  date_from?: string;
+  date_to?: string;
+  site?: string;
+  is_public?: boolean;
 }
 
 /**
- * Fetch events from API with optional filters
+ * Fetch events from Zrobie Jutro API with optional filters
  */
-export const fetchEvents = async (filters?: EventFilters): Promise<Event[]> => {
-  const params: Record<string, string | number> = {};
-
-  if (filters?.category) {
-    params.category = filters.category;
-  }
-
-  if (filters?.price_type) {
-    params.price_type = filters.price_type;
-  }
+export const fetchEvents = async (filters?: EventFilters): Promise<ZrobieEvent[]> => {
+  const params: Record<string, string | number | boolean> = {};
 
   if (filters?.search) {
     params.search = filters.search;
@@ -34,20 +27,24 @@ export const fetchEvents = async (filters?: EventFilters): Promise<Event[]> => {
     params.date_to = filters.date_to;
   }
 
-  if (filters?.radius) {
-    // params.radius = filters.radius;
+  if (filters?.site) {
+    params.site = filters.site;
   }
 
-  const response = await apiClient.get<EventsResponse>("/events/", { params });
+  if (filters?.is_public !== undefined) {
+    params.is_public = filters.is_public;
+  }
+
+  const response = await apiClient.get<ZrobieEventsResponse>("/events", { params });
 
   // Handle both paginated and non-paginated responses
-  if (response.data.results) {
-    return response.data.results;
+  if (response.data.events) {
+    return response.data.events;
   }
 
   // If the API returns an array directly
   if (Array.isArray(response.data)) {
-    return response.data as unknown as Event[];
+    return response.data as unknown as ZrobieEvent[];
   }
 
   return [];
@@ -56,15 +53,15 @@ export const fetchEvents = async (filters?: EventFilters): Promise<Event[]> => {
 /**
  * Fetch a single event by ID
  */
-export const fetchEventById = async (id: number): Promise<Event> => {
-  const response = await apiClient.get<Event>(`/events/${id}/`);
+export const fetchEventById = async (id: number): Promise<ZrobieEvent> => {
+  const response = await apiClient.get<ZrobieEvent>(`/events/${id}`);
   return response.data;
 };
 
 /**
- * Fetch a single event by slug
+ * Fetch a single event by UniqueID
  */
-export const fetchEventBySlug = async (slug: string): Promise<Event> => {
-  const response = await apiClient.get<Event>(`/events/${slug}/`);
+export const fetchEventByUniqueId = async (uniqueId: string): Promise<ZrobieEvent> => {
+  const response = await apiClient.get<ZrobieEvent>(`/events/by-unique-id/${uniqueId}`);
   return response.data;
 };

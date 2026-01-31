@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import OrganizerHeroSplitScreen from "../components/organizers/OrganizerHeroSplitScreen";
 import OrganizerEventsSection from "../components/organizers/OrganizerEventsSection";
 import { fetchOrganizerBySlug, fetchOrganizerEvents } from "../api/organizers";
-import type { Event } from "../types/event";
+import type { ZrobieEvent } from "../types/zrobie-event";
 
 const OrganizerPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -24,7 +24,7 @@ const OrganizerPage: React.FC = () => {
   });
 
   // Fetch organizer events
-  const { data: events = [], isLoading: isLoadingEvents } = useQuery({
+  const { data: events = [], isLoading: isLoadingEvents } = useQuery<ZrobieEvent[]>({
     queryKey: ["organizer-events", slug],
     queryFn: () => fetchOrganizerEvents(slug!),
     enabled: !!slug && !isOrganizerError,
@@ -94,7 +94,7 @@ const OrganizerPage: React.FC = () => {
     <>
       <OrganizerHeroSplitScreen
         organizer={organizer}
-        events={events as Event[]}
+        events={events}
       />
       {!isLoadingEvents && <OrganizerEventsSection organizer={organizer} />}
     </>

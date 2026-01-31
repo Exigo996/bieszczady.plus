@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Event, EventFilters } from "../../types/event";
+import type { ZrobieEvent } from "../../types/zrobie-event";
+import type { EventFilters } from "../../types/event";
 import type { Organizer } from "../../types/organizer";
 import { fetchOrganizerEvents } from "../../api/organizers";
 import { useFilters } from "../../contexts/FiltersContext";
@@ -61,22 +62,11 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
       // Search filter (client-side backup)
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
-        const titleMatch = event.title.pl.toLowerCase().includes(searchLower);
-        const descMatch = event.description.pl
-          .toLowerCase()
-          .includes(searchLower);
-        const locationMatch = event.location?.name
-          ?.toLowerCase()
-          .includes(searchLower);
+        const titleMatch = event.Title.toLowerCase().includes(searchLower);
+        const descMatch = event.Description?.toLowerCase().includes(searchLower);
+        const venueMatch = event.Venue?.toLowerCase().includes(searchLower);
 
-        if (!titleMatch && !descMatch && !locationMatch) {
-          return false;
-        }
-      }
-
-      // Distance filter (client-side backup)
-      if (filters.radius && event.location?.distance) {
-        if (event.location.distance > filters.radius) {
+        if (!titleMatch && !descMatch && !venueMatch) {
           return false;
         }
       }
@@ -85,11 +75,9 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
     });
   }, [events, filters]);
 
-  // Sort by date
+  // Sort by ID
   const sortedEvents = useMemo(() => {
-    return [...filteredEvents].sort((a, b) =>
-      new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
-    );
+    return [...filteredEvents].sort((a, b) => a.ID - b.ID);
   }, [filteredEvents]);
 
   return (
@@ -252,7 +240,7 @@ const OrganizerEventsSection: React.FC<OrganizerEventsSectionProps> = ({ organiz
             aria-label="Lista wydarzeń"
           >
             {sortedEvents.map((event) => (
-              <div key={event.id} role="listitem">
+              <div key={event.ID} role="listitem">
                 <EventCard event={event} />
               </div>
             ))}
