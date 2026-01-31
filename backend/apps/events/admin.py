@@ -1,12 +1,20 @@
 from django.contrib import admin
+from django.shortcuts import render
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse, path
+from django.utils.safestring import mark_safe
+
 from .models import Event, EventDate, Organizer, EventImage, Location
+from .services import EventImporter
+from .views import import_events_json
 
 
 class EventDateInline(admin.TabularInline):
     """Inline admin for EventDate model"""
     model = EventDate
     extra = 1
-    fields = ['start_date', 'end_date', 'duration_minutes', 'notes']
+    fields = ['start_date', 'end_date', 'location', 'duration_minutes', 'notes']
     ordering = ['start_date']
 
 
@@ -57,6 +65,7 @@ class EventDateAdmin(admin.ModelAdmin):
     list_display = [
         'event',
         'start_date',
+        'get_location',
         'end_date',
         'duration_minutes',
         'is_past',
@@ -64,11 +73,13 @@ class EventDateAdmin(admin.ModelAdmin):
 
     list_filter = [
         'start_date',
+        'location',
         'created_at',
     ]
 
     search_fields = [
         'event__title_pl',
+        'location__name',
         'notes',
     ]
 
@@ -76,7 +87,7 @@ class EventDateAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Wydarzenie', {
-            'fields': ('event',)
+            'fields': ('event', 'location')
         }),
         ('Data i czas', {
             'fields': ('start_date', 'end_date', 'duration_minutes', 'notes')
@@ -86,6 +97,13 @@ class EventDateAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+    def get_location(self, obj):
+        """Display location in admin list"""
+        if obj.location:
+            return f"{obj.location.name} ({obj.location.city})" if obj.location.city else obj.location.name
+        return '-'
+    get_location.short_description = 'Lokalizacja'
 
 
 @admin.register(Organizer)
@@ -140,9 +158,25 @@ class EventImageAdmin(admin.ModelAdmin):
     ordering = ['event', 'order']
 
 
+def import_events_from_json(modeladmin, request, queryset):
+    """
+    Admin action to import events from JSON file.
+    Redirects to intermediate view with file upload form.
+    """
+    # Store selected IDs in session for returning after import
+    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    request.session['_selected_events'] = selected
+    return HttpResponseRedirect(reverse('admin:events_event_import_json'))
+
+
+import_events_from_json.short_description = 'Importuj wydarzenia z pliku JSON'
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     """Admin interface for Event model"""
+
+    actions = [import_events_from_json]
 
     list_display = [
         'title_pl',
@@ -249,3 +283,15 @@ class EventAdmin(admin.ModelAdmin):
         return qs.select_related('location', 'organizer').prefetch_related(
             'event_dates', 'event_images__image'
         )
+
+    def get_urls(self):
+        """Add custom URL for import view"""
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'import/json/',
+                self.admin_site.admin_view(import_events_json),
+                name='events_event_import_json'
+            ),
+        ]
+        return custom_urls + urls

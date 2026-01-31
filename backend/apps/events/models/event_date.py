@@ -6,13 +6,21 @@ from django.core.validators import MinValueValidator
 class EventDate(models.Model):
     """
     EventDate model - stores individual dates for events
-    Allows events to have multiple occurrences
+    Allows events to have multiple dates, each with its own location
     """
     event = models.ForeignKey(
         'Event',
         on_delete=models.CASCADE,
         related_name='event_dates',
         help_text="Wydarzenie do którego należy ta data"
+    )
+    location = models.ForeignKey(
+        'Location',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='event_dates',
+        help_text="Miejsce wydarzenia dla tego terminu"
     )
     start_date = models.DateTimeField(
         help_text="Data i godzina rozpoczęcia"
@@ -44,6 +52,7 @@ class EventDate(models.Model):
         indexes = [
             models.Index(fields=['start_date']),
             models.Index(fields=['event', 'start_date']),
+            models.Index(fields=['location']),
         ]
 
     def __str__(self):

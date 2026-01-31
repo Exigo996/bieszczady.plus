@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='events' %}">Events</a>
+    &rsaquo; <a href="{% url 'admin:events_event_changelist' %}">{% trans 'Events' %}</a>
+    &rsaquo; {% trans 'Import from JSON' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans 'Import Events from JSON' %}</h1>
+
+<div id="content-main">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="module">
+            <h2>{% trans 'Upload JSON File' %}</h2>
+
+            <p>{% trans 'Select a JSON file containing events to import. Events will be matched by title. Existing events with matching dates and locations will be skipped.' %}</p>
+
+            <div class="form-row">
+                <div>
+                    <label for="id_json_file" class="required">{% trans 'JSON File:' %}</label>
+                    <input type="file" name="json_file" id="id_json_file" accept=".json" required>
+                </div>
+            </div>
+
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Import Events' %}" class="default">
+                <a href="{% url 'admin:events_event_changelist' %}" class="button">{% trans 'Cancel' %}</a>
+            </div>
+        </div>
+
+        <div class="module">
+            <h2>{% trans 'JSON Structure Example' %}</h2>
+            <pre style="background: #f6f6f6; padding: 10px; border-radius: 4px; overflow-x: auto;">[
+  {
+    "title_pl": "Koncert w Bieszczadach",
+    "title_en": "Concert in Bieszczady",
+    "title_uk": "Концерт у Бещадах",
+    "description_pl": "Opis wydarzenia",
+    "category": "CONCERT",
+    "event_type": "EVENT",
+    "price_type": "PAID",
+    "price_amount": 50.00,
+    "currency": "PLN",
+    "organizer_name": "Fundacja Kultury",
+    "dates": [
+      {
+        "start_date": "2025-02-01T19:00:00",
+        "end_date": "2025-02-01T22:00:00",
+        "duration_minutes": 180,
+        "location": {
+          "name": "Dom Kultury",
+          "city": "Lesko",
+          "address": "ul. Główna 1",
+          "latitude": 49.45,
+          "longitude": 22.33,
+          "location_type": "VENUE"
+        }
+      }
+    ]
+  }
+]</pre>
+        </div>
+    </form>
+</div>
+{% endblock %}

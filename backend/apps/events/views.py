@@ -1,8 +1,13 @@
 from django.shortcuts import render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Event, Organizer, EventDate
+from .services import EventImporter
 from .serializers import (
     EventSerializer,
     EventListSerializer,
@@ -71,3 +76,55 @@ class OrganizerViewSet(viewsets.ReadOnlyModelViewSet):
         events = organizer.events.all().order_by('-start_date')
         serializer = EventListSerializer(events, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+@staff_member_required
+def import_events_json(request):
+    """
+    Admin view for importing events from JSON file.
+    Shows upload form and processes import.
+    """
+    if request.method == 'POST':
+        json_file = request.FILES.get('json_file')
+        if json_file:
+            try:
+                # Read and parse JSON
+                json_string = json_file.read().decode('utf-8')
+
+                # Import events
+                importer = EventImporter()
+                result = importer.import_from_string(json_string)
+
+                # Build result message
+                if result.errors:
+                    error_list = '\n'.join([
+                        f"- [{e['index']}] {e['title']}: {e['error']}"
+                        for e in result.errors[:10]  # Show first 10 errors
+                    ])
+                    if len(result.errors) > 10:
+                        error_list += f"\n... i {len(result.errors) - 10} więcej błędów"
+
+                    messages.error(
+                        request,
+                        f'Import zakończony z błędami.\n'
+                        f'Zaimportowano: {result.imported}\n'
+                        f'Pominięto: {result.skipped}\n'
+                        f'Błędy:\n{error_list}'
+                    )
+                else:
+                    messages.success(
+                        request,
+                        f'Import zakończony pomyślnie!\n'
+                        f'Zaimportowano: {result.imported}\n'
+                        f'Pominięto: {result.skipped}'
+                    )
+
+            except Exception as e:
+                messages.error(request, f'Błąd podczas przetwarzania pliku: {e}')
+        else:
+            messages.error(request, 'Proszę wybrać plik JSON.')
+
+        return HttpResponseRedirect(reverse('admin:events_event_changelist'))
+
+    # GET request - show upload form
+    return render(request, 'admin/events/import_events_form.html')

@@ -54,6 +54,7 @@ export interface EventDate {
   duration_minutes?: number | null;
   notes?: string;
   is_past?: boolean;
+  location?: Location | null;
   created_at: string;
   updated_at: string;
 }

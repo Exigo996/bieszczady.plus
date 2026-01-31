@@ -108,6 +108,9 @@ class EventSerializer(serializers.ModelSerializer):
     # Images from Gallery
     images = EventImageField(read_only=True)
 
+    # Dates with their locations
+    event_dates = EventDateSerializer(many=True, read_only=True)
+
     class Meta:
         model = Event
         fields = [
@@ -130,6 +133,7 @@ class EventSerializer(serializers.ModelSerializer):
             'external_url',
             'ticket_url',
             'images',
+            'event_dates',
             'source',
             'moderation_status',
             'created_at',
@@ -284,8 +288,10 @@ class OrganizerListSerializer(serializers.ModelSerializer):
 class EventDateSerializer(serializers.ModelSerializer):
     """
     Serializer for EventDate model
+    Includes nested location for each date
     """
     is_past = serializers.ReadOnlyField()
+    location = LocationSerializer(read_only=True)
 
     class Meta:
         model = EventDate
@@ -296,6 +302,7 @@ class EventDateSerializer(serializers.ModelSerializer):
             'duration_minutes',
             'notes',
             'is_past',
+            'location',
             'created_at',
             'updated_at',
         ]
