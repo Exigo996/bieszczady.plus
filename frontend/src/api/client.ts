@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_BASE_URL = "https://content.zrobie.jutro.net/api";
+export const API_BASE_URL = "https://content.zrobie.jutro.net/api/v1";
 // export const API_BASE_URL = "https://api.bieszczady.plus/api";
 // export const API_BASE_URL = "http://0.0.0.0:8000/api";
 
