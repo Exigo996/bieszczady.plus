@@ -83,6 +83,30 @@ class EventImageField(serializers.Field):
         return obj
 
 
+class EventDateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EventDate model
+    Includes nested location for each date
+    """
+    is_past = serializers.ReadOnlyField()
+    location = LocationSerializer(read_only=True)
+
+    class Meta:
+        model = EventDate
+        fields = [
+            'id',
+            'start_date',
+            'end_date',
+            'duration_minutes',
+            'notes',
+            'is_past',
+            'location',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_past']
+
+
 class EventSerializer(serializers.ModelSerializer):
     """
     Standard serializer for Event model
@@ -283,27 +307,3 @@ class OrganizerListSerializer(serializers.ModelSerializer):
     def get_events_count(self, obj):
         """Get total number of events for this organizer"""
         return obj.events.count()
-
-
-class EventDateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for EventDate model
-    Includes nested location for each date
-    """
-    is_past = serializers.ReadOnlyField()
-    location = LocationSerializer(read_only=True)
-
-    class Meta:
-        model = EventDate
-        fields = [
-            'id',
-            'start_date',
-            'end_date',
-            'duration_minutes',
-            'notes',
-            'is_past',
-            'location',
-            'created_at',
-            'updated_at',
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'is_past']
