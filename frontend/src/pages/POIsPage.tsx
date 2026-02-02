@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPOIs, getUniquePOITypes } from "../api/pois";
-import type { POI } from "../types/poi";
+import type { POI, POIsResponse } from "../types/poi";
 import POICard from "../components/pois/POICard";
 import POIFilterPanel from "../components/pois/POIFilterPanel";
 import POIMap from "../components/pois/POIMap";
@@ -17,9 +17,9 @@ const POIsPage: React.FC = () => {
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<POIsResponse>({
     queryKey: ["pois"],
-    queryFn: fetchPOIs,
+    queryFn: () => fetchPOIs(),
   });
 
   const pois = response?.data || [];
@@ -27,7 +27,7 @@ const POIsPage: React.FC = () => {
 
   // Filter POIs by selected type
   const filteredPOIs = selectedType
-    ? pois.filter((poi) => poi.POIType === selectedType)
+    ? pois.filter((poi: POI) => poi.POIType === selectedType)
     : pois;
 
   // Loading state
@@ -207,7 +207,7 @@ const POIsPage: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredPOIs.map((poi) => (
+                {filteredPOIs.map((poi: POI) => (
                   <POICard key={poi.ID} poi={poi} />
                 ))}
               </div>
