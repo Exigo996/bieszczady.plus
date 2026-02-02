@@ -4,8 +4,8 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import HomePage from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
-import ProductsPage from "./pages/ProductsPage";
-import OrganizerPage from "./pages/OrganizerPage";
+import POIsPage from "./pages/POIsPage";
+import POIDetailPage from "./pages/POIDetailPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { FiltersProvider } from "./contexts/FiltersContext";
 import "./App.css";
@@ -33,11 +33,10 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/mapa" element={<MapPage />} />
-                  <Route path="/produkty" element={<ProductsPage />} />
-                  <Route
-                    path="/organizator/:slug"
-                    element={<OrganizerPage />}
-                  />
+                  <Route path="/produkty" element={<POIsPage />} />
+                  <Route path="/lokalni-producenci" element={<POIsPage />} />
+                  <Route path="/produkty/:id" element={<POIDetailPage />} />
+                  <Route path="/lokalni-producenci/:id" element={<POIDetailPage />} />
                 </Routes>
               </main>
               <Footer />
