@@ -3,12 +3,27 @@ import type { ZrobieEvent } from "../../types/zrobie-event";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale/pl";
 import { getEventDateTime, parsePrice, getCurrency, isEventFree } from "../../types/zrobie-event";
+import { API_BASE_URL } from "../../api/client";
 
 interface EventCardProps {
   event: ZrobieEvent;
   language?: "pl" | "en" | "uk";
   viewMode?: "grid" | "list";
 }
+
+// Extract origin from API_BASE_URL (e.g., "https://content.zrobie.jutro.net")
+const API_ORIGIN = new URL(API_BASE_URL).origin;
+
+// Helper to convert relative API URLs to absolute URLs
+const getAbsoluteImageUrl = (url: string | null): string | null => {
+  if (!url) return null;
+  // If URL is already absolute (starts with http), return as-is
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  // Relative URL - prepend origin only (API already returns /api/v1/... paths)
+  return `${API_ORIGIN}${url}`;
+};
 
 const EventCard: React.FC<EventCardProps> = ({
   event,
@@ -20,8 +35,8 @@ const EventCard: React.FC<EventCardProps> = ({
   // Title is now a simple string (no multi-language support in new API)
   const title = event.Title;
 
-  // ImageURL is absolute in the new API
-  const imageUrl = event.ImageURL || null;
+  // ImageURL - convert relative URLs to absolute
+  const imageUrl = getAbsoluteImageUrl(event.ImageURL);
 
   // Get combined datetime
   const eventDateTime = getEventDateTime(event);

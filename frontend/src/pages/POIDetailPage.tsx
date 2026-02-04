@@ -88,7 +88,7 @@ const POIDetailPage: React.FC = () => {
             Obiekt o podanym identyfikatorze nie istnieje.
           </p>
           <button
-            onClick={() => navigate("/lokalni-producenci")}
+            onClick={() => navigate("/punkty-warte-zobaczenia")}
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
             <svg
@@ -119,7 +119,7 @@ const POIDetailPage: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <button
-            onClick={() => navigate("/lokalni-producenci")}
+            onClick={() => navigate("/punkty-warte-zobaczenia")}
             className="inline-flex items-center text-blue-100 hover:text-white transition-colors mb-4"
           >
             <svg

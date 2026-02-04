@@ -42,7 +42,7 @@ const translations: Record<Language, Translations> = {
   pl: {
     // Header
     events: 'Wydarzenia',
-    localProducers: 'Lokalni Producenci',
+    localProducers: 'Punkty warte zobaczenia',
     map: 'Mapa',
     aboutUs: 'O nas',
     language: 'Język',
@@ -79,7 +79,7 @@ const translations: Record<Language, Translations> = {
   en: {
     // Header
     events: 'Events',
-    localProducers: 'Local Producers',
+    localProducers: 'Points of Interest',
     map: 'Map',
     aboutUs: 'About Us',
     language: 'Language',
@@ -116,7 +116,7 @@ const translations: Record<Language, Translations> = {
   uk: {
     // Header
     events: 'Події',
-    localProducers: 'Місцеві Виробники',
+    localProducers: 'Цікаві місця',
     map: 'Карта',
     aboutUs: 'Про нас',
     language: 'Мова',

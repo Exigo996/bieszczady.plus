@@ -10,7 +10,7 @@ const POICard: React.FC<POICardProps> = ({ poi }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/lokalni-producenci/${poi.ID}`);
+    navigate(`/punkty-warte-zobaczenia/${poi.ID}`);
   };
 
   // Generate a color based on POIType

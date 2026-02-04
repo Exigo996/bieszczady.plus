@@ -109,9 +109,9 @@ const Header: React.FC = () => {
               {t.events}
             </Link>
             <Link
-              to="/produkty"
+              to="/punkty-warte-zobaczenia"
               className={`px-3 py-2 text-sm font-medium transition-colors border-b-2 ${
-                isActive("/produkty")
+                isActive("/punkty-warte-zobaczenia")
                   ? "text-gray-900 border-blue-600"
                   : "text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-600"
               }`}
@@ -394,9 +394,9 @@ const Header: React.FC = () => {
                 {t.events}
               </Link>
               <Link
-                to="/produkty"
+                to="/punkty-warte-zobaczenia"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/produkty")
+                  isActive("/punkty-warte-zobaczenia")
                     ? "text-white bg-blue-600"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 } transition-colors`}

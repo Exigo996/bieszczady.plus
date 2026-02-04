@@ -34,9 +34,9 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/mapa" element={<MapPage />} />
                   <Route path="/produkty" element={<POIsPage />} />
-                  <Route path="/lokalni-producenci" element={<POIsPage />} />
+                  <Route path="/punkty-warte-zobaczenia" element={<POIsPage />} />
                   <Route path="/produkty/:id" element={<POIDetailPage />} />
-                  <Route path="/lokalni-producenci/:id" element={<POIDetailPage />} />
+                  <Route path="/punkty-warte-zobaczenia/:id" element={<POIDetailPage />} />
                 </Routes>
               </main>
               <Footer />
