@@ -1,5 +1,6 @@
 /**
  * Types for the Zrobie Jutro API (content.zrobie.jutro.net)
+ * Based on OpenAPI spec v1.0.0
  */
 
 export interface ZrobieLocation {
@@ -7,35 +8,40 @@ export interface ZrobieLocation {
   lat: number;
 }
 
-export interface ZrobieSite {
+export interface SiteEmbed {
   ID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string | null;
   Name: string;
   Type: string;
   BaseURL: string;
-  Enabled: boolean;
-  ScrapeSchedule: string;
-  LastScraped: string;
-  LastNewContent: string;
-  Status: string;
-  LastError: string;
-  Config: unknown;
-  DefaultPublic: boolean;
+}
+
+export interface POIEmbed {
+  ID: number;
+  Name: string;
+  POIType: string;
+  GeometryType: "point" | "linestring" | "polygon";
+  Description: string;
+  Point: { lat: number; lng: number };
+  Centroid: { lat: number; lng: number };
+  IsPublic: boolean;
+  IsVerified: boolean;
   Source: string;
-  Location: ZrobieLocation;
-  LocationZoom: number;
+}
+
+export interface Pagination {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface ZrobieEvent {
   ID: number;
   CreatedAt: string;
   UpdatedAt: string;
-  DeletedAt: string | null;
   UniqueID: string;
   SiteID: number;
-  Site: ZrobieSite;
+  Site: SiteEmbed;
   SourceID: string;
   SourceURL: string;
   Title: string;
@@ -47,15 +53,20 @@ export interface ZrobieEvent {
   ImageURL: string;
   Venue: string;
   Price: string; // e.g. "20,00 zł" or empty
-  Location: ZrobieLocation;
   ScrapedAt: string;
-  RawData: unknown;
   IsPublic: boolean;
+  POIID?: number;
+  POI?: POIEmbed;
+  Distance?: number; // Distance from origin in km (when lat/lng provided)
 }
 
 export interface ZrobieEventsResponse {
-  currentPage: number;
-  events: ZrobieEvent[];
+  data: ZrobieEvent[];
+  pagination: Pagination;
+  polygon?: {
+    type: "Polygon";
+    coordinates: number[][][];
+  };
 }
 
 /**

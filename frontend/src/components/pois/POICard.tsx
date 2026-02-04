@@ -105,7 +105,7 @@ const POICard: React.FC<POICardProps> = ({ poi }) => {
                   clipRule="evenodd"
                 />
               </svg>
-              {poi.Point.lat.toFixed(4)}, {poi.Point.lng.toFixed(4)}
+              {poi.Point ? `${poi.Point.lat.toFixed(4)}, ${poi.Point.lng.toFixed(4)}` : "Brak współrzędnych"}
             </span>
           </div>
         </div>

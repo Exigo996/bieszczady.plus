@@ -123,6 +123,6 @@ export interface EventFilters {
   price_type?: PriceType;
   radius?: number;
   search?: string;
-  date_from?: string;
-  date_to?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }

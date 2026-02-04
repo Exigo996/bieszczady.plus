@@ -270,17 +270,47 @@ class FacebookEventScraper:
 
 ### 3. API Endpoints
 
-**Current Implementation**:
+**API Documentation**: The project uses **OpenAPI 3.0 spec** for API documentation. See `./openapi.yaml` in the project root for the complete API schema including request/response formats, parameters, and data models.
+
+**Important**: When API changes are made, always update `openapi.yaml` to keep documentation in sync.
+
+**Current Implementation** (External Scraper API - content.zrobie.jutro.net):
 
 ```
-GET    /api/events/              # List all events
-GET    /api/events/{id}/         # Get event by ID
-GET    /api/events/{slug}/       # Get event by slug
-GET    /api/organizers/          # List all organizers
-GET    /api/organizers/{id}/     # Get organizer by ID
-GET    /api/organizers/{id}/events/  # Get organizer's events
-GET    /api/gallery/             # Gallery endpoints
+GET    /api/v1/events           # List events (paginated, with filters)
+GET    /api/v1/events/{id}      # Get event by ID
+GET    /api/v1/videos           # List videos
+GET    /api/v1/videos/{id}      # Get video by ID
+GET    /api/v1/pois             # List POIs (Points of Interest)
+GET    /api/v1/pois/{id}        # Get POI by ID
+GET    /api/v1/tags             # List all tags grouped by category
+GET    /api/v1/tags/categories  # List tag categories
+GET    /api/v1/tags/{slug}      # Get tag by slug with usage counts
 ```
+
+**Response Format**: All list endpoints return:
+```json
+{
+  "data": [...],           // Array of items
+  "pagination": {          // Pagination metadata
+    "page": 1,
+    "pageSize": 50,
+    "total": 150,
+    "totalPages": 3
+  },
+  "polygon": {...}         // Optional: GeoJSON isochrone polygon
+}
+```
+
+**Frontend API Client**: Located in `frontend/src/api/`
+- `client.ts` - Axios instance with base URL and interceptors
+- `events.ts` - Event API calls and types
+- `pois.ts` - POI API calls and types
+- `organizers.ts` - Organizer API calls
+
+**TypeScript Types**: Mirror OpenAPI schemas in `frontend/src/types/`
+- `zrobie-event.ts` - Event, SiteEmbed, Pagination types
+- `poi.ts` - POI, POIPoint, POIPolygon types
 
 ### 4. Maps
 

@@ -23,15 +23,17 @@ export interface POI {
   ID: number;
   Name: string;
   POIType: string;
-  GeometryType: "point" | "polygon";
+  GeometryType: "point" | "linestring" | "polygon";
   Description: string;
-  Point: POIPoint;
-  Centroid: POIPoint;
+  Point?: POIPoint | null;
+  Centroid?: POIPoint | null;
   IsPublic: boolean;
   IsVerified: boolean;
   Source: string;
   // Optional polygon data (may only be present in detail view)
   polygon?: POIPolygon;
+  // Optional distance from search origin (when lat/lng params provided)
+  Distance?: number;
 }
 
 export interface POIsResponse {
@@ -49,9 +51,15 @@ export const hasPolygon = (poi: POI): boolean => {
 
 /**
  * Helper to get coordinates for Leaflet (expects [lat, lng])
+ * Handles optional Point and falls back to Centroid
  */
-export const getLeafletPosition = (point: POIPoint): [number, number] => {
-  return [point.lat, point.lng];
+export const getLeafletPosition = (point?: POIPoint | null, centroid?: POIPoint | null): [number, number] => {
+  const validPoint = point || centroid;
+  if (!validPoint) {
+    // Default to Bieszczady center if no coordinates available
+    return [49.35, 22.5];
+  }
+  return [validPoint.lat, validPoint.lng];
 };
 
 /**

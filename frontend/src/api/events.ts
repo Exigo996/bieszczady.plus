@@ -3,65 +3,76 @@ import type { ZrobieEvent, ZrobieEventsResponse } from "../types/zrobie-event";
 
 export interface EventFilters {
   search?: string;
-  date_from?: string;
-  date_to?: string;
-  site?: string;
-  is_public?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  poiId?: number;
+  lat?: number;
+  lng?: number;
+  radius?: number;
+  minutes?: number;
+  mode?: "auto" | "pedestrian" | "bicycle";
+  sort?: "date" | "title" | "created_at" | "scraped_at" | "distance";
+  order?: "asc" | "desc";
 }
 
 /**
  * Fetch events from Zrobie Jutro API with optional filters
  */
 export const fetchEvents = async (filters?: EventFilters): Promise<ZrobieEvent[]> => {
-  const params: Record<string, string | number | boolean> = {};
+  const params: Record<string, string | number> = {};
 
   if (filters?.search) {
     params.search = filters.search;
   }
 
-  if (filters?.date_from) {
-    params.date_from = filters.date_from;
+  if (filters?.dateFrom) {
+    params.dateFrom = filters.dateFrom;
   }
 
-  if (filters?.date_to) {
-    params.date_to = filters.date_to;
+  if (filters?.dateTo) {
+    params.dateTo = filters.dateTo;
   }
 
-  if (filters?.site) {
-    params.site = filters.site;
+  if (filters?.poiId) {
+    params.poiId = filters.poiId;
   }
 
-  if (filters?.is_public !== undefined) {
-    params.is_public = filters.is_public;
+  if (filters?.lat) {
+    params.lat = filters.lat;
+  }
+
+  if (filters?.lng) {
+    params.lng = filters.lng;
+  }
+
+  if (filters?.radius) {
+    params.radius = filters.radius;
+  }
+
+  if (filters?.minutes) {
+    params.minutes = filters.minutes;
+  }
+
+  if (filters?.mode) {
+    params.mode = filters.mode;
+  }
+
+  if (filters?.sort) {
+    params.sort = filters.sort;
+  }
+
+  if (filters?.order) {
+    params.order = filters.order;
   }
 
   const response = await apiClient.get<ZrobieEventsResponse>("/events", { params });
-
-  // Handle both paginated and non-paginated responses
-  if (response.data.events) {
-    return response.data.events;
-  }
-
-  // If the API returns an array directly
-  if (Array.isArray(response.data)) {
-    return response.data as unknown as ZrobieEvent[];
-  }
-
-  return [];
+  return response.data.data;
 };
 
 /**
  * Fetch a single event by ID
  */
-export const fetchEventById = async (id: number): Promise<ZrobieEvent> => {
-  const response = await apiClient.get<ZrobieEvent>(`/events/${id}`);
-  return response.data;
-};
-
-/**
- * Fetch a single event by UniqueID
- */
-export const fetchEventByUniqueId = async (uniqueId: string): Promise<ZrobieEvent> => {
-  const response = await apiClient.get<ZrobieEvent>(`/events/by-unique-id/${uniqueId}`);
+export const fetchEventById = async (id: number): Promise<{ data: ZrobieEvent }> => {
+  const response = await apiClient.get<{ data: ZrobieEvent }>(`/events/${id}`);
   return response.data;
 };

@@ -159,7 +159,11 @@ const POIsPage: React.FC = () => {
                       </p>
                       <p>
                         <span className="font-semibold">Współrzędne:</span>{" "}
-                        {selectedPOI.Point.lat.toFixed(6)}, {selectedPOI.Point.lng.toFixed(6)}
+                        {selectedPOI.Point
+                          ? `${selectedPOI.Point.lat.toFixed(6)}, ${selectedPOI.Point.lng.toFixed(6)}`
+                          : selectedPOI.Centroid
+                            ? `${selectedPOI.Centroid.lat.toFixed(6)}, ${selectedPOI.Centroid.lng.toFixed(6)}`
+                            : "Brak danych"}
                       </p>
                     </div>
                   </div>

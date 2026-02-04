@@ -110,7 +110,7 @@ const POIDetailPage: React.FC = () => {
   }
 
   const color = getTypeColor(poi.POIType);
-  const center = getLeafletPosition(poi.Point);
+  const center = getLeafletPosition(poi.Point, poi.Centroid);
   const mapZoom = poi.GeometryType === "polygon" ? 11 : 13;
 
   return (
@@ -298,12 +298,28 @@ const POIDetailPage: React.FC = () => {
                       Współrzędne
                     </span>
                   </div>
-                  <p className="text-sm font-mono text-gray-900">
-                    Lat: {poi.Point.lat.toFixed(6)}
-                  </p>
-                  <p className="text-sm font-mono text-gray-900">
-                    Lng: {poi.Point.lng.toFixed(6)}
-                  </p>
+                  {poi.Point ? (
+                    <>
+                      <p className="text-sm font-mono text-gray-900">
+                        Lat: {poi.Point.lat.toFixed(6)}
+                      </p>
+                      <p className="text-sm font-mono text-gray-900">
+                        Lng: {poi.Point.lng.toFixed(6)}
+                      </p>
+                    </>
+                  ) : poi.Centroid ? (
+                    <>
+                      <p className="text-xs text-gray-500 mb-1">Centroid obszaru:</p>
+                      <p className="text-sm font-mono text-gray-900">
+                        Lat: {poi.Centroid.lat.toFixed(6)}
+                      </p>
+                      <p className="text-sm font-mono text-gray-900">
+                        Lng: {poi.Centroid.lng.toFixed(6)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-500">Brak danych</p>
+                  )}
                 </div>
 
                 {/* Source */}

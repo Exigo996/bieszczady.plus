@@ -70,7 +70,7 @@ const POIMap: React.FC<POIMapProps> = ({
   const [mapZoom, setMapZoom] = React.useState<number | null>(null);
 
   // Filter POIs with geometry data
-  const poisWithPoints = pois.filter((poi) => poi.Point && poi.GeometryType === "point");
+  const poisWithPoints = pois.filter((poi) => (poi.Point || poi.Centroid));
   const poisWithPolygons = pois.filter(
     (poi) => poi.GeometryType === "polygon" && poi.polygon
   );
@@ -78,8 +78,8 @@ const POIMap: React.FC<POIMapProps> = ({
   // Handle marker click
   const handleMarkerClick = (poi: POI) => {
     onPOISelect(poi);
-    if (poi.Point) {
-      setMapCenter(getLeafletPosition(poi.Point));
+    if (poi.Point || poi.Centroid) {
+      setMapCenter(getLeafletPosition(poi.Point, poi.Centroid));
       setMapZoom(13);
     }
   };
@@ -102,7 +102,7 @@ const POIMap: React.FC<POIMapProps> = ({
         {/* Point markers */}
         {poisWithPoints.map((poi) => {
           const color = getTypeColor(poi.POIType);
-          const position = getLeafletPosition(poi.Point);
+          const position = getLeafletPosition(poi.Point, poi.Centroid);
 
           return (
             <Marker

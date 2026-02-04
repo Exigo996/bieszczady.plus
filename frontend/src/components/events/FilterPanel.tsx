@@ -129,16 +129,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange }) =
           <input
             id="date-from"
             type="date"
-            value={filters.date_from || ''}
-            onChange={(e) => onFiltersChange({ ...filters, date_from: e.target.value || undefined })}
+            value={filters.dateFrom || ''}
+            onChange={(e) => onFiltersChange({ ...filters, dateFrom: e.target.value || undefined })}
             className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             aria-label="Data od"
           />
           <input
             id="date-to"
             type="date"
-            value={filters.date_to || ''}
-            onChange={(e) => onFiltersChange({ ...filters, date_to: e.target.value || undefined })}
+            value={filters.dateTo || ''}
+            onChange={(e) => onFiltersChange({ ...filters, dateTo: e.target.value || undefined })}
             className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             aria-label="Data do"
           />
