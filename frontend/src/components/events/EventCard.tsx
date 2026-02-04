@@ -133,7 +133,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>{event.Venue || "Brak lokalizacji"}</span>
+                <span>{event.Venue || event.Site?.Name || "Brak lokalizacji"}</span>
               </div>
 
               {/* Price */}
@@ -292,9 +292,9 @@ const EventCard: React.FC<EventCardProps> = ({
                       </span>
                     </div>
                     <p className="text-lg font-bold text-purple-900">
-                      {event.Venue || "Brak lokalizacji"}
+                      {event.Venue || event.Site?.Name || "Brak lokalizacji"}
                     </p>
-                    {event.Site?.Name && (
+                    {event.Site?.Name && event.Venue && (
                       <p className="mt-1 text-sm text-purple-700">
                         📍 {event.Site.Name}
                       </p>
@@ -483,7 +483,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 />
               </svg>
               <span className="truncate drop-shadow-lg">
-                {event.Venue || "Brak lokalizacji"}
+                {event.Venue || event.Site?.Name || "Brak lokalizacji"}
               </span>
             </div>
           </div>
@@ -640,9 +640,9 @@ const EventCard: React.FC<EventCardProps> = ({
                     </span>
                   </div>
                   <p className="text-lg font-bold text-purple-900">
-                    {event.Venue || "Brak lokalizacji"}
+                    {event.Venue || event.Site?.Name || "Brak lokalizacji"}
                   </p>
-                  {event.Site?.Name && (
+                  {event.Site?.Name && event.Venue && (
                     <p className="mt-1 text-sm text-purple-700">
                       📍 {event.Site.Name}
                     </p>
