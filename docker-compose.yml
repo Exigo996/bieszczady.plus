@@ -54,7 +54,7 @@ services:
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
       ALLOWED_HOSTS: "localhost,127.0.0.1,backend,0.0.0.0"
-      CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -103,21 +103,23 @@ services:
       - redis
       - backend
 
-  # React Frontend
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: bieszczady_frontend
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules # Prevent overwriting node_modules
-  #   ports:
-  #     - "5173:5173"
-  #   environment:
-  #     VITE_API_URL: "http://localhost:8000/api"
-  #   depends_on:
-  #     - backend
+  # Nuxt Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: bieszczady_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/.output  # Prevent overwriting build output
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NUXT_PUBLIC_API_BASE: http://localhost:8000/api
+      NUXT_PUBLIC_SITE_URL: http://localhost:3000
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

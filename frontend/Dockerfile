@@ -1,17 +1,35 @@
-FROM node:20-alpine
-
-# Set working directory
+# Build stage
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install dependencies first (for better caching)
+# Copy package files
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy project files
+# Copy source files
 COPY . .
 
-# Expose port
-EXPOSE 5173
+# Build the application
+RUN npm run build
 
-# Start development server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Production stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Set environment to production
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOST=0.0.0.0
+
+# Copy built files from builder
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/package*.json ./
+
+# Install production dependencies only
+RUN npm ci --production=only
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
+CMD ["node", ".output/server/index.mjs"]

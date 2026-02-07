@@ -1,0 +1,45 @@
+/* Custom styles for Leaflet */
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #10b981;
+  --color-secondary: #f59e0b;
+  --color-culture: #8b5cf6;
+  --color-nature: #10b981;
+  --color-sport: #3b82f6;
+  --color-history: #f59e0b;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typewriter animation cursor */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: currentColor;
+  animation: blink 1s infinite;
+  vertical-align: text-bottom;
+}
+
+/* Category colors */
+.category-culture { --category-color: var(--color-culture); }
+.category-nature { --category-color: var(--color-nature); }
+.category-sport { --category-color: var(--color-sport); }
+.category-history { --category-color: var(--color-history); }

@@ -1,0 +1,118 @@
+{
+  "language": {
+    "change": "Change language"
+  },
+  "onboarding": {
+    "greeting": "Hello!",
+    "subtitle": "Choose a category:",
+    "withChildren": "I'm with children"
+  },
+  "categories": {
+    "culture": "Culture",
+    "nature": "Nature",
+    "sport": "Sport",
+    "history": "History"
+  },
+  "explorer": {
+    "hero": {
+      "region": "Bieszczady +",
+      "categories": {
+        "entertainment": "Entertainment",
+        "culture": "Culture",
+        "nature": "Nature",
+        "history": "History"
+      },
+      "welcomeText": "Choose a point on the map and see what's happening nearby"
+    },
+    "all": "All",
+    "tabs": {
+      "map": "Map",
+      "events": "Events",
+      "pois": "Places",
+      "favorites": "Favorites"
+    },
+    "transport": {
+      "car": "Car",
+      "bike": "Bike",
+      "walk": "Walk"
+    },
+    "mode": {
+      "time": "Time",
+      "distance": "Distance"
+    },
+    "time": {
+      "label": "Travel time",
+      "minutes": "{n} min"
+    },
+    "distance": {
+      "label": "Radius",
+      "kilometers": "{n} km"
+    },
+    "location": {
+      "get": "My location",
+      "search": "Search on map",
+      "reset": "Reset"
+    },
+    "description": "{transport}, up to {time}",
+    "noPoiSelected": "No POI selected",
+    "results": "{n} results",
+    "noResults": "No results",
+    "tryDifferentFilters": "Try different filters",
+    "event": {
+      "free": "Free"
+    },
+    "map": {
+      "show": "Show map",
+      "hide": "Hide map",
+      "clickForDetails": "Click for details",
+      "noResults": "No results on map"
+    },
+    "carousel": {
+      "swipe": "Swipe for more"
+    },
+    "modal": {
+      "event": "event",
+      "events": "events"
+    }
+  },
+  "favorites": {
+    "title": "My favorites",
+    "empty": "No favorites yet",
+    "events": "Events",
+    "pois": "Places"
+  },
+  "actions": {
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "addCalendar": "Add to calendar",
+    "buyTicket": "Buy ticket",
+    "seeMore": "See more"
+  },
+  "newsletter": {
+    "title": "Subscribe to newsletter",
+    "placeholder": "Your email",
+    "submit": "Subscribe",
+    "success": "Thank you!"
+  },
+  "modal": {
+    "about": "About",
+    "visitWebsite": "Visit website"
+  },
+  "poi": {
+    "contact": "Contact",
+    "videos": "Videos",
+    "loadingVideos": "Loading videos...",
+    "backToExplorer": "Back to explorer",
+    "videosSection": "How does it look like",
+    "eventsSection": "What's going on here",
+    "nearbySection": "What's nearby",
+    "noVideos": "No videos available",
+    "noEvents": "No events at this location",
+    "noNearby": "No nearby places found",
+    "loadingNearby": "Searching nearby...",
+    "about": "About this place"
+  },
+  "actions": {
+    "back": "Back"
+  }
+}

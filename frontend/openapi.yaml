@@ -1,0 +1,698 @@
+openapi: 3.0.3
+info:
+  title: BPlus Scraper Public API
+  version: 1.0.0
+  description: |
+    Public API for browsing scraped events, videos, and POIs.
+
+    All endpoints return only public content (is_public=true).
+    No authentication is required for these endpoints.
+
+servers:
+  - url: /api/v1
+    description: Public API v1
+
+paths:
+  /events:
+    get:
+      summary: List events
+      description: Get a paginated list of public events with optional filtering and sorting.
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+        - name: poiId
+          in: query
+          description: Filter by POI ID
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          description: Filter events from this date onwards (inclusive, YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Filter events up to this date (inclusive, YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          description: Search in title and description
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          description: Longitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          description: Search radius in kilometers (requires lat and lng, ignored when minutes is provided)
+          schema:
+            type: number
+            default: 50
+        - name: minutes
+          in: query
+          description: Travel time in minutes for isochrone filtering (1-120). When provided with lat/lng, uses isochrone mode instead of radius.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 120
+        - name: mode
+          in: query
+          description: Transport mode for isochrone (requires minutes)
+          schema:
+            type: string
+            enum: [auto, pedestrian, bicycle]
+            default: auto
+        - name: sort
+          in: query
+          description: Sort field (distance only available when lat/lng provided)
+          schema:
+            type: string
+            enum: [date, title, created_at, scraped_at, distance]
+            default: date
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventListResponse'
+
+  /events/{id}:
+    get:
+      summary: Get event by ID
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /videos:
+    get:
+      summary: List videos
+      description: Get a paginated list of public videos with optional filtering and sorting.
+      tags:
+        - Videos
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+        - name: poiId
+          in: query
+          description: Filter by POI ID (videos associated with this POI)
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Search in title and description
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          description: Longitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          description: Search radius in kilometers (requires lat and lng, ignored when minutes is provided)
+          schema:
+            type: number
+            default: 50
+        - name: minutes
+          in: query
+          description: Travel time in minutes for isochrone filtering (1-120). When provided with lat/lng, uses isochrone mode instead of radius.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 120
+        - name: mode
+          in: query
+          description: Transport mode for isochrone (requires minutes)
+          schema:
+            type: string
+            enum: [auto, pedestrian, bicycle]
+            default: auto
+        - name: sort
+          in: query
+          description: Sort field (distance only available when lat/lng provided)
+          schema:
+            type: string
+            enum: [title, created_at, scraped_at, duration, distance]
+            default: scraped_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: List of videos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoListResponse'
+
+  /videos/{id}:
+    get:
+      summary: Get video by ID
+      tags:
+        - Videos
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Video details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /pois:
+    get:
+      summary: List POIs
+      description: Get a paginated list of public Points of Interest.
+      tags:
+        - POIs
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+        - name: poiType
+          in: query
+          description: Filter by POI type
+          schema:
+            type: string
+        - name: geometryType
+          in: query
+          description: Filter by geometry type
+          schema:
+            type: string
+            enum: [point, linestring, polygon]
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated slugs)
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search by name
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          description: Longitude for location-based filtering
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          description: Search radius in meters (ignored when minutes is provided)
+          schema:
+            type: number
+            default: 50000
+        - name: minutes
+          in: query
+          description: Travel time in minutes for isochrone filtering (1-120). When provided with lat/lng, uses isochrone mode instead of radius.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 120
+        - name: mode
+          in: query
+          description: Transport mode for isochrone (requires minutes)
+          schema:
+            type: string
+            enum: [auto, pedestrian, bicycle]
+            default: auto
+      responses:
+        '200':
+          description: List of POIs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POIListResponse'
+
+  /pois/{id}:
+    get:
+      summary: Get POI by ID
+      tags:
+        - POIs
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: POI details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tags:
+    get:
+      summary: List all tags
+      description: Get all tags grouped by category.
+      tags:
+        - Tags
+      responses:
+        '200':
+          description: Tags grouped by category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TagCategory'
+
+  /tags/categories:
+    get:
+      summary: List tag categories
+      description: Get all tag categories (without tags).
+      tags:
+        - Tags
+      responses:
+        '200':
+          description: List of tag categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TagCategory'
+
+  /tags/{slug}:
+    get:
+      summary: Get tag by slug
+      description: Get a single tag with usage counts.
+      tags:
+        - Tags
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag details with counts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tag:
+                        $ref: '#/components/schemas/Tag'
+                      counts:
+                        type: object
+                        properties:
+                          events:
+                            type: integer
+                          videos:
+                            type: integer
+                          images:
+                            type: integer
+                          pois:
+                            type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    pageSize:
+      name: pageSize
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        default: 50
+        minimum: 1
+        maximum: 500
+    id:
+      name: id
+      in: path
+      required: true
+      description: Resource ID
+      schema:
+        type: integer
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 50
+        total:
+          type: integer
+          example: 150
+        totalPages:
+          type: integer
+          example: 3
+
+    DataResponse:
+      type: object
+      properties:
+        data:
+          type: object
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Resource not found"
+        code:
+          type: string
+          example: "NOT_FOUND"
+
+    Event:
+      type: object
+      properties:
+        ID:
+          type: integer
+        CreatedAt:
+          type: string
+          format: date-time
+        UpdatedAt:
+          type: string
+          format: date-time
+        UniqueID:
+          type: string
+          description: Unique identifier in format {site_name}-{source_id}
+        SiteID:
+          type: integer
+        Site:
+          $ref: '#/components/schemas/SiteEmbed'
+        SourceID:
+          type: string
+        SourceURL:
+          type: string
+          format: uri
+        Title:
+          type: string
+        Description:
+          type: string
+        Date:
+          type: string
+          format: date
+        StartTime:
+          type: string
+        EndTime:
+          type: string
+        Duration:
+          type: integer
+          description: Duration in minutes
+        ImageURL:
+          type: string
+          format: uri
+        Venue:
+          type: string
+        Price:
+          type: string
+        ScrapedAt:
+          type: string
+          format: date-time
+        IsPublic:
+          type: boolean
+        POIID:
+          type: integer
+        POI:
+          $ref: '#/components/schemas/POI'
+        Distance:
+          type: number
+          format: double
+          description: Distance from origin in kilometers (only present when lat/lng query params are provided)
+
+    Video:
+      type: object
+      properties:
+        ID:
+          type: integer
+        CreatedAt:
+          type: string
+          format: date-time
+        UpdatedAt:
+          type: string
+          format: date-time
+        UniqueID:
+          type: string
+        SiteID:
+          type: integer
+        Site:
+          $ref: '#/components/schemas/SiteEmbed'
+        SourceID:
+          type: string
+        SourceURL:
+          type: string
+          format: uri
+        Title:
+          type: string
+        Description:
+          type: string
+        VideoURL:
+          type: string
+          format: uri
+        ThumbnailURL:
+          type: string
+          format: uri
+        Duration:
+          type: integer
+          description: Duration in seconds
+        PublishedAt:
+          type: string
+          format: date-time
+        ScrapedAt:
+          type: string
+          format: date-time
+        IsPublic:
+          type: boolean
+        POIs:
+          type: array
+          items:
+            $ref: '#/components/schemas/POI'
+
+    POI:
+      type: object
+      properties:
+        ID:
+          type: integer
+        Name:
+          type: string
+        POIType:
+          type: string
+        GeometryType:
+          type: string
+          enum: [point, linestring, polygon]
+        Description:
+          type: string
+        Point:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+            lng:
+              type: number
+              format: double
+        Centroid:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+            lng:
+              type: number
+              format: double
+        IsPublic:
+          type: boolean
+        IsVerified:
+          type: boolean
+        Source:
+          type: string
+        Distance:
+          type: number
+          format: double
+          description: Distance from origin in kilometers (only present when lat/lng query params are provided)
+
+    SiteEmbed:
+      type: object
+      properties:
+        ID:
+          type: integer
+        Name:
+          type: string
+        Type:
+          type: string
+        BaseURL:
+          type: string
+          format: uri
+
+    Tag:
+      type: object
+      properties:
+        ID:
+          type: integer
+        Slug:
+          type: string
+        Name:
+          type: string
+        CategoryID:
+          type: integer
+
+    TagCategory:
+      type: object
+      properties:
+        ID:
+          type: integer
+        Slug:
+          type: string
+        Name:
+          type: string
+        SortOrder:
+          type: integer
+        Tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+
+    EventListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        polygon:
+          $ref: '#/components/schemas/GeoJSONPolygon'
+          description: Isochrone polygon geometry (only present when minutes parameter was used)
+
+    VideoListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Video'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        polygon:
+          $ref: '#/components/schemas/GeoJSONPolygon'
+          description: Isochrone polygon geometry (only present when minutes parameter was used)
+
+    POIListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/POI'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        polygon:
+          $ref: '#/components/schemas/GeoJSONPolygon'
+          description: Isochrone polygon geometry (only present when minutes parameter was used)
+
+    GeoJSONPolygon:
+      type: object
+      description: GeoJSON Polygon geometry
+      properties:
+        type:
+          type: string
+          example: "Polygon"
+        coordinates:
+          type: array
+          description: Array of linear ring coordinate arrays
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+              minItems: 2
+              maxItems: 2

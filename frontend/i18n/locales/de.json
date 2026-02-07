@@ -1,0 +1,118 @@
+{
+  "language": {
+    "change": "Sprache ändern"
+  },
+  "onboarding": {
+    "greeting": "Guten Tag!",
+    "subtitle": "Wählen Sie eine Kategorie:",
+    "withChildren": "Ich bin mit Kindern"
+  },
+  "categories": {
+    "culture": "Kultur",
+    "nature": "Natur",
+    "sport": "Sport",
+    "history": "Geschichte"
+  },
+  "explorer": {
+    "hero": {
+      "region": "Bieszczady +",
+      "categories": {
+        "entertainment": "Unterhaltung",
+        "culture": "Kultur",
+        "nature": "Natur",
+        "history": "Geschichte"
+      },
+      "welcomeText": "Wählen Sie einen Punkt auf der Karte und sehen Sie, was in der Nähe passiert"
+    },
+    "all": "Alle",
+    "tabs": {
+      "map": "Karte",
+      "events": "Veranstaltungen",
+      "pois": "Orte",
+      "favorites": "Favoriten"
+    },
+    "transport": {
+      "car": "Auto",
+      "bike": "Fahrrad",
+      "walk": "Zu Fuß"
+    },
+    "mode": {
+      "time": "Zeit",
+      "distance": "Entfernung"
+    },
+    "time": {
+      "label": "Reisezeit",
+      "minutes": "{n} min"
+    },
+    "distance": {
+      "label": "Umkreis",
+      "kilometers": "{n} km"
+    },
+    "location": {
+      "get": "Mein Standort",
+      "search": "Auf Karte suchen",
+      "reset": "Zurücksetzen"
+    },
+    "description": "{transport}, bis zu {time}",
+    "noPoiSelected": "Kein Ort ausgewählt",
+    "results": "{n} Ergebnisse",
+    "noResults": "Keine Ergebnisse",
+    "tryDifferentFilters": "Versuchen Sie andere Filter",
+    "event": {
+      "free": "Kostenlos"
+    },
+    "map": {
+      "show": "Karte anzeigen",
+      "hide": "Karte ausblenden",
+      "clickForDetails": "Klicken Sie für Details",
+      "noResults": "Keine Ergebnisse auf der Karte"
+    },
+    "carousel": {
+      "swipe": "Wischen für mehr"
+    },
+    "modal": {
+      "event": "Veranstaltung",
+      "events": "Veranstaltungen"
+    }
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "empty": "Keine Favoriten",
+    "events": "Veranstaltungen",
+    "pois": "Orte"
+  },
+  "actions": {
+    "addFavorite": "Zu Favoriten hinzufügen",
+    "removeFavorite": "Aus Favoriten entfernen",
+    "addCalendar": "Zum Kalender hinzufügen",
+    "buyTicket": "Ticket kaufen",
+    "seeMore": "Mehr sehen"
+  },
+  "newsletter": {
+    "title": "Newsletter abonnieren",
+    "placeholder": "Ihre E-Mail",
+    "submit": "Abonnieren",
+    "success": "Danke!"
+  },
+  "modal": {
+    "about": "Über",
+    "visitWebsite": "Website besuchen"
+  },
+  "poi": {
+    "contact": "Kontakt",
+    "videos": "Videos",
+    "loadingVideos": "Videos werden geladen...",
+    "backToExplorer": "Zurück zum Explorer",
+    "videosSection": "Wie es aussieht",
+    "eventsSection": "Was hier passiert",
+    "nearbySection": "Was in der Nähe ist",
+    "noVideos": "Keine Videos verfügbar",
+    "noEvents": "Keine Veranstaltungen an diesem Ort",
+    "noNearby": "Keine Orte in der Nähe gefunden",
+    "loadingNearby": "Suche in der Nähe...",
+    "about": "Über diesen Ort"
+  },
+  "actions": {
+    "back": "Zurück"
+  }
+}

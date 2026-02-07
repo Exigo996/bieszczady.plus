@@ -1,0 +1,118 @@
+{
+  "language": {
+    "change": "Змінити мову"
+  },
+  "onboarding": {
+    "greeting": "Добрий день!",
+    "subtitle": "Виберіть категорію:",
+    "withChildren": "Я з дітьми"
+  },
+  "categories": {
+    "culture": "Культура",
+    "nature": "Природа",
+    "sport": "Спорт",
+    "history": "Історія"
+  },
+  "explorer": {
+    "hero": {
+      "region": "Бещчади +",
+      "categories": {
+        "entertainment": "Розваги",
+        "culture": "Культура",
+        "nature": "Природа",
+        "history": "Історія"
+      },
+      "welcomeText": "Виберіть точку на карті та дізнайтеся, що відбувається поруч"
+    },
+    "all": "Всі",
+    "tabs": {
+      "map": "Карта",
+      "events": "Події",
+      "pois": "Місця",
+      "favorites": "Улюблене"
+    },
+    "transport": {
+      "car": "Автомобіль",
+      "bike": "Велосипед",
+      "walk": "Пішки"
+    },
+    "mode": {
+      "time": "Час",
+      "distance": "Відстань"
+    },
+    "time": {
+      "label": "Час у дорозі",
+      "minutes": "{n} хв"
+    },
+    "distance": {
+      "label": "Радіус",
+      "kilometers": "{n} км"
+    },
+    "location": {
+      "get": "Моя локація",
+      "search": "Шукати на карті",
+      "reset": "Скинути"
+    },
+    "description": "{transport}, до {time}",
+    "noPoiSelected": "Не обрано місце",
+    "results": "{n} результатів",
+    "noResults": "Немає результатів",
+    "tryDifferentFilters": "Спробуйте інші фільтри",
+    "event": {
+      "free": "Безкоштовно"
+    },
+    "map": {
+      "show": "Показати карту",
+      "hide": "Приховати карту",
+      "clickForDetails": "Натисніть для деталей",
+      "noResults": "Немає результатів на карті"
+    },
+    "carousel": {
+      "swipe": "Проведіть щоб побачити більше"
+    },
+    "modal": {
+      "event": "подія",
+      "events": "події"
+    }
+  },
+  "favorites": {
+    "title": "Мої улюблені",
+    "empty": "Немає улюблених",
+    "events": "Події",
+    "pois": "Місця"
+  },
+  "actions": {
+    "addFavorite": "Додати в улюблені",
+    "removeFavorite": "Видалити з улюблених",
+    "addCalendar": "Додати в календар",
+    "buyTicket": "Купити квиток",
+    "seeMore": "Дивитися більше"
+  },
+  "newsletter": {
+    "title": "Підписатися на розсилку",
+    "placeholder": "Ваш email",
+    "submit": "Підписатися",
+    "success": "Дякуємо!"
+  },
+  "modal": {
+    "about": "Про подію",
+    "visitWebsite": "Відвідати сайт"
+  },
+  "poi": {
+    "contact": "Контакт",
+    "videos": "Відео",
+    "loadingVideos": "Завантаження відео...",
+    "backToExplorer": "Повернутися до експлорера",
+    "videosSection": "Як це виглядає",
+    "eventsSection": "Що тут відбувається",
+    "nearbySection": "Що поруч",
+    "noVideos": "Немає доступних відео",
+    "noEvents": "Немає подій у цьому місці",
+    "noNearby": "Не знайдено близьких місць",
+    "loadingNearby": "Пошук поруч...",
+    "about": "Про місце"
+  },
+  "actions": {
+    "back": "Назад"
+  }
+}

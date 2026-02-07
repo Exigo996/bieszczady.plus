@@ -1,0 +1,121 @@
+{
+  "language": {
+    "change": "Zmień język"
+  },
+  "onboarding": {
+    "greeting": "Dzień dobry!",
+    "subtitle": "Wybierz kategorię:",
+    "withChildren": "Jestem z dziećmi"
+  },
+  "categories": {
+    "culture": "Kultura",
+    "nature": "Natura",
+    "sport": "Sport",
+    "history": "Historia"
+  },
+  "explorer": {
+    "hero": {
+      "region": "Bieszczady +",
+      "categories": {
+        "entertainment": "Rozrywka",
+        "culture": "Kultura",
+        "nature": "Natura",
+        "history": "Historia"
+      },
+      "welcomeText": "Wybierz interesujący Cię punkt na mapie i sprawdź co dzieje się w pobliżu"
+    },
+    "all": "Wszystkie",
+    "tabs": {
+      "map": "Mapa",
+      "events": "Wydarzenia",
+      "pois": "Miejsca",
+      "favorites": "Ulubione"
+    },
+    "transport": {
+      "car": "Samochód",
+      "bike": "Rower",
+      "walk": "Pieszo"
+    },
+    "mode": {
+      "time": "Czas",
+      "distance": "Dystans"
+    },
+    "time": {
+      "label": "Czas dojazdu",
+      "minutes": "{n} min",
+      "minutes_one": "{n} min",
+      "minutes_few": "{n} min",
+      "minutes_many": "{n} min"
+    },
+    "distance": {
+      "label": "Promień",
+      "kilometers": "{n} km"
+    },
+    "location": {
+      "get": "Moja lokalizacja",
+      "search": "Szukaj na mapie",
+      "reset": "Resetuj"
+    },
+    "description": "{transport}, do {time}",
+    "noPoiSelected": "Brak wybranego obiektu",
+    "results": "{n} wyników",
+    "noResults": "Brak wyników",
+    "tryDifferentFilters": "Spróbuj zmienić filtry",
+    "event": {
+      "free": "Bezpłatnie"
+    },
+    "map": {
+      "show": "Pokaż mapę",
+      "hide": "Ukryj mapę",
+      "clickForDetails": "Kliknij po szczegóły",
+      "noResults": "Brak wyników na mapie"
+    },
+    "carousel": {
+      "swipe": "Przesuń aby zobaczyć więcej"
+    },
+    "modal": {
+      "event": "wydarzenie",
+      "events": "wydarzenia"
+    }
+  },
+  "favorites": {
+    "title": "Moje ulubione",
+    "empty": "Brak ulubionych",
+    "events": "Wydarzenia",
+    "pois": "Miejsca"
+  },
+  "actions": {
+    "addFavorite": "Dodaj do ulubionych",
+    "removeFavorite": "Usuń z ulubionych",
+    "addCalendar": "Dodaj do kalendarza",
+    "buyTicket": "Kup bilet",
+    "seeMore": "Zobacz więcej"
+  },
+  "newsletter": {
+    "title": "Zapisz się do newslettera",
+    "placeholder": "Twój email",
+    "submit": "Zapisz",
+    "success": "Dziękujemy!"
+  },
+  "modal": {
+    "about": "O wydarzeniu",
+    "visitWebsite": "Odwiedź stronę"
+  },
+  "poi": {
+    "contact": "Kontakt",
+    "videos": "Wideo",
+    "loadingVideos": "Ładowanie wideo...",
+    "backToExplorer": "Powrót do eksploratora",
+    "videosSection": "Jak to wygląda",
+    "eventsSection": "Co się dzieje",
+    "nearbySection": "Co w pobliżu",
+    "noVideos": "Brak dostępnych wideo",
+    "noEvents": "Brak wydarzeń w tej lokalizacji",
+    "noNearby": "Nie znaleziono pobliskich miejsc",
+    "loadingNearby": "Wyszukiwanie pobliskich...",
+    "about": "O miejscu"
+  },
+  "actions": {
+    "back": "Wróć"
+  }
+}
