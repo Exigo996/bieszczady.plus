@@ -111,7 +111,8 @@ services:
     container_name: bieszczady_frontend
     volumes:
       - ./frontend:/app
-      - /app/.output  # Prevent overwriting build output
+      - /app/.nuxt
+      - /app/node_modules
     ports:
       - "5173:5173"
     environment:

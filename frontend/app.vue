@@ -1,8 +1,18 @@
 <script setup lang="ts">
+const route = useRoute()
 const { pageView } = useAnalytics()
 
+// Redirect root to explore
+watchEffect(() => {
+  if (route.path === '/') {
+    navigateTo('/explore', { replace: true })
+  }
+})
+
 onMounted(() => {
-  pageView('app')
+  if (route.path !== '/') {
+    pageView('app')
+  }
 })
 </script>
 

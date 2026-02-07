@@ -9,10 +9,10 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Build the application
+# Build the application (generates .output directory)
 RUN npm run build
 
-# Production stage
+# Production stage - use Nitro server for SPA
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -22,14 +22,14 @@ ENV PORT=3000
 ENV HOST=0.0.0.0
 
 # Copy built files from builder
-COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/.output ./
 COPY --from=builder /app/package*.json ./
 
-# Install production dependencies only
+# Install production dependencies only (for Nitro server)
 RUN npm ci --production=only
 
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["node", ".output/server/index.mjs"]
+# Start the Nitro server
+CMD ["node", "server/index.mjs"]
