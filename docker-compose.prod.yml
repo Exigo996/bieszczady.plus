@@ -106,20 +106,20 @@ services:
   #   restart: unless-stopped
 
   # Frontend (built static files served by Node)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-      args:
-        VITE_API_URL: ${VITE_API_URL:-https://api.bieszczady.plus}
-    container_name: bieszczady_frontend_prod
-    restart: unless-stopped
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
-    #   - "traefik.http.routers.frontend.entrypoints=websecure"
-    #   - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-    #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.prod
+  #     args:
+  #       VITE_API_URL: ${VITE_API_URL:-https://api.bieszczady.plus}
+  #   container_name: bieszczady_frontend_prod
+  #   restart: unless-stopped
+  # labels:
+  #   - "traefik.enable=true"
+  #   - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
+  #   - "traefik.http.routers.frontend.entrypoints=websecure"
+  #   - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+  #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
 volumes:
   postgres_data:
