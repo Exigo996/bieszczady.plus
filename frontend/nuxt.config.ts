@@ -5,7 +5,10 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  devtools: { enabled: true },
+  // SPA mode - client-side rendering only
+  ssr: false,
+
+  devtools: { enabled: false },
 
   modules: ["@nuxt/eslint", "@nuxtjs/i18n", "@vite-pwa/nuxt", "@pinia/nuxt"],
 
